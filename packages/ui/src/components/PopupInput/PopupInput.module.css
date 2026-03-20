@@ -1,0 +1,15 @@
+.popupInput {
+    width: calc(100%);
+    height: 32px;
+    background-color: var(--muted-bg);
+    border: none;
+    border-radius: 5px;
+    padding: 4px 8px;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+[device-type="mobile"] .popupInput {
+    font-size: 1.4rem;
+    height: 48px;
+}

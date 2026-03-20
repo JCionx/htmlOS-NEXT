@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="ui.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="app">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">And thi sis. arelly long Title</span>
+                <button class="toggle-sidebar-button" id="toggle-sidebar-button"></button>
+            </div>
+        </div>
+        <div class="content">
+            <h1>UI Test</h1>
+            <p>This is a test page for the UI.</p>
+            <button id="testButton">Click Me!</button>
+        </div>
+    </div>
+    <script src="api.js"></script>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+
+        document.getElementById('toggle-sidebar-button').addEventListener('click', () => {
+            sidebar.classList.toggle('sidebarClosing');
+        });
+    </script>
+</body>
+</html>

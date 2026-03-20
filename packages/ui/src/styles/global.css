@@ -1,0 +1,74 @@
+:root {
+    --accent: #0088ff;
+    /* Button */
+    --button-primary-bg: var(--accent);
+    --button-primary-bg-hover: color-mix(in srgb, var(--accent), black 15%);
+    --button-primary-bg-active: color-mix(in srgb, var(--accent), black 30%);
+    --button-secondary-bg-hover: color-mix(in srgb, var(--accent), white 90%);
+    --button-secondary-bg-active: color-mix(in srgb, var(--accent), white 90%);
+    --button-disabled-bg: color-mix(in srgb, var(--accent), white 60%);
+    --text-disabled: color-mix(in srgb, var(--text-primary), white 40%);
+
+    /* Icons & Accents */
+    --icon-color: var(--accent);
+    --border-color: #0000001a;
+
+    /* Surfaces & Backgrounds */
+    --surface-bg: #ffffff7a;
+    --surface-bg-hover: #ffffffa1;
+    --surface-bg-active: #ffffffd5;
+    --card-bg: #e5e5e5;
+    --card-bg-secondary: #f5f5f5;
+    --overlay-bg: rgba(0, 0, 0, 0.4);
+    --muted-bg: rgba(0, 0, 0, 0.06);
+
+    /* Text */
+    --text-primary: #000000;
+    --text-secondary: #8b8b8b;
+    --text-inverse: #ffffff;
+
+    /* Sizes */
+    --sidebar-width: 200px;
+}
+
+[data-theme="dark"] {
+    /* Button */
+    --button-secondary-bg-hover: #252628;
+    --button-secondary-bg-active: #2b2f35;
+    --button-disabled-bg: color-mix(in srgb, var(--accent), black 60%);
+    --text-disabled: color-mix(in srgb, var(--text-primary), black 40%);
+
+    /* Surfaces & Backgrounds */
+    --surface-bg: #1e1e1e7a;
+    --surface-bg-hover: #2a2a2aa1;
+    --surface-bg-active: #3a3a3ad5;
+    --card-bg: #1d1d1d;
+    --card-bg-secondary: #2a2a2a;
+    --overlay-bg: rgba(255, 255, 255, 0.4);
+    --muted-bg: rgba(255, 255, 255, 0.12);
+
+    /* Text */
+    --text-primary: #ffffff;
+    --text-inverse: #000000;
+    --text-secondary: #b3b3b3;
+}
+
+body {
+    color: var(--text-primary);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+[device-type="mobile"] body {
+    background-color: var(--card-bg-secondary) !important;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}

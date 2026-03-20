@@ -1,0 +1,7 @@
+.popupDescription {
+    text-align: center;
+}
+
+[device-type="mobile"] .popupDescription {
+    font-size: 1.4rem;
+}

@@ -1,0 +1,38 @@
+.contextMenu {
+    background-color: var(--surface-bg-active);
+    position: fixed;
+    border-radius: 9px;
+    z-index: 9999;
+    border: solid 1px var(--border-color);
+    backdrop-filter: blur(16px);
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+
+    /* Animation State: Closed */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform-origin: var(--origin, top left);
+    transform: scale(0.8) translateX(var(--tx-start))
+        translateY(var(--ty-start));
+
+    /* Smooth transition for all properties */
+    transition:
+        opacity 0.12s ease-out,
+        transform 0.12s cubic-bezier(0.4, 0, 0.2, 1),
+        visibility 0.12s;
+}
+
+.contextMenuOpen {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    /* Animation State: Open */
+    transform: scale(1) translateX(0px) translateY(0px);
+}
+
+/* Optional: Mobile adjustments */
+.contextMenuMobile {
+    /* For example: larger touch targets or fixed center positioning if desired */
+}

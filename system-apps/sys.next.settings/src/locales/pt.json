@@ -1,0 +1,69 @@
+{
+  "sidebar": {
+    "system": "Sistema",
+    "user": "Utilizador",
+    "appearence": "Aparência",
+    "installedapps": "Aplicações instaladas",
+    "defaultapps": "Aplicações padrão",
+    "developeroptions": "Opções de desenvolvedor"
+  },
+  "system": {
+    "language": "Idioma",
+    "timezone": "Fuso horário",
+    "24hour": "Relógio de 24 horas",
+    "secondsinclock": "Mostrar segundos no relógio",
+    "developeroptions": "Mostrar opções de desenvolvedor"
+  },
+  "user": {
+    "loading": "Carregando perfil do utilizador...",
+    "error": "Erro ao carregar perfil do utilizador",
+    "notfound": "Utilizador não encontrado",
+    "failedtoloaduser": "Falha ao carregar perfil do utilizador",
+    "usernamechanged": "Nome de utilizador alterado com sucesso",
+    "failedtochangeusername": "Falha ao alterar nome de utilizador",
+    "newusernamecantbesame": "O novo nome de utilizador deve ser diferente do atual",
+    "newusernamerequired": "O nome de utilizador não pode estar vazio",
+    "passwordchanged": "Senha alterada com sucesso",
+    "currentpasswordrequired": "A senha atual é obrigatoria",
+    "newpasswordrequired": "A nova senha é obrigatoria",
+    "passwordtooshort": "A nova senha deve ter pelo menos 6 caracteres",
+    "passwordsdontmatch": "A nova senha e a confirmação de senha não coincidem",
+    "failedtochangepassword": "Falha ao alterar senha",
+    "changeusername": "Alterar nome de utilizador",
+    "newusername": "Novo nome de utilizador",
+    "enternewusername": "Digite o novo nome de utilizador",
+    "changepassword": "Alterar senha",
+    "currentpassword": "Senha atual",
+    "entercurrentpassword": "Digite a senha atual",
+    "newpassword": "Nova senha",
+    "enternewpassword": "Digite a nova senha",
+    "confirmpassword": "Confirmar senha"
+  },
+  "appearence": {
+    "taskbaralignment": "Alinhamento da barra de tarefas",
+    "center": "Centro",
+    "edges": "Bordas",
+    "taskbarstyle": "Estilo da barra de tarefas",
+    "floating": "Flutuante",
+    "expanded": "Expandida",
+    "appearence": "Aparencia",
+    "system": "Sistema",
+    "light": "Claro",
+    "dark": "Escuro",
+    "backgroundimage": "Imagem de fundo",
+    "selectimage": "Selecionar imagem"
+  },
+  "installedapps": {
+    "popup": {
+      "title": "Desinstalar {{appName}}?",
+      "description": "Tem certeza de que deseja desinstalar esta aplicação? Todos os dados relacionados a esta aplicação serão perdidos.",
+      "submit": "Desinstalar",
+      "cancel": "Cancelar"
+    }
+  },
+  "developeroptions": {
+    "showreloadbutton": "Mostrar botao de recarregar",
+    "showinspectbutton": "Mostrar botao de inspecionar"
+  },
+  "loadingsettings": "Carregando definições..."
+}

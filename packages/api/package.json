@@ -1,0 +1,18 @@
+{
+  "name": "@htmlos-next/api",
+  "version": "0.0.3",
+  "license": "MIT",
+  "author": "JCionx",
+  "description": "Core API and system bindings for htmlOS NEXT.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const theme = urlParams.get("theme") === "dark" ? "dark" : "light";
+        const deviceType = urlParams.get("mobile") === "true" ? "mobile" : "desktop";
+
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.setAttribute("device-type", deviceType);
+    </script>
+</head>
+<body>
+    <div class="visor"></div>
+    <div class="button-grid">
+        <div class="button-row">
+            <button class="calc-button light" data-value="delete">DEL</button>
+            <button class="calc-button light" data-value="ac">AC</button>
+            <button class="calc-button light" data-value="%">%</button>
+            <button class="calc-button orange" data-value="/">÷</button>
+        </div>
+        <div class="button-row">
+            <button class="calc-button" data-value="7">7</button>
+            <button class="calc-button" data-value="8">8</button>
+            <button class="calc-button" data-value="9">9</button>
+            <button class="calc-button orange" data-value="*">×</button>
+        </div>
+        <div class="button-row">
+            <button class="calc-button" data-value="4">4</button>
+            <button class="calc-button" data-value="5">5</button>
+            <button class="calc-button" data-value="6">6</button>
+            <button class="calc-button orange" data-value="-">-</button>
+        </div>
+        <div class="button-row">
+            <button class="calc-button" data-value="1">1</button>
+            <button class="calc-button" data-value="2">2</button>
+            <button class="calc-button" data-value="3">3</button>
+            <button class="calc-button orange" data-value="+">+</button>
+        </div>
+        <div class="button-row">
+            <button class="calc-button" data-value="+/-">+/-</button>
+            <button class="calc-button" data-value="0">0</button>
+            <button class="calc-button" data-value=",">,</button>
+            <button class="calc-button orange" data-value="=">=</button>
+        </div>
+    </div>
+
+    <style>
+
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        [data-theme='dark'] body {
+            background-color: #2a2a2a;
+        }
+
+        .visor {
+            color: black;
+            font-size: 48px;
+            text-align: right;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 20px;
+            height: 50%;
+            overflow-x: auto;
+            font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
+        }
+
+        [data-theme='dark'] .visor {
+            color: white;
+        }
+
+        .button-grid {
+            background-color: #959595;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            gap: 1px;
+        }
+
+        .button-row {
+            background-color: #959595;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            height: 100%;
+            gap: 1px;
+        }
+
+        .calc-button {
+            background-color: #313131;
+            border: none;
+            outline: none;
+            color: white;
+            width: 100%;
+            height: 100%;
+            font-size: 24px;
+            transition: 0.2s;
+        }
+
+        .calc-button:hover {
+            background-color: #313131da;
+        }
+
+        .light {
+            background-color: #5C5C5C;
+        }
+
+        .light:hover {
+            background-color: #5C5C5Cda;
+        }
+
+        .orange {
+            background-color: #FF9200;
+        }
+
+        .orange:hover {
+            background-color: #FF9200da;
+        }
+    </style>
+
+    <script src="api.js"></script>
+    <script>
+        // Calculator logic
+        const visor = document.querySelector('.visor');
+        const buttons = document.querySelectorAll('.calc-button');
+
+        let current = '0';
+        let operator = null;
+        let operand = null;
+        let resetNext = false;
+
+        function updateVisor() {
+            visor.textContent = current.replace('.', ',');
+        }
+
+        function inputNumber(num) {
+            if (resetNext) {
+                current = num;
+                resetNext = false;
+            } else if (current === '0') {
+                current = num;
+            } else {
+                current += num;
+            }
+        }
+
+        function inputComma() {
+            if (resetNext) {
+                current = '0,';
+                resetNext = false;
+            } else if (!current.includes(',')) {
+                current += ',';
+            }
+        }
+
+        function parseCurrent() {
+            return parseFloat(current.replace(',', '.'));
+        }
+
+        function setOperator(op) {
+            if (operator && !resetNext) {
+                calculate();
+            }
+            operand = parseCurrent();
+            operator = op;
+            resetNext = true;
+        }
+
+        function calculate() {
+            if (operator === null || operand === null) return;
+            let result = 0;
+            const curr = parseCurrent();
+            switch (operator) {
+                case '+': result = operand + curr; break;
+                case '-': result = operand - curr; break;
+                case '*': result = operand * curr; break;
+                case '/': result = curr === 0 ? 'Error' : operand / curr; break;
+                case '%': result = operand % curr; break;
+            }
+            current = (result === 'Error') ? 'Error' : result.toString().replace('.', ',');
+            operator = null;
+            operand = null;
+            resetNext = true;
+        }
+
+        function clearAll() {
+            current = '0';
+            operator = null;
+            operand = null;
+            resetNext = false;
+        }
+
+        function deleteLast() {
+            if (resetNext || current === 'Error') {
+                current = '0';
+                resetNext = false;
+            } else if (current.length > 1) {
+                current = current.slice(0, -1);
+                if (current === '-' || current === '') current = '0';
+            } else {
+                current = '0';
+            }
+        }
+
+        function toggleSign() {
+            if (current === '0' || current === 'Error') return;
+            if (current.startsWith('-')) {
+                current = current.slice(1);
+            } else {
+                current = '-' + current;
+            }
+        }
+
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const val = btn.getAttribute('data-value');
+                handleInput(val);
+                updateVisor();
+            });
+        });
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+            let key = e.key;
+            if (key >= '0' && key <= '9') {
+                handleInput(key);
+            } else if (key === ',' || key === '.') {
+                handleInput(',');
+            } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+                handleInput(key);
+            } else if (key === 'Enter' || key === '=') {
+                handleInput('=');
+                e.preventDefault();
+            } else if (key === 'Backspace') {
+                handleInput('delete');
+                e.preventDefault();
+            } else if (key.toLowerCase() === 'c') {
+                handleInput('ac');
+            } else if (key === '%') {
+                handleInput('%');
+            } else if (key === 'F9') {
+                handleInput('+/-');
+            }
+            updateVisor();
+        });
+
+        function handleInput(val) {
+            if (!isNaN(val)) {
+                inputNumber(val);
+            } else if (val === ',') {
+                inputComma();
+            } else if (['+', '-', '*', '/'].includes(val)) {
+                setOperator(val);
+            } else if (val === '=') {
+                calculate();
+            } else if (val === 'ac') {
+                clearAll();
+            } else if (val === 'delete') {
+                deleteLast();
+            } else if (val === '+/-') {
+                toggleSign();
+            } else if (val === '%') {
+                setOperator('%');
+            }
+        }
+
+        updateVisor();
+    </script>
+</body>
+</html>

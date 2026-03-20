@@ -1,0 +1,33 @@
+{
+    "sidebar": {
+        "title": "Toutes les notes",
+        "button": "Nouvelle note"
+    },
+    "context": {
+        "duplicate": "Dupliquer",
+        "rename": "Renommer",
+        "delete": "Supprimer"
+    },
+    "popup": {
+        "new": {
+            "title": "Nouvelle note",
+            "description": "Entrez un titre pour votre nouvelle note",
+            "placeholder": "Titre de la note",
+            "submit": "Ajouter"
+        },
+        "rename": {
+            "title": "Renommer la note",
+            "description": "Entrez le nouveau nom pour la note sélectionnée",
+            "submit": "Renommer"
+        },
+        "delete": {
+            "title": "Supprimer la note",
+            "description": "Voulez-vous vraiment supprimer cette note ?",
+            "submit": "Supprimer"
+        },
+        "cancel": "Annuler"
+    },
+    "empty": {
+        "title": "Aucune note sélectionnée"
+    }
+}

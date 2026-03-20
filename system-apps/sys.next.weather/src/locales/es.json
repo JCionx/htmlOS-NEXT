@@ -1,0 +1,75 @@
+{
+  "sidebar": {
+    "title": "Ubicaciones"
+  },
+  "toolbar": {
+    "title": "Clima"
+  },
+  "content": {
+    "loading": "Cargando clima",
+    "empty": "No hay datos del clima",
+    "temperature": "Temperatura",
+    "windspeed": "Velocidad del viento",
+    "feelsLike": "Sensacion termica",
+    "condition": "Condicion",
+    "forecast": "Pronostico de 7 dias"
+  },
+  "popup": {
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "add": {
+      "title": "Agregar ubicacion",
+      "description": "Busca por nombre de ciudad.",
+      "placeholder": "Nombre de ciudad",
+      "submit": "Agregar"
+    },
+    "picker": {
+      "title": "Elegir ubicacion",
+      "description": "Elige la ciudad correcta.",
+      "back": "Volver"
+    },
+    "delete": {
+      "title": "Eliminar ubicacion",
+      "description": "Eliminar la ubicacion seleccionada?",
+      "submit": "Eliminar"
+    },
+    "settings": {
+      "title": "Configuracion del clima",
+      "description": "Elige la unidad de temperatura usada en la app.",
+      "temperatureUnit": "Unidad de temperatura",
+      "celsius": "Celsius",
+      "fahrenheit": "Fahrenheit"
+    }
+  },
+  "conditions": {
+    "0": "Cielo despejado",
+    "1": "Mayormente despejado",
+    "2": "Parcialmente nublado",
+    "3": "Nublado",
+    "45": "Niebla",
+    "48": "Niebla helada",
+    "51": "Llovizna ligera",
+    "53": "Llovizna",
+    "55": "Llovizna densa",
+    "56": "Llovizna helada",
+    "57": "Llovizna helada densa",
+    "61": "Lluvia ligera",
+    "63": "Lluvia",
+    "65": "Lluvia fuerte",
+    "66": "Lluvia helada",
+    "67": "Lluvia helada fuerte",
+    "71": "Nieve ligera",
+    "73": "Nieve",
+    "75": "Nieve fuerte",
+    "77": "Granulos de nieve",
+    "80": "Chubascos",
+    "81": "Chubascos",
+    "82": "Chubascos violentos",
+    "85": "Chubascos de nieve",
+    "86": "Chubascos de nieve fuertes",
+    "95": "Tormenta",
+    "96": "Tormenta con granizo",
+    "99": "Tormenta severa con granizo",
+    "default": "Desconocido"
+  }
+}

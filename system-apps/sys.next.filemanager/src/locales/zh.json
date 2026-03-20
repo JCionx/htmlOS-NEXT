@@ -1,0 +1,42 @@
+{
+    "bookmarks": {
+        "title": "书签",
+        "home": "主页",
+        "documents": "文档",
+        "downloads": "下载",
+        "applications": "应用程序",
+        "pictures": "图片",
+        "music": "音乐",
+        "movies": "电影"
+    },
+    "popup": {
+        "newfolder": {
+            "title": "创建新文件夹",
+            "placeholder": "文件夹名称",
+            "submit": "创建"
+        },
+        "rename": {
+            "title": "重命名",
+            "submit": "重命名"
+        },
+        "delete": {
+            "title": "删除",
+            "description": "您确定要删除此项目吗？",
+            "submit": "删除"
+        },
+        "cancel": "取消"
+    },
+    "context": {
+        "download": "下载",
+        "downloadzip": "下载 (ZIP)",
+        "rename": "重命名",
+        "copy": "复制",
+        "cut": "剪切",
+        "delete": "删除"
+    },
+    "upload": {
+        "files": "文件",
+        "folder": "文件夹",
+        "uploading": "上传中"
+    }
+}

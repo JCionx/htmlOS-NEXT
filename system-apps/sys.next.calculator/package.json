@@ -1,0 +1,9 @@
+{
+  "name": "sys.next.calculator",
+  "license": "MIT",
+  "author": "JCionx",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "APP_NAME=$(basename \"$PWD\") && rm -rf \"../../backend/apps/$APP_NAME\" && mkdir -p \"../../backend/apps/$APP_NAME\" && cp -r dist/* \"../../backend/apps/$APP_NAME/\""
+  }
+}

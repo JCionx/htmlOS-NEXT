@@ -1,0 +1,22 @@
+{
+    "auth": {
+        "title": "Login",
+        "username": "Username",
+        "password": "Password",
+        "submit": "Login"
+    },
+    "start": {
+        "title": "All Apps",
+        "search": "Search apps..."
+    },
+    "popup": {
+        "fileselect": {
+            "title": "Select a file",
+            "description": "This app will be able to access the selected file until closed.",
+            "supportedfiles": "Supported files:",
+            "all": "All files",
+            "submit": "Select"
+        },
+        "cancel": "Cancel"
+    }
+}

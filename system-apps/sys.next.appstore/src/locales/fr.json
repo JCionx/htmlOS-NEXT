@@ -1,0 +1,42 @@
+{
+	"sidebar": {
+		"title": "Applications",
+		"featured": "À la une"
+	},
+	"overview": {
+		"by": "par",
+		"install": "Installer",
+		"installed": "Installée",
+		"installing": "Installation en cours...",
+		"screenshots": "Captures d'écran",
+		"version": "Version",
+		"appId": "ID de l'application",
+		"permissions": {
+			"title": "Autorisations requises",
+			"positionManipulation": {
+				"title": "Manipulation de la position",
+				"description": "Les applications disposant de cette autorisation peuvent se déplacer et se redimensionner elles-mêmes, vérifier leur position à l'écran et se fermer elles-mêmes. "
+			},
+			"spawnChildWindows": {
+				"title": "Créer des fenêtres enfants",
+				"description": "Les applications disposant de cette autorisation peuvent ouvrir d'autres fenêtres avec les mêmes autorisations."
+			},
+			"fullDiskAccess": {
+				"title": "Accès complet au disque",
+				"description": "Les applications disposant de cette autorisation peuvent accéder à tous les fichiers de votre compte utilisateur."
+			},
+			"cameraAccess": {
+				"title": "Accès à la caméra",
+				"description": "Les applications disposant de cette autorisation peuvent accéder à votre caméra."
+			},
+			"microphoneAccess": {
+				"title": "Accès au microphone",
+				"description": "Les applications disposant de cette autorisation peuvent accéder à votre microphone."
+			}
+		}
+
+	}
+	,
+	"noApps": "Aucune application disponible.",
+	"loading": "Chargement..."
+}

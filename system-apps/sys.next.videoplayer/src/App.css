@@ -1,0 +1,38 @@
+.video-player {
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+}
+
+[device-type="mobile"] .video-player {
+    top: 0;
+    height: 100%;
+}
+
+.no-content-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.no-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+}
+
+.app-icon {
+    width: 96px;
+    height: 96px;
+}
+
+.no-content-text {
+    margin: 0;
+    color: var(--text-primary);
+}

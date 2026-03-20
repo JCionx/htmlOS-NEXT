@@ -1,0 +1,47 @@
+.balloon {
+    position: fixed;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    width: 256px;
+    padding: 14px;
+    gap: 8px;
+    border-radius: 9px;
+    background-color: var(--surface-bg);
+    border: solid 1px var(--border-color);
+    align-items: center;
+    box-sizing: border-box;
+    transform-origin: 50% calc(100% + 8px);
+    transform: translate(-50%, calc(-100% - 8px)) scale(0.1);
+    filter: opacity(0);
+    transition: 0.3s;
+    pointer-events: none;
+    backdrop-filter: blur(12px);
+}
+
+.balloonOpen {
+    transform: translate(-50%, calc(-100% - 8px)) scale(1);
+    filter: opacity(1);
+    pointer-events: auto;
+}
+
+.balloon::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    
+    width: 10px;
+    height: 10px;
+    
+    background-color: var(--surface-bg);
+    border-right: solid 1px var(--border-color);
+    border-bottom: solid 1px var(--border-color);
+
+    backdrop-filter: blur(12px);
+}
+
+[device-type="mobile"] .balloon {
+    font-size: 1.4rem;
+}

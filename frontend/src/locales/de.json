@@ -1,0 +1,22 @@
+{
+    "auth": {
+        "title": "Anmelden",
+        "username": "Benutzername",
+        "password": "Passwort",
+        "submit": "Anmelden"
+    },
+    "start": {
+        "title": "Alle Apps",
+        "search": "Apps suchen..."
+    },
+    "popup": {
+        "fileselect": {
+            "title": "Datei auswählen",
+            "description": "Diese App kann auf die ausgewählte Datei zugreifen, bis sie geschlossen wird.",
+            "supportedfiles": "Unterstützte Dateien:",
+            "all": "Alle Dateien",
+            "submit": "Auswählen"
+        },
+        "cancel": "Abbrechen"
+    }
+}

@@ -1,0 +1,42 @@
+{
+	"sidebar": {
+		"title": "应用",
+		"featured": "精选"
+	},
+	"overview": {
+		"by": "作者",
+		"install": "安装",
+		"installed": "已安装",
+		"installing": "安装中...",
+		"screenshots": "截图",
+		"version": "版本",
+		"appId": "应用 ID",
+		"permissions": {
+			"title": "所需权限",
+			"positionManipulation": {
+				"title": "位置控制",
+				"description": "拥有此权限的应用可以移动和调整自身大小、检查自己在屏幕上的位置，并自行退出。 "
+			},
+			"spawnChildWindows": {
+				"title": "创建子窗口",
+				"description": "拥有此权限的应用可以创建具有相同权限的其他窗口。"
+			},
+			"fullDiskAccess": {
+				"title": "完全磁盘访问权限",
+				"description": "拥有此权限的应用可以访问您用户账户中的所有文件。"
+			},
+			"cameraAccess": {
+				"title": "摄像头访问权限",
+				"description": "拥有此权限的应用可以访问您的摄像头。"
+			},
+			"microphoneAccess": {
+				"title": "麦克风访问权限",
+				"description": "拥有此权限的应用可以访问您的麦克风。"
+			}
+		}
+
+	}
+	,
+	"noApps": "没有可用应用。",
+	"loading": "加载中..."
+}

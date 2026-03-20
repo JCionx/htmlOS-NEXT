@@ -1,0 +1,42 @@
+{
+    "bookmarks": {
+        "title": "Bookmarks",
+        "home": "Home",
+        "documents": "Documents",
+        "downloads": "Downloads",
+        "applications": "Applications",
+        "pictures": "Pictures",
+        "music": "Music",
+        "movies": "Movies"
+    },
+    "popup": {
+        "newfolder": {
+            "title": "Create New Folder",
+            "placeholder": "Folder name",
+            "submit": "Create"
+        },
+        "rename": {
+            "title": "Rename",
+            "submit": "Rename"
+        },
+        "delete": {
+            "title": "Delete",
+            "description": "Are you sure you want to delete this item?",
+            "submit": "Delete"
+        },
+        "cancel": "Cancel"
+    },
+    "context": {
+        "download": "Download",
+        "downloadzip": "Download (ZIP)",
+        "rename": "Rename",
+        "copy": "Copy",
+        "cut": "Cut",
+        "delete": "Delete"
+    },
+    "upload": {
+        "files": "Files",
+        "folder": "Folder",
+        "uploading": "Uploading"
+    }
+}

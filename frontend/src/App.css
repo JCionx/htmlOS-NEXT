@@ -1,0 +1,51 @@
+@import url('assets/fonts/inter.css');
+
+:root {
+    --background: rgba(240, 240, 240, 0.7);
+    --background-dark: rgba(216, 216, 216, 0.7);
+    --blur: 24px;
+    --border: solid 1px rgba(0, 0, 0, 0.1);
+    --text: black;
+    --text-inverse: white;
+    --background-color: #bee7d1;
+
+    --button-primary-bg: #5EB2FE;
+    --button-primary-bg-hover: #40A1FE;
+    --button-primary-bg-active: #208CFE;
+    --button-secondary-bg-hover: #e7f3ff;
+    --button-secondary-bg-active: #d6ebff;
+
+    --border-color: #0000001a;
+    --surface-bg: #ffffff7a;
+}
+
+:root[data-theme='dark'] {
+    --background: rgba(32, 32, 32, 0.7);
+    --background-dark: rgba(16, 16, 16, 0.7);
+    --border: solid 1px rgba(255, 255, 255, 0.1);
+    --text: white;
+    --text-inverse: black;
+    --background-color: #3a3a3a;
+
+    --button-secondary-bg-hover: #252628;
+    --button-secondary-bg-active: #2b2f35;
+
+    --surface-bg: #1e1e1e7a;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-image: url("/wallpaper-dark-color.webp");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100vh;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}

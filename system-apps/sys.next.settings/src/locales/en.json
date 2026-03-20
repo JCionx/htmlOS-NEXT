@@ -1,0 +1,69 @@
+{
+    "sidebar": {
+        "system": "System",
+        "user": "User",
+        "appearence": "Appearence",
+        "installedapps": "Installed Apps",
+        "defaultapps": "Default Apps",
+        "developeroptions": "Developer Options"
+    },
+    "system": {
+        "language": "Language",
+        "timezone": "Timezone",
+        "24hour": "24-Hour Clock",
+        "secondsinclock": "Show Seconds in Clock",
+        "developeroptions": "Show Developer Options"
+    },
+    "user": {
+        "loading": "Loading user profile...",
+        "error": "Error loading user profile",
+        "notfound": "User not found",
+        "failedtoloaduser": "Failed to load user profile",
+        "usernamechanged": "Username changed successfully",
+        "failedtochangeusername": "Failed to change username",
+        "newusernamecantbesame": "New username must be different from current username",
+        "newusernamerequired": "Username cannot be empty",
+        "passwordchanged": "Password changed successfully",
+        "currentpasswordrequired": "Current password is required",
+        "newpasswordrequired": "New password is required",
+        "passwordtooshort": "New password must be at least 6 characters",
+        "passwordsdontmatch": "New password and confirm password do not match",
+        "failedtochangepassword": "Failed to change password",
+        "changeusername": "Change Username",
+        "newusername": "New Username",
+        "enternewusername": "Enter new username",
+        "changepassword": "Change Password",
+        "currentpassword": "Current Password",
+        "entercurrentpassword": "Enter current password",
+        "newpassword": "New Password",
+        "enternewpassword": "Enter new password",
+        "confirmpassword": "Confirm Password"
+    },
+    "appearence": {
+        "taskbaralignment": "Taskbar Alignment",
+        "center": "Center",
+        "edges": "Edges",
+        "taskbarstyle": "Taskbar Style",
+        "floating": "Floating",
+        "expanded": "Expanded",
+        "appearence": "Appearence",
+        "system": "System",
+        "light": "Light",
+        "dark": "Dark",
+        "backgroundimage": "Background Image",
+        "selectimage": "Select Image"
+    },
+    "installedapps": {
+        "popup": {
+            "title": "Delete {{appName}}?",
+            "description": "Are you sure you want to delete this app? All data related to this app will be lost.",
+            "submit": "Delete",
+            "cancel": "Cancel"
+        }
+    },
+    "developeroptions": {
+        "showreloadbutton": "Show Reload Button",
+        "showinspectbutton": "Show Inspect Button"
+    },
+    "loadingsettings": "Loading settings..."
+}

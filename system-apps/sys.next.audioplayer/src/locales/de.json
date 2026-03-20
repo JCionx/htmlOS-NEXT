@@ -1,0 +1,11 @@
+{
+  "main": {
+    "title": "Kein Audio geladen",
+    "button": "Audio laden"
+  },
+  "player": {
+    "unknownTitle": "Unbekannter Titel",
+    "unknownArtist": "Unbekannter Künstler",
+    "unknownAlbum": "Unbekanntes Album"
+  }
+}

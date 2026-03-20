@@ -1,0 +1,11 @@
+{
+  "main": {
+    "title": "Nenhum áudio selecionado",
+    "button": "Selecionar Áudio"
+  },
+  "player": {
+    "unknownTitle": "Título Desconhecido",
+    "unknownArtist": "Artista Desconhecido",
+    "unknownAlbum": "Álbum Desconhecido"
+  }
+}

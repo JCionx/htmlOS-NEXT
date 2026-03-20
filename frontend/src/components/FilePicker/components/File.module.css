@@ -1,0 +1,30 @@
+.file {
+    padding: 4px 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.fileMobile {
+    padding: 12px 20px;
+    font-size: 1.2rem;
+}
+
+.fileDisabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.fileSelected {
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme='dark'] .fileSelected {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.file img {
+    width: 32px;
+    height: 100%;
+}

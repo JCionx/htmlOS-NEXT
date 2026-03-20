@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borderless</title>
+</head>
+<body>
+
+    <div class="custom-title-bar">
+        <div class="title-bar-buttons">
+            <button>-</button>
+            <button onclick="toggleMaximize()">[]</button>
+            <button onclick="quit()">X</button>
+        </div>
+    </div>
+
+    <div class="center">
+        <div class="row">
+            <button class="resize-btn" onclick="goToTopLeft()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M2 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1H3.707l10.147 10.146a.5.5 0 0 1-.708.708L3 3.707V8.5a.5.5 0 0 1-1 0z"/>
+                </svg>
+            </button>
+            <button class="resize-btn" onclick="goToTop()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5"/>
+                </svg>
+            </button>
+            <button class="resize-btn" onclick="goToTopRight()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/>
+                </svg>
+            </button>
+        </div>
+        <div class="row">
+            <button class="resize-btn" onclick="goToLeft()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                </svg>
+            </button>
+            <button class="resize-btn" onclick="goToCenter()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-square" viewBox="0 0 16 16">
+                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                </svg>
+            </button>
+            <button class="resize-btn" onclick="goToRight()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+                </svg>
+            </button>
+        </div>
+        <div class="row">
+            <button class="resize-btn" onclick="goToBottomLeft()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M2 13.5a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 0-1H3.707L13.854 2.854a.5.5 0 0 0-.708-.708L3 12.293V7.5a.5.5 0 0 0-1 0z"/>
+                </svg>
+            </button>
+            <button class="resize-btn" onclick="goToBottom()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1"/>
+                </svg>
+            </button>
+            <button class="resize-btn" onclick="goToBottomRight()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M14 13.5a.5.5 0 0 1-.5.5h-6a.5.5 0 0 1 0-1h4.793L2.146 2.854a.5.5 0 1 1 .708-.708L13 12.293V7.5a.5.5 0 0 1 1 0z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+</body>
+
+<script>
+    function goToCenter() {
+        const windowX = getWindowWidth();
+        const windowY = getWindowHeight();
+        const screenX = getScreenWidth();
+        const screenY = getScreenHeight();
+        const centerX = (screenX - windowX) / 2;
+        const centerY = (screenY - windowY) / 2;
+        setPosition(centerX, centerY);
+    }
+
+    function goToTopLeft() {
+        setPosition(0, 0);
+    }
+
+    function goToTopRight() {
+        const windowX = getWindowWidth();
+        const screenX = getScreenWidth();
+        setPosition(screenX - windowX, 0);
+    }
+
+    function goToBottomLeft() {
+        const windowY = getWindowHeight();
+        const screenY = getScreenHeight();
+        setPosition(0, screenY - windowY);
+    }
+
+    function goToBottomRight() {
+        const windowX = getWindowWidth();
+        const windowY = getWindowHeight();
+        const screenX = getScreenWidth();
+        const screenY = getScreenHeight();
+        setPosition(screenX - windowX, screenY - windowY);
+    }
+
+    function goToTop() {
+        const windowX = getWindowWidth();
+        const screenX = getScreenWidth();
+        setPosition((screenX - windowX) / 2, 0);
+    }
+
+    function goToBottom() {
+        const windowX = getWindowWidth();
+        const windowY = getWindowHeight();
+        const screenX = getScreenWidth();
+        const screenY = getScreenHeight();
+        setPosition((screenX - windowX) / 2, screenY - windowY);
+    }
+
+    function goToLeft() {
+        const windowY = getWindowHeight();
+        const screenY = getScreenHeight();
+        setPosition(0, (screenY - windowY) / 2);
+    }
+
+    function goToRight() {
+        const windowX = getWindowWidth();
+        const windowY = getWindowHeight();
+        const screenX = getScreenWidth();
+        const screenY = getScreenHeight();
+        setPosition(screenX - windowX, (screenY - windowY) / 2);
+    }
+</script>
+
+<style>
+    .custom-title-bar {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        height: 28px;
+        border-radius: 8px;
+    }
+
+    .title-bar-buttons {
+        background-color: darkblue;
+        height: 28px;
+        padding: 4px;
+        border-radius: 8px;
+    }
+
+    .title-bar-buttons button {
+        background-color: transparent;
+        color: white;
+        border: none;
+        font-size: 16px;
+        margin-left: 8px;
+    }
+
+    .center {
+        width: 100%;
+        height: calc(100vh - 46px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .resize-btn {
+        width: 86px;
+        height: 86px;
+        background-color: darkblue;
+        border: none;
+        border-radius: 8px;
+        padding: 8px;
+    }
+
+    .resize-btn svg {
+        width: 100%;
+        height: 100%;
+        fill: white;
+    }
+</style>
+
+</html>

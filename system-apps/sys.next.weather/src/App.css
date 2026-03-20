@@ -1,0 +1,95 @@
+.weather-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  width: 100%;
+}
+
+.weather-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.weather-grid > * {
+  min-width: 0;
+}
+
+.weather-full-width {
+  grid-column: 1 / -1;
+}
+
+.weather-card-title {
+  margin: 0 0 6px 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.weather-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.weather-card-value {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+.weather-card-subtitle {
+  margin: 6px 0 0 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.forecast-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forecast-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+
+.forecast-item strong {
+  display: block;
+}
+
+.forecast-item span {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.settings-radios {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-radios label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.location-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+[device-type='mobile'] .weather-layout {
+  padding: 16px;
+  gap: 14px;
+}
+
+[device-type='mobile'] .weather-card-value {
+  font-size: 2rem;
+}

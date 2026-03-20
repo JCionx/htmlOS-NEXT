@@ -1,0 +1,14 @@
+.toolbarActions {
+    background-color: var(--surface-bg);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: row;
+}
+
+[device-type="mobile"] .toolbarActions {
+    border-radius: 24px;
+}
+
+.toolbarActions button {
+    background-color: transparent;
+}

@@ -1,0 +1,22 @@
+{
+    "auth": {
+        "title": "Iniciar sesión",
+        "username": "Usuario",
+        "password": "Contraseña",
+        "submit": "Entrar"
+    },
+    "start": {
+        "title": "Todas las aplicaciones",
+        "search": "Buscar aplicaciones..."
+    },
+    "popup": {
+        "fileselect": {
+            "title": "Seleccionar un archivo",
+            "description": "Esta aplicación podrá acceder al archivo seleccionado hasta que se cierre.",
+            "supportedfiles": "Archivos compatibles:",
+            "all": "Todos los archivos",
+            "submit": "Seleccionar"
+        },
+        "cancel": "Cancelar"
+    }
+}

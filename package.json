@@ -1,0 +1,11 @@
+{
+  "name": "htmlos-next",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": "JCionx",
+  "type": "commonjs",
+  "scripts": {
+    "clean": "rm -rf backend/node_modules frontend/node_modules packages/ui/node_modules system-apps/*/node_modules",
+    "build": "(cd packages/ui && npm install && npm run build && npm link) && for app in system-apps/*/; do (cd \"$app\" && npm install && npm link @htmlos/ui && npm run build); done"
+  }
+}

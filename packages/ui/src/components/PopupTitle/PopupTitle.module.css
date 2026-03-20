@@ -1,0 +1,10 @@
+.popupTitle {
+    margin: 0;
+    text-align: center;
+    font-size: large;
+    font-weight: bold;
+}
+
+[device-type="mobile"] .popupTitle {
+    font-size: 1.4rem;
+}

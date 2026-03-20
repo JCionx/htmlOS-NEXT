@@ -1,0 +1,69 @@
+{
+  "sidebar": {
+    "system": "Systeme",
+    "user": "Utilisateur",
+    "appearence": "Apparence",
+    "installedapps": "Applications installees",
+    "defaultapps": "Applications par defaut",
+    "developeroptions": "Options de developpement"
+  },
+  "system": {
+    "language": "Langue",
+    "timezone": "Fuseau horaire",
+    "24hour": "Horloge 24 heures",
+    "secondsinclock": "Afficher les secondes dans l'horloge",
+    "developeroptions": "Afficher les options de developpement"
+  },
+  "user": {
+    "loading": "Chargement du profil utilisateur...",
+    "error": "Erreur lors du chargement du profil utilisateur",
+    "notfound": "Utilisateur introuvable",
+    "failedtoloaduser": "Echec du chargement du profil utilisateur",
+    "usernamechanged": "Nom d'utilisateur modifie avec succes",
+    "failedtochangeusername": "Echec de la modification du nom d'utilisateur",
+    "newusernamecantbesame": "Le nouveau nom d'utilisateur doit etre different de l'actuel",
+    "newusernamerequired": "Le nom d'utilisateur ne peut pas etre vide",
+    "passwordchanged": "Mot de passe modifie avec succes",
+    "currentpasswordrequired": "Le mot de passe actuel est requis",
+    "newpasswordrequired": "Le nouveau mot de passe est requis",
+    "passwordtooshort": "Le nouveau mot de passe doit contenir au moins 6 caracteres",
+    "passwordsdontmatch": "Le nouveau mot de passe et la confirmation ne correspondent pas",
+    "failedtochangepassword": "Echec de la modification du mot de passe",
+    "changeusername": "Modifier le nom d'utilisateur",
+    "newusername": "Nouveau nom d'utilisateur",
+    "enternewusername": "Entrez le nouveau nom d'utilisateur",
+    "changepassword": "Modifier le mot de passe",
+    "currentpassword": "Mot de passe actuel",
+    "entercurrentpassword": "Entrez le mot de passe actuel",
+    "newpassword": "Nouveau mot de passe",
+    "enternewpassword": "Entrez le nouveau mot de passe",
+    "confirmpassword": "Confirmer le mot de passe"
+  },
+  "appearence": {
+    "taskbaralignment": "Alignement de la barre des taches",
+    "center": "Centre",
+    "edges": "Bords",
+    "taskbarstyle": "Style de la barre des taches",
+    "floating": "Flottante",
+    "expanded": "Etendue",
+    "appearence": "Apparence",
+    "system": "Systeme",
+    "light": "Clair",
+    "dark": "Sombre",
+    "backgroundimage": "Image d'arriere-plan",
+    "selectimage": "Selectionner une image"
+  },
+  "installedapps": {
+    "popup": {
+      "title": "Supprimer {{appName}} ?",
+      "description": "Etes-vous sur de vouloir supprimer cette application ? Toutes les donnees liees a cette application seront perdues.",
+      "submit": "Supprimer",
+      "cancel": "Annuler"
+    }
+  },
+  "developeroptions": {
+    "showreloadbutton": "Afficher le bouton Recharger",
+    "showinspectbutton": "Afficher le bouton Inspecter"
+  },
+  "loadingsettings": "Chargement des parametres..."
+}

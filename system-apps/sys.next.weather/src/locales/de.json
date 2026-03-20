@@ -1,0 +1,75 @@
+{
+  "sidebar": {
+    "title": "Orte"
+  },
+  "toolbar": {
+    "title": "Wetter"
+  },
+  "content": {
+    "loading": "Wetter wird geladen",
+    "empty": "Keine Wetterdaten verfugbar",
+    "temperature": "Temperatur",
+    "windspeed": "Windgeschwindigkeit",
+    "feelsLike": "Gefuhlt",
+    "condition": "Bedingung",
+    "forecast": "7-Tage-Vorhersage"
+  },
+  "popup": {
+    "cancel": "Abbrechen",
+    "close": "Schliessen",
+    "add": {
+      "title": "Ort hinzufugen",
+      "description": "Nach Stadtnamen suchen.",
+      "placeholder": "Stadtname",
+      "submit": "Hinzufugen"
+    },
+    "picker": {
+      "title": "Ort auswahlen",
+      "description": "Wahlen Sie die richtige Stadt.",
+      "back": "Zuruck"
+    },
+    "delete": {
+      "title": "Ort loschen",
+      "description": "Aktuell ausgewahlten Ort loschen?",
+      "submit": "Loschen"
+    },
+    "settings": {
+      "title": "Wettereinstellungen",
+      "description": "Wahlen Sie die im App verwendete Temperatureinheit.",
+      "temperatureUnit": "Temperatureinheit",
+      "celsius": "Celsius",
+      "fahrenheit": "Fahrenheit"
+    }
+  },
+  "conditions": {
+    "0": "Klarer Himmel",
+    "1": "Uberwiegend klar",
+    "2": "Teilweise bewolkt",
+    "3": "Bedeckt",
+    "45": "Nebel",
+    "48": "Raureifnebel",
+    "51": "Leichter Nieselregen",
+    "53": "Nieselregen",
+    "55": "Dichter Nieselregen",
+    "56": "Gefrierender Nieselregen",
+    "57": "Dichter gefrierender Nieselregen",
+    "61": "Leichter Regen",
+    "63": "Regen",
+    "65": "Starker Regen",
+    "66": "Gefrierender Regen",
+    "67": "Starker gefrierender Regen",
+    "71": "Leichter Schnee",
+    "73": "Schnee",
+    "75": "Starker Schnee",
+    "77": "Schneekorner",
+    "80": "Regenschauer",
+    "81": "Regenschauer",
+    "82": "Heftige Regenschauer",
+    "85": "Schneeschauer",
+    "86": "Starke Schneeschauer",
+    "95": "Gewitter",
+    "96": "Gewitter mit Hagel",
+    "99": "Starkes Gewitter mit Hagel",
+    "default": "Unbekannt"
+  }
+}

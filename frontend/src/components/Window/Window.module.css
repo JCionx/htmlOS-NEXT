@@ -1,0 +1,202 @@
+:root {
+    --window-color: #2a2e32;
+    --window-border-radius: 14px;
+}
+
+.window {
+    background-color: var(--background);
+    backdrop-filter: blur(var(--blur));
+    box-shadow: 8px 14px 45px 4px rgba(0,0,0,0.1);
+    width: 100%;
+    height: 100%;
+    border-radius: var(--window-border-radius);
+    border: var(--border);
+    display: flex;
+    flex-direction: column;
+    position: absolute !important;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+    overflow: hidden;
+    animation: windowOpen 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.windowMinimized {
+    pointer-events: none;
+    opacity: 0;
+    transform: translate3d(calc(var(--minimize-dest-x) - 5px), calc(var(--minimize-dest-y) - 5px), 0) scale(0.1) !important;
+}
+
+.windowTransition {
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
+                width 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
+                height 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
+                opacity 0.3s ease-out;
+}
+
+.restoreAnimation {
+    transition: all 0.3s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.minimizeAnimation {
+    transition: all 0.3s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.mobileWindow {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+    overflow: hidden;
+    scroll-snap-align: center;
+    border-radius: 0;
+    
+}
+
+/* Last window */
+.mobileWindow:last-child {
+    margin-right: 25%;
+}
+
+.mobileHeader {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background-color: rgba(173, 172, 172, 0.51);
+    backdrop-filter: blur(var(--blur));
+    box-shadow: 8px 14px 45px 4px rgba(0,0,0,0.1);
+    color: black;
+    border-radius: 32px;
+    padding: 4px 16px;
+    font-size: 28px;
+    opacity: 0;
+    transition: 0.2s ease-out;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    transform: translateY(-40px);
+}
+
+.mobileHeader img {
+    width: 28px;
+    height: 28px;
+}
+
+.mobileWindowActivitiesOpen .mobileHeader {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+.windowHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 30px;
+}
+
+.windowDescription {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 3px;
+    width: 100%;
+}
+
+.windowTitle {
+    margin-left: 4px;
+    font-size: 17px;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    color: var(--text);
+}
+
+.windowTitleIconless {
+    margin-left: 7px;
+}
+
+.windowIcon {
+    width: 16px;
+    height: 16px;
+    margin: 4px;
+}
+
+.windowContent {
+    width: 100%;
+    height: 100%;
+    
+}
+
+.windowFrame {
+    width: 100%;
+    height: 100%;
+}
+
+.mobileWindowFrame {
+    background-color: white;
+    width: 100%;
+    height: 100%;
+    border-radius: 0px;
+    transition: 0.2s ease-out;
+    pointer-events: all;
+}
+
+.mobileWindowActivitiesOpen .mobileWindowFrame {
+    border-radius: 32px;
+    pointer-events: none;
+}
+
+.windowControls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.windowControls button {
+    background-color: transparent;
+    border: none;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    transition: 0.1s;
+}
+
+.windowControls button:hover {
+    filter: brightness(0.6);
+}
+
+.windowControls button img {
+    width: 20px;
+    height: 20px;
+}
+
+.contentOverlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 30px);
+    z-index: 1;
+}
+
+.maximizeAnimation {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes windowOpen {
+    0% {
+        transform: scale(0.4);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

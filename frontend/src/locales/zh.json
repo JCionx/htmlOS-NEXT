@@ -1,0 +1,22 @@
+{
+    "auth": {
+        "title": "登录",
+        "username": "用户名",
+        "password": "密码",
+        "submit": "登录"
+    },
+    "start": {
+        "title": "所有应用",
+        "search": "搜索应用..."
+    },
+    "popup": {
+        "fileselect": {
+            "title": "选择文件",
+            "description": "此应用可以在关闭前访问所选文件。",
+            "supportedfiles": "支持的文件：",
+            "all": "所有文件",
+            "submit": "选择"
+        },
+        "cancel": "取消"
+    }
+}
