@@ -94,7 +94,7 @@
         "id": "com.jcionx.monochrome",
         "name": "Monochrome",
         "version": "1.0.0",
-        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/monochrome/com.jcionx.monochrome",
+        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/monochrome/com.jcionx.monochrome.zip",
         "entryPoint": "index.html",
         "iconPath": "icon.png"
       }
