@@ -1,0 +1,153 @@
+{
+  "featuredApps": [
+    {
+      "author": "Author",
+      "description": "description",
+      "storeIcon": "https://example.com/icon.png",
+      "screenshots": [
+        "https://example.com/1.png",
+        "https://example.com/2.png",
+        "https://example.com/3.png"
+      ],
+      "app": {
+        "id": "com.app.id",
+        "name": "name",
+        "version": "1.0.01",
+        "packageUrl": "https://example.com/package.zip",
+        "entryPoint": "dist/index.html",
+        "iconPath": "icon.svg",
+        "allowResize": true,
+        "allowMaximize": true,
+        "defaultWidth": 400,
+        "defaultHeight": 800,
+        "minWidth": 400,
+        "minHeight": 800,
+        "maxWidth": 400,
+        "maxHeight": 800,
+        "defaultX": 400,
+        "defaultY": 400,
+        "borderless": false,
+        "permissions": [
+          "positionManipulation",
+          "windowSpawning",
+          "diskAccess",
+          "cameraAccess",
+          "microphoneAccess"
+        ]
+      }
+    },
+    {
+      "author": "JCionx",
+      "description": "Unofficial Apple Music App for htmlOS NEXT. You can play songs from your Apple Music Library.",
+      "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/icon.svg",
+      "screenshots": [
+        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/1.jpeg",
+        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/2.jpeg",
+        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/3.jpeg"
+      ],
+      "app": {
+        "id": "com.jcionx.applemusic",
+        "name": "Apple Music",
+        "version": "1.0.0",
+        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/apple-music.zip",
+        "entryPoint": "dist/index.html",
+        "iconPath": "icon.svg"
+      }
+    },
+    {
+      "author": "JCionx",
+      "description": "Unofficial Apple Music App for htmlOS NEXT. You can play songs from your Apple Music Library.",
+      "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/icon.svg",
+      "screenshots": [
+        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/1.jpeg",
+        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/2.jpeg",
+        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/3.jpeg"
+      ],
+      "app": {
+        "id": "com.jcionx.musicplayer",
+        "name": "Music Player",
+        "version": "1.0.0",
+        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/music-player/com.jcionx.musicplayer.zip",
+        "entryPoint": "index.html",
+        "iconPath": "icon.png",
+        "locale": {
+          "en": "Music Player",
+          "pt": "Reprodutor de Música",
+          "es": "Reproductor de música",
+          "de": "Musikplayer",
+          "zh": "音乐播放器",
+          "fr": "Lecteur de musique"
+        },
+        "filetypes": ["wav", "mp3", "m4a", "ogg", "flac"]
+      }
+    }
+  ],
+  "categories": [
+    {
+      "name": {
+        "en": "Utilities",
+        "es": "Utilidades",
+        "pt": "Ferramentas",
+        "de": "Dienstprogramme",
+        "fr": "Utilitaires",
+        "zh": "实用工具"
+      },
+      "apps": []
+    },
+    {
+      "name": {
+        "en": "Multimedia",
+        "es": "Multimedia",
+        "pt": "Multimédia",
+        "de": "Multimedia",
+        "fr": "Multimédia",
+        "zh": "多媒体"
+      },
+      "apps": [
+        {
+          "author": "JCionx",
+          "description": "Unofficial Apple Music App for htmlOS NEXT. You can play songs from your Apple Music Library.",
+          "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/icon.svg",
+          "screenshots": [
+            "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/1.jpeg",
+            "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/2.jpeg",
+            "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/3.jpeg"
+          ],
+          "app": {
+            "id": "com.jcionx.applemusic",
+            "name": "Apple Music",
+            "version": "1.0.0",
+            "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/apple-music.zip",
+            "entryPoint": "dist/index.html",
+            "iconPath": "icon.svg"
+          }
+        }
+      ]
+    },
+    {
+      "name": {
+        "en": "Games",
+        "es": "Juegos",
+        "pt": "Jogos",
+        "de": "Spiele",
+        "fr": "Jeux",
+        "zh": "游戏"
+      },
+      "apps": [
+        {
+          "author": "Afonso Póvoa",
+          "description": "Fight your way through space!",
+          "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/tretas-espaciais/icon.png",
+          "app": {
+            "id": "com.afonso.tretasespaciais",
+            "name": "Tretas Espaciais",
+            "version": "1.0.0",
+            "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/tretas-espaciais/tretas-espaciais.zip",
+            "entryPoint": "index.html",
+            "iconPath": "icon.png"
+          }
+        }
+      ]
+    }
+  ]
+}

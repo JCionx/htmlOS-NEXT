@@ -1,8 +1,0 @@
-.sidebarIcon {
-    rotate: 0deg;
-    transition: rotate 0.3s;
-}
-
-.sidebarIconExpanded {
-    rotate: 180deg;
-}
