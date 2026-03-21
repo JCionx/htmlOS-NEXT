@@ -56,8 +56,8 @@
     },
     {
       "author": "JCionx",
-      "description": "Unofficial Apple Music App for htmlOS NEXT. You can play songs from your Apple Music Library.",
-      "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/icon.svg",
+      "description": "Another music player App to test system behavior with multiple apps supporting the same file types.",
+      "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/music-player/icon.png",
       "screenshots": [
         "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/1.jpeg",
         "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/2.jpeg",
@@ -79,6 +79,24 @@
           "fr": "Lecteur de musique"
         },
         "filetypes": ["wav", "mp3", "m4a", "ogg", "flac"]
+      }
+    },
+    {
+      "author": "JCionx",
+      "description": "Unofficial Monochrome App for htmlOS NEXT. You can play songs from Tidal. More info on monochrome.tf.",
+      "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/monochrome/icon.png",
+      "screenshots": [
+        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/1.jpeg",
+        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/2.jpeg",
+        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/3.jpeg"
+      ],
+      "app": {
+        "id": "com.jcionx.monochrome",
+        "name": "Monochrome",
+        "version": "1.0.0",
+        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/monochrome/com.jcionx.monochrome",
+        "entryPoint": "index.html",
+        "iconPath": "icon.png"
       }
     }
   ],
@@ -120,6 +138,51 @@
             "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/apple-music.zip",
             "entryPoint": "dist/index.html",
             "iconPath": "icon.svg"
+          }
+        },
+        {
+          "author": "JCionx",
+          "description": "Another music player App to test system behavior with multiple apps supporting the same file types.",
+          "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/music-player/icon.png",
+          "screenshots": [
+            "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/1.jpeg",
+            "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/2.jpeg",
+            "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/3.jpeg"
+          ],
+          "app": {
+            "id": "com.jcionx.musicplayer",
+            "name": "Music Player",
+            "version": "1.0.0",
+            "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/music-player/com.jcionx.musicplayer.zip",
+            "entryPoint": "index.html",
+            "iconPath": "icon.png",
+            "locale": {
+            "en": "Music Player",
+            "pt": "Reprodutor de Música",
+            "es": "Reproductor de música",
+            "de": "Musikplayer",
+            "zh": "音乐播放器",
+            "fr": "Lecteur de musique"
+            },
+            "filetypes": ["wav", "mp3", "m4a", "ogg", "flac"]
+          }
+        },
+        {
+          "author": "JCionx",
+          "description": "Unofficial Monochrome App for htmlOS NEXT. You can play songs from Tidal. More info on monochrome.tf.",
+          "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/monochrome/icon.png",
+          "screenshots": [
+            "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/1.jpeg",
+            "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/2.jpeg",
+            "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/3.jpeg"
+          ],
+          "app": {
+            "id": "com.jcionx.monochrome",
+            "name": "Monochrome",
+            "version": "1.0.0",
+            "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/monochrome/com.jcionx.monochrome",
+            "entryPoint": "index.html",
+            "iconPath": "icon.png"
           }
         }
       ]
