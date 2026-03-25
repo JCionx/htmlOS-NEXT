@@ -9,6 +9,57 @@ const unzipper = require("unzipper");
 
 const { authenticateToken } = require("../middleware/authenticateToken");
 
+function normalizeLocale(locale) {
+  if (!locale || typeof locale !== "object" || Array.isArray(locale)) {
+    return null;
+  }
+
+  const normalized = {};
+
+  for (const [lang, value] of Object.entries(locale)) {
+    if (typeof lang === "string" && typeof value === "string") {
+      const trimmedLang = lang.trim();
+      const trimmedValue = value.trim();
+      if (trimmedLang && trimmedValue) {
+        normalized[trimmedLang] = trimmedValue;
+      }
+    }
+  }
+
+  return Object.keys(normalized).length > 0 ? normalized : null;
+}
+
+function normalizeFiletypes(filetypes) {
+  if (!Array.isArray(filetypes)) {
+    return [];
+  }
+
+  const seen = new Set();
+  const normalized = [];
+
+  for (const filetype of filetypes) {
+    if (typeof filetype !== "string") {
+      continue;
+    }
+
+    const cleaned = filetype.trim().replace(/^\.+/, "").toLowerCase();
+    if (!cleaned) {
+      continue;
+    }
+
+    if (!/^[a-z0-9]+$/.test(cleaned)) {
+      continue;
+    }
+
+    if (!seen.has(cleaned)) {
+      seen.add(cleaned);
+      normalized.push(cleaned);
+    }
+  }
+
+  return normalized;
+}
+
 router.get("/list", authenticateToken, (req, res) => {
   const userId = req.user.id;
 
@@ -29,9 +80,11 @@ router.get("/list", authenticateToken, (req, res) => {
 });
 
 router.get("/filetypes", authenticateToken, (req, res) => {
+  const userId = req.user.id;
+
   db.all(
-    'SELECT app_id, filetype, "default" as is_default FROM filetypes',
-    [],
+    'SELECT app_id, filetype, "default" as is_default FROM filetypes WHERE user_id = ?',
+    [userId],
     (err, rows) => {
       if (err) {
         console.error(err);
@@ -55,6 +108,7 @@ router.get("/filetypes", authenticateToken, (req, res) => {
 });
 
 router.post("/filetypes/set-default", authenticateToken, async (req, res) => {
+  const userId = req.user.id;
   const { filetype, appId } = req.body;
 
   if (!filetype || !appId) {
@@ -65,8 +119,8 @@ router.post("/filetypes/set-default", authenticateToken, async (req, res) => {
     // First, set all apps for this filetype to not default
     await new Promise((resolve, reject) => {
       db.run(
-        'UPDATE filetypes SET "default" = 0 WHERE filetype = ?',
-        [filetype],
+        'UPDATE filetypes SET "default" = 0 WHERE user_id = ? AND filetype = ?',
+        [userId, filetype],
         (err) => {
           if (err) reject(err);
           else resolve();
@@ -77,8 +131,8 @@ router.post("/filetypes/set-default", authenticateToken, async (req, res) => {
     // Then, set the specified app as default for this filetype
     await new Promise((resolve, reject) => {
       db.run(
-        'UPDATE filetypes SET "default" = 1 WHERE filetype = ? AND app_id = ?',
-        [filetype, appId],
+        'UPDATE filetypes SET "default" = 1 WHERE user_id = ? AND filetype = ? AND app_id = ?',
+        [userId, filetype, appId],
         function (err) {
           if (err) reject(err);
           else if (this.changes === 0)
@@ -100,6 +154,11 @@ router.post("/filetypes/set-default", authenticateToken, async (req, res) => {
 router.get("/delete/:id", authenticateToken, (req, res) => {
   const appId = req.params.id;
   const userId = req.user.id;
+
+  db.run("DELETE FROM filetypes WHERE app_id = ? AND user_id = ?", [
+    appId,
+    userId,
+  ]);
 
   db.run(
     "DELETE FROM apps WHERE id = ? AND user_id = ?",
@@ -196,6 +255,17 @@ router.post("/uninstall", authenticateToken, async (req, res) => {
     await new Promise((resolve, reject) => {
       db.run(
         "DELETE FROM apps WHERE id = ? AND user_id = ?",
+        [appId, userId],
+        function (err) {
+          if (err) reject(err);
+          else resolve();
+        },
+      );
+    });
+
+    await new Promise((resolve, reject) => {
+      db.run(
+        "DELETE FROM filetypes WHERE app_id = ? AND user_id = ?",
         [appId, userId],
         function (err) {
           if (err) reject(err);
@@ -376,7 +446,9 @@ router.post("/install", authenticateToken, async (req, res) => {
     const permissions = app.permissions
       ? JSON.stringify(app.permissions)
       : null;
-    const nameLocale = app.nameLocale ? JSON.stringify(app.nameLocale) : null;
+    const localePayload = normalizeLocale(app.locale || app.nameLocale);
+    const nameLocale = localePayload ? JSON.stringify(localePayload) : null;
+    const filetypes = normalizeFiletypes(app.filetypes);
 
     await new Promise((resolve, reject) => {
       db.run(
@@ -408,6 +480,24 @@ router.post("/install", authenticateToken, async (req, res) => {
         },
       );
     });
+
+    if (filetypes.length > 0) {
+      await Promise.all(
+        filetypes.map(
+          (filetype) =>
+            new Promise((resolve, reject) => {
+              db.run(
+                'INSERT INTO filetypes (user_id, app_id, filetype, "default") VALUES (?, ?, ?, 0) ON CONFLICT(user_id, app_id, filetype) DO NOTHING',
+                [userId, appId, filetype],
+                function (err) {
+                  if (err) reject(err);
+                  else resolve();
+                },
+              );
+            }),
+        ),
+      );
+    }
 
     res.json({ success: true, message: "App installed successfully" });
   } catch (error) {

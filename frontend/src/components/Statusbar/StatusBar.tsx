@@ -57,7 +57,6 @@ function StatusBar({
             twentyFourHourClock,
           )}
         </p>
-        <p>0 notifications</p>
       </div>
     );
   } else {

@@ -36,6 +36,8 @@ export interface AppData {
     packageUrl: string;
     entryPoint: string;
     iconPath: string;
+    locale?: Record<string, string>;
+    filetypes?: string[];
     allowResize?: boolean;
     allowMaximize?: boolean;
     defaultWidth?: number;

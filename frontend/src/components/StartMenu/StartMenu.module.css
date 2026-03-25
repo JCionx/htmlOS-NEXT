@@ -68,7 +68,6 @@
     flex-wrap: wrap;
     justify-content: start;
     align-items: flex-start;
-    
 }
 
 .appItem {
@@ -85,6 +84,11 @@
     text-overflow: ellipsis;
     text-align: center;
     transition: 0.2s;
+}
+
+.mobileStartMenu .appTitle {
+    color: white;
+    text-shadow: black 0 0 4px;
 }
 
 .appItem img {
@@ -128,7 +132,7 @@
 }
 
 .startMenuSearch:focus {
-    border: solid 1px #5EC1FE;
+    border: solid 1px #5ec1fe;
     width: 200px;
 }
 
