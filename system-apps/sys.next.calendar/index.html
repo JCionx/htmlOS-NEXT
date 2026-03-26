@@ -1,112 +1,112 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Test</title>
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Calendar</title>
+    </head>
+    <body>
+        <h1>API Test</h1>
+        <p>This is a test page to check the API functionality.</p>
+        <div class="actions-container">
+            <button onclick="changeParentWindowTitle(`${getRandomNumber()}`)">
+                Change title
+            </button>
+            <button onclick="nextXPosition()">Change X position</button>
+            <button onclick="nextYPosition()">Change Y position</button>
+            <button onclick="nextWidth()">Change width</button>
+            <button onclick="nextHeight()">Change height</button>
+            <button onclick="getAndAlertPosition()">Get position</button>
+            <button onclick="spawnTestWindow()">Spawn test window</button>
+            <button onclick="goToRandomPos()">Goto random</button>
+        </div>
 
-    <h1>API Test</h1>
-    <p>This is a test page to check the API functionality.</p>
-    <div class="actions-container">
-        <button onclick="changeParentWindowTitle(`${getRandomNumber()}`)">Change title</button>
-        <button onclick="nextXPosition()">Change X position</button>
-        <button onclick="nextYPosition()">Change Y position</button>
-        <button onclick="nextWidth()">Change width</button>
-        <button onclick="nextHeight()">Change height</button>
-        <button onclick="getAndAlertPosition()">Get position</button>
-        <button onclick="spawnTestWindow()">Spawn test window</button>
-        <button onclick="goToRandomPos()">Goto random</button>
-    </div>
-
-    <style>
-        .actions-container {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            margin: 8px;
-        }
-
-        .actions-container button {
-            height: 32px;
-        }
-    </style>
-
-    <script src="api.js"></script>
-    <script>
-
-        let x_factor = 300;
-        let y_factor = 100;
-        let width_factor = 400;
-        let height_factor = 400;
-
-        function nextXPosition() {
-            if (x_factor > 1000) {
-                x_factor = 300;
+        <style>
+            .actions-container {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                margin: 8px;
             }
-            setXPosition(x_factor);
-            x_factor += 100;
-        }
 
-        function nextYPosition() {
-            if (y_factor > 400) {
-                y_factor = 100;
+            .actions-container button {
+                height: 32px;
             }
-            setYPosition(y_factor);
-            y_factor += 100;
-        }
+        </style>
 
-        function nextWidth() {
-            if (width_factor > 1000) {
-                width_factor = 300;
+        <script src="api.js"></script>
+        <script>
+            let x_factor = 300;
+            let y_factor = 100;
+            let width_factor = 400;
+            let height_factor = 400;
+
+            function nextXPosition() {
+                if (x_factor > 1000) {
+                    x_factor = 300;
+                }
+                setXPosition(x_factor);
+                x_factor += 100;
             }
-            setWidth(width_factor);
-            width_factor += 100;
-        }
 
-        function nextHeight() {
-            if (height_factor > 600) {
-                height_factor = 300;
+            function nextYPosition() {
+                if (y_factor > 400) {
+                    y_factor = 100;
+                }
+                setYPosition(y_factor);
+                y_factor += 100;
             }
-            setHeight(height_factor);
-            height_factor += 100;
-        }
 
-        async function getAndAlertPosition() {
-            const pos = await getPosition();
-            alert(JSON.stringify(pos));
-        }
-        
-        function getRandomNumber() {
-            return Math.floor(Math.random() * 1000);
-        }
-        
-        function spawnTestWindow() {
-            spawnWindow(
-                "test" + Math.floor(Math.random() * 1000),
-                "Test Window",
-                "https://jcionx.github.io/hOS",
-                "",
-                100,
-                100,
-                false,
-                300,
-                300,
-                200,
-                200,
-                600,
-                600,
-                true,
-                true
-            );
-        }
+            function nextWidth() {
+                if (width_factor > 1000) {
+                    width_factor = 300;
+                }
+                setWidth(width_factor);
+                width_factor += 100;
+            }
 
-        function goToRandomPos() {
-            const x = getRandomNumber();
-            const y = getRandomNumber();
-            setPosition(x, y);
-        }
-    </script>
-</body>
+            function nextHeight() {
+                if (height_factor > 600) {
+                    height_factor = 300;
+                }
+                setHeight(height_factor);
+                height_factor += 100;
+            }
+
+            async function getAndAlertPosition() {
+                const pos = await getPosition();
+                alert(JSON.stringify(pos));
+            }
+
+            function getRandomNumber() {
+                return Math.floor(Math.random() * 1000);
+            }
+
+            function spawnTestWindow() {
+                spawnWindow(
+                    "test" + Math.floor(Math.random() * 1000),
+                    "Test Window",
+                    "https://jcionx.github.io/hOS",
+                    "",
+                    100,
+                    100,
+                    false,
+                    300,
+                    300,
+                    200,
+                    200,
+                    600,
+                    600,
+                    true,
+                    true,
+                );
+            }
+
+            function goToRandomPos() {
+                const x = getRandomNumber();
+                const y = getRandomNumber();
+                setPosition(x, y);
+            }
+        </script>
+    </body>
 </html>

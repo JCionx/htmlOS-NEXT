@@ -57,7 +57,7 @@ export function WallpaperPicker({
 
   return (
     <div className={styles.wallpaperPicker}>
-      {wallpapers.map((wallpaper, index) => {
+      {wallpapers.map((wallpaper) => {
         const isSelected =
           selectedWallpaper === wallpaper.name ||
           selectedWallpaper === wallpaper.name.replace("builtin:", "");

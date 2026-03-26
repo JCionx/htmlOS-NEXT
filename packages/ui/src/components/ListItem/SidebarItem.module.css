@@ -12,6 +12,10 @@
     width: 100%;
 }
 
+.listItem > svg {
+    flex: 0 0 auto;
+}
+
 [device-type="mobile"] .listItem {
     font-size: 1.4rem;
 }
