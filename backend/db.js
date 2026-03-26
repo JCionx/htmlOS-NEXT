@@ -107,6 +107,7 @@ const DEFAULT_APPS = [
     version: "1.0.0",
     entry_point: "index.html",
     icon_path: "icon.png",
+    min_height: 340,
     name_locale:
       '{"en":"Calendar","pt":"Calendário","zh":"日历","es":"Calendario","fr":"Calendrier","de":"Kalender"}',
   },

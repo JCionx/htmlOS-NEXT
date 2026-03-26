@@ -5,7 +5,10 @@
   "author": "JCionx",
   "type": "commonjs",
   "scripts": {
-    "clean": "rm -rf backend/node_modules frontend/node_modules packages/ui/node_modules system-apps/*/node_modules",
-    "build": "(cd packages/ui && npm install && npm run build && npm link) && for app in system-apps/*/; do (cd \"$app\" && npm install && npm link @htmlos/ui && npm run build); done"
+    "clean": "rm -rf backend/node_modules backend/package-lock.json frontend/node_modules frontend/package-lock.json packages/ui/node_modules packages/ui/package-lock.json packages/api/node_modules packages/api/package-lock.json system-apps/*/node_modules system-apps/*/package-lock.json",
+    "clean-packages": "rm -rf packages/ui/node_modules packages/ui/package-lock.json packages/api/node_modules packages/api/package-lock.json",
+    "clean-apps": "rm -rf system-apps/*/node_modules system-apps/*/package-lock.json",
+    "build-apps": "cd system-apps && for d in */; do (cd \"$d\" && npm install && npm run build); done && cd ..",
+    "update-apps": "cd system-apps && for d in */; do (cd \"$d\" && npm update); done && cd .."
   }
 }

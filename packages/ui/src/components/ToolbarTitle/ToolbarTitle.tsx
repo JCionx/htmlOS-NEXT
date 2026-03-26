@@ -5,5 +5,9 @@ interface ToolbarTitleProps {
 }
 
 export function ToolbarTitle({ children }: ToolbarTitleProps) {
-  return <h3 className={styles.toolbarTitle}>{children}</h3>;
+  return (
+    <h3 className={styles.toolbarTitle}>
+      <span className={styles.toolbarTitleContent}>{children}</span>
+    </h3>
+  );
 }
