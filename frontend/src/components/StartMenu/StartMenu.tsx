@@ -5,12 +5,15 @@ import { useTranslation } from "react-i18next";
 
 import DefaultIcon from "./assets/default.png";
 
+import { Search, LogOut } from "lucide-react";
+
 interface TaskbarProps {
   apps: WindowConfig[];
   menuOpen: boolean;
   setMenuOpen: (open: boolean) => void;
   openApp: (appId: string) => void;
   mobileMode?: boolean;
+  username?: string;
 }
 
 function StartMenu({
@@ -19,6 +22,7 @@ function StartMenu({
   setMenuOpen,
   openApp,
   mobileMode,
+  username = "Username",
 }: TaskbarProps) {
   const [search, setSearch] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -68,42 +72,51 @@ function StartMenu({
           className={styles.mobileStartMenu}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className={styles.startMenuHeader}>
-            <span className={styles.startMenuTitle}>All apps</span>
-            <input
-              className={styles.startMenuSearch}
-              type="text"
-              placeholder={t("start.search")}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              ref={searchInputRef}
-            />
-            {/* Added onClick and text here */}
+          <div className={styles.startMenuTop}>
+            <div className={styles.startMenuHeader}>
+              <span className={styles.startMenuTitle}>All apps</span>
+              <div className={styles.startMenuSearchContainer}>
+                <Search className={styles.startMenuSearchIcon} size={22} />
+                <input
+                  className={styles.startMenuSearch}
+                  type="text"
+                  placeholder={t("start.search")}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  ref={searchInputRef}
+                />
+              </div>
+            </div>
+            <div className={styles.appsContainer}>
+              <div className={styles.apps}>
+                {filteredApps.map((app) => (
+                  <div
+                    key={app.id}
+                    className={styles.appItem}
+                    onClick={() => openApp(app.id)}
+                  >
+                    <img
+                      src={app.icon ? app.icon : DefaultIcon}
+                      alt={`${app.title}'s app icon`}
+                      className={styles.appIcon}
+                      onError={(e) => {
+                        e.currentTarget.src = DefaultIcon;
+                        e.currentTarget.onerror = null;
+                      }}
+                    />
+                    <span className={styles.appTitle}>{app.title}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className={styles.startMenuFooter}>
+            <p>{username}</p>
             <button className={styles.logoutButton} onClick={handleLogout}>
+              <LogOut size={16} />
               Logout
             </button>
           </div>
-          <div className={styles.appsContainer}>
-            {filteredApps.map((app) => (
-              <div
-                key={app.id}
-                className={styles.appItem}
-                onClick={() => openApp(app.id)}
-              >
-                <img
-                  src={app.icon ? app.icon : DefaultIcon}
-                  alt={`${app.title}'s app icon`}
-                  className={styles.appIcon}
-                  onError={(e) => {
-                    e.currentTarget.src = DefaultIcon;
-                    e.currentTarget.onerror = null;
-                  }}
-                />
-                <span className={styles.appTitle}>{app.title}</span>
-              </div>
-            ))}
-          </div>
-          <div className={styles.startMenuActions}></div>
         </div>
       </div>
     );
@@ -120,40 +133,48 @@ function StartMenu({
         autoFocus
       >
         <div className={styles.startMenu} onClick={(e) => e.stopPropagation()}>
-          <div className={styles.startMenuHeader}>
-            <span className={styles.startMenuTitle}>{t("start.title")}</span>
-            <input
-              className={styles.startMenuSearch}
-              type="text"
-              placeholder={t("start.search")}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              ref={searchInputRef}
-            />
-          </div>
-          <div className={styles.appsContainer}>
-            {filteredApps.map((app) => (
-              <div
-                key={app.id}
-                className={styles.appItem}
-                onClick={() => openApp(app.id)}
-              >
-                <img
-                  src={app.icon ? app.icon : DefaultIcon}
-                  alt={`${app.title}'s app icon`}
-                  className={styles.appIcon}
-                  onError={(e) => {
-                    e.currentTarget.src = DefaultIcon;
-                    e.currentTarget.onerror = null;
-                  }}
+          <div className={styles.startMenuTop}>
+            <div className={styles.startMenuHeader}>
+              <span className={styles.startMenuTitle}>{t("start.title")}</span>
+              <div className={styles.startMenuSearchContainer}>
+                <Search className={styles.startMenuSearchIcon} size={22} />
+                <input
+                  className={styles.startMenuSearch}
+                  type="text"
+                  placeholder={t("start.search")}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  ref={searchInputRef}
                 />
-                <span className={styles.appTitle}>{app.title}</span>
               </div>
-            ))}
+            </div>
+            <div className={styles.appsContainer}>
+              <div className={styles.apps}>
+                {filteredApps.map((app) => (
+                  <div
+                    key={app.id}
+                    className={styles.appItem}
+                    onClick={() => openApp(app.id)}
+                  >
+                    <img
+                      src={app.icon ? app.icon : DefaultIcon}
+                      alt={`${app.title}'s app icon`}
+                      className={styles.appIcon}
+                      onError={(e) => {
+                        e.currentTarget.src = DefaultIcon;
+                        e.currentTarget.onerror = null;
+                      }}
+                    />
+                    <span className={styles.appTitle}>{app.title}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className={styles.startMenuActions}>
-            {/* Added the logout button to the desktop actions bar too */}
+          <div className={styles.startMenuFooter}>
+            <p>{username}</p>
             <button className={styles.logoutButton} onClick={handleLogout}>
+              <LogOut size={16} />
               Logout
             </button>
           </div>

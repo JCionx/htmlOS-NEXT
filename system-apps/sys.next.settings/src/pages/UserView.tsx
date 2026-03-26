@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { EmptyView, Card, TextInput, Button } from "@htmlos-next/ui";
 import { User } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { SettingEntry } from "../components/SettingEntry/SettingEntry";
 import * as api from "@htmlos-next/api";
 
 function UserView() {
@@ -124,7 +125,9 @@ function UserView() {
 
   return (
     <>
-      <h3>{t("user.changeusername")}</h3>
+      <SettingEntry>
+        <p>{t("user.changeusername")}</p>
+      </SettingEntry>
 
       <Card>
         <label htmlFor="newUsername">{t("user.newusername")}</label>
@@ -145,7 +148,9 @@ function UserView() {
         </Button>
       </Card>
 
-      <h3>{t("user.changepassword")}</h3>
+      <SettingEntry>
+        <p>{t("user.changepassword")}</p>
+      </SettingEntry>
 
       <Card>
         <label htmlFor="currentPassword">{t("user.currentpassword")}</label>

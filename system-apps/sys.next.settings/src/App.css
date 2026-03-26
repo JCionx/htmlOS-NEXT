@@ -1,0 +1,7 @@
+[device-type="mobile"] select {
+    width: 100%;
+}
+
+[device-type="mobile"] body {
+    font-size: 1.4rem;
+}

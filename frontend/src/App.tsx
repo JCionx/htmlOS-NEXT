@@ -8,9 +8,11 @@ import { SettingsProvider, useSettings } from "./contexts/SettingsContext";
 function AppContent({
   systemColorScheme,
   mobileMode,
+  username,
 }: {
   systemColorScheme: "light" | "dark";
   mobileMode: boolean;
+  username: string;
 }) {
   const { colorScheme } = useSettings();
 
@@ -26,12 +28,14 @@ function AppContent({
       systemColorScheme={systemColorScheme}
       mobileMode={mobileMode}
       colorScheme={colorScheme}
+      username={username}
     />
   );
 }
 
 function App() {
   const [mobileMode, setMobileMode] = useState(false);
+  const [username, setUsername] = useState("Username");
   const [systemColorScheme, setSystemColorScheme] = useState<"light" | "dark">(
     window.matchMedia("(prefers-color-scheme: dark)").matches
       ? "dark"
@@ -75,9 +79,17 @@ function App() {
     fetch(import.meta.env.VITE_BACKEND_ADDRESS + "/auth/check", {
       credentials: "include",
     })
-      .then((res) =>
-        res.ok ? setIsAuthenticated(true) : setIsAuthenticated(false),
-      )
+      .then(async (res) => {
+        if (res.ok) {
+          const data = await res.json();
+          if (data.user && data.user.username) {
+            setUsername(data.user.username);
+          }
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      })
       .catch(() => setIsAuthenticated(false));
   }, []);
 
@@ -89,6 +101,7 @@ function App() {
           <AppContent
             systemColorScheme={systemColorScheme}
             mobileMode={mobileMode}
+            username={username}
           />
         </SettingsProvider>
       </>

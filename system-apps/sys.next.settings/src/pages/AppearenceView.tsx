@@ -65,7 +65,9 @@ function SystemView({ settings, changeSetting }: SystemViewProps) {
   return (
     <>
       <SettingEntry>
-        {t("appearence.taskbaralignment")}
+        <label htmlFor="taskbar-alignment">
+          {t("appearence.taskbaralignment")}
+        </label>
         <SelectInput
           name="taskbar-alignment"
           id="taskbar-alignment"
@@ -77,7 +79,7 @@ function SystemView({ settings, changeSetting }: SystemViewProps) {
         </SelectInput>
       </SettingEntry>
       <SettingEntry>
-        {t("appearence.taskbarstyle")}
+        <label htmlFor="taskbar-style">{t("appearence.taskbarstyle")}</label>
         <SelectInput
           name="taskbar-style"
           id="taskbar-style"
@@ -89,13 +91,15 @@ function SystemView({ settings, changeSetting }: SystemViewProps) {
         </SelectInput>
       </SettingEntry>
       <SettingEntry>
-        {t("appearence.appearence")}
+        <label>{t("appearence.appearence")}</label>
         <SchemePicker
           selectedScheme={settings.colorScheme}
           selectScheme={handleColorSchemeChange}
         ></SchemePicker>
       </SettingEntry>
-      <SettingEntry>{t("appearence.backgroundimage")}</SettingEntry>
+      <SettingEntry>
+        <label>{t("appearence.backgroundimage")}</label>
+      </SettingEntry>
       <WallpaperPicker
         selectedWallpaper={settings.wallpaper || ""}
         selectWallpaper={handleWallpaperChange}

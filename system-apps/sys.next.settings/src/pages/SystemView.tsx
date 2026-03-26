@@ -56,7 +56,7 @@ function SystemView({
   return (
     <>
       <SettingEntry>
-        {t("system.language")}
+        <label htmlFor="language">{t("system.language")}</label>
         <SelectInput
           name="language"
           id="language"
@@ -72,7 +72,7 @@ function SystemView({
         </SelectInput>
       </SettingEntry>
       <SettingEntry>
-        {t("system.timezone")}
+        <label htmlFor="timezone">{t("system.timezone")}</label>
         <SelectInput
           name="timezone"
           id="timezone"
@@ -87,7 +87,7 @@ function SystemView({
         </SelectInput>
       </SettingEntry>
       <SettingEntry>
-        {t("system.24hour")}
+        <label htmlFor="twentyFourHourClock">{t("system.24hour")}</label>
         <input
           type="checkbox"
           id="twentyFourHourClock"
@@ -97,7 +97,7 @@ function SystemView({
         />
       </SettingEntry>
       <SettingEntry>
-        {t("system.secondsinclock")}
+        <label htmlFor="showSeconds">{t("system.secondsinclock")}</label>
         <input
           type="checkbox"
           id="showSeconds"
@@ -107,7 +107,9 @@ function SystemView({
         />
       </SettingEntry>
       <SettingEntry>
-        {t("system.developeroptions")}
+        <label htmlFor="showDeveloperOptions">
+          {t("system.developeroptions")}
+        </label>
         <input
           type="checkbox"
           id="showDeveloperOptions"

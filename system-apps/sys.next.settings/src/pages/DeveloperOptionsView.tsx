@@ -29,7 +29,9 @@ function DeveloperOptionsView({
   return (
     <>
       <SettingEntry>
-        {t("developeroptions.showreloadbutton")}
+        <label htmlFor="showReloadButton">
+          {t("developeroptions.showreloadbutton")}
+        </label>
         <input
           type="checkbox"
           id="showReloadButton"
@@ -39,7 +41,9 @@ function DeveloperOptionsView({
         />
       </SettingEntry>
       <SettingEntry>
-        {t("developeroptions.showinspectbutton")}
+        <label htmlFor="showInspectButton">
+          {t("developeroptions.showinspectbutton")}
+        </label>
         <input
           type="checkbox"
           id="showInspectButton"

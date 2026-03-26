@@ -1,4 +1,4 @@
-@import url('assets/fonts/inter.css');
+@import url("assets/fonts/inter.css");
 
 :root {
     --background: rgba(240, 240, 240, 0.7);
@@ -9,9 +9,9 @@
     --text-inverse: white;
     --background-color: #bee7d1;
 
-    --button-primary-bg: #5EB2FE;
-    --button-primary-bg-hover: #40A1FE;
-    --button-primary-bg-active: #208CFE;
+    --button-primary-bg: #5eb2fe;
+    --button-primary-bg-hover: #40a1fe;
+    --button-primary-bg-active: #208cfe;
     --button-secondary-bg-hover: #e7f3ff;
     --button-secondary-bg-active: #d6ebff;
 
@@ -19,7 +19,7 @@
     --surface-bg: #ffffff7a;
 }
 
-:root[data-theme='dark'] {
+:root[data-theme="dark"] {
     --background: rgba(32, 32, 32, 0.7);
     --background-dark: rgba(16, 16, 16, 0.7);
     --border: solid 1px rgba(255, 255, 255, 0.1);
@@ -34,7 +34,7 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter", sans-serif;
     background-image: url("/wallpaper-dark-color.webp");
     background-repeat: no-repeat;
     background-position: center center;

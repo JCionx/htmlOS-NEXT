@@ -12,4 +12,16 @@
 
 [device-type="mobile"] .settingEntry {
     font-size: 1.4rem;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+[device-type="mobile"] .settingEntry:has(input[type="checkbox"]) {
+    flex-direction: row;
+    align-items: center;
+}
+
+[device-type="mobile"] .settingEntry:has(button) {
+    flex-direction: row;
+    align-items: center;
 }

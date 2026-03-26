@@ -91,7 +91,7 @@ function InstalledAppsView() {
                 objectFit: "contain",
               }}
             />
-            <span>{app.name}</span>
+            <label>{app.name}</label>
           </div>
           <button
             onClick={() => {

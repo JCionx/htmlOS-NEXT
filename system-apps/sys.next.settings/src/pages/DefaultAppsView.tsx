@@ -97,7 +97,7 @@ function DefaultAppsView() {
 
         return (
           <SettingEntry key={filetype}>
-            <span style={{ textTransform: "uppercase" }}>.{filetype}</span>
+            <label style={{ textTransform: "uppercase" }}>.{filetype}</label>
             <SelectInput
               value={currentDefault}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>

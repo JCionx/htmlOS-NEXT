@@ -61,12 +61,8 @@ export function WallpaperPicker({
         const isSelected =
           selectedWallpaper === wallpaper.name ||
           selectedWallpaper === wallpaper.name.replace("builtin:", "");
-
-        // Add line break after every 4 wallpapers (indices 3, 7)
         return (
           <>
-            {index === 4 && <div style={{ width: "100%" }} />}{" "}
-            {/* Line break after 4 items */}
             <div key={wallpaper.name}>
               <div
                 className={styles.wallpaperItem}

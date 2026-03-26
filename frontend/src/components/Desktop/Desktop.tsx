@@ -17,9 +17,15 @@ interface DesktopProps {
   systemColorScheme: "light" | "dark";
   mobileMode: boolean;
   colorScheme: string;
+  username: string;
 }
 
-function Desktop({ systemColorScheme, mobileMode, colorScheme }: DesktopProps) {
+function Desktop({
+  systemColorScheme,
+  mobileMode,
+  colorScheme,
+  username,
+}: DesktopProps) {
   const {
     language,
     taskbarFloating,
@@ -314,6 +320,7 @@ function Desktop({ systemColorScheme, mobileMode, colorScheme }: DesktopProps) {
           }
         }}
         mobileMode={mobileMode}
+        username={username}
       ></StartMenu>
       <Taskbar
         windows={windows}
