@@ -127,17 +127,17 @@
           "description": "Unofficial Apple Music App for htmlOS NEXT. You can play songs from your Apple Music Library.",
           "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/icon.svg",
           "screenshots": [
-            "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/1.jpeg",
-            "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/2.jpeg",
-            "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/3.jpeg"
+            "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/1.png",
+            "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/2.png",
+            "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/3.png"
           ],
           "app": {
             "id": "com.jcionx.applemusic",
             "name": "Apple Music",
             "version": "1.0.0",
-            "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/apple-music.zip",
-            "entryPoint": "dist/index.html",
-            "iconPath": "icon.svg"
+            "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/com.jcionx.applemusic.zip",
+            "entryPoint": "index.html",
+            "iconPath": "icon.png"
           }
         },
         {
