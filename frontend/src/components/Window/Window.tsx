@@ -87,6 +87,8 @@ interface WindowProps {
     url: string;
   };
   onOpenFile: (path: string, appId: string) => void;
+  onStartContinuity: (appId: string, data: Record<string, unknown>) => void;
+  onDismissContinuity: (appId: string) => void;
 }
 
 function Window({
@@ -129,6 +131,8 @@ function Window({
   colorScheme,
   fileInput,
   onOpenFile,
+  onStartContinuity,
+  onDismissContinuity,
 }: WindowProps) {
   const {
     language,
@@ -250,6 +254,8 @@ function Window({
       requestTempUrl,
       handleFilePick,
       handleClose,
+      onStartContinuity,
+      onDismissContinuity,
       // Pass settings from context
       language,
       setLanguage,
@@ -302,7 +308,14 @@ function Window({
     if (iframeRef.current) {
       iframeRef.current.src = iframeURL;
     }
-  }, [colorScheme, systemColorScheme, language, mobileMode, fileInput]);
+  }, [
+    iframeURL,
+    colorScheme,
+    systemColorScheme,
+    language,
+    mobileMode,
+    fileInput,
+  ]);
 
   useEffect(() => {
     if (requestedFilePath !== "" && pendingFilePick) {
@@ -322,6 +335,34 @@ function Window({
       setPendingFilePick(false);
     }
   }, [requestedFilePath, pendingFilePick]);
+
+  useEffect(() => {
+    const handleContinuityConsumed = (event: Event) => {
+      const customEvent = event as CustomEvent<{ appId?: string }>;
+      if (customEvent.detail?.appId !== id) {
+        return;
+      }
+
+      iframeRef.current?.contentWindow?.postMessage(
+        {
+          type: "continuityConsumed",
+        },
+        "*",
+      );
+    };
+
+    window.addEventListener(
+      "htmlos:continuity-consumed",
+      handleContinuityConsumed,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "htmlos:continuity-consumed",
+        handleContinuityConsumed,
+      );
+    };
+  }, [id]);
 
   function handleFilePick(formats: string[]) {
     setPendingFilePick(true);

@@ -49,6 +49,12 @@ function App() {
     name: string;
     isDirectory: boolean;
   }>({ name: "", isDirectory: false });
+  const [pendingContinuityNoteName, setPendingContinuityNoteName] = useState<
+    string | null
+  >(null);
+
+  const normalizeNoteName = (name: string) =>
+    name.endsWith(".txt") ? name : `${name}.txt`;
 
   useEffect(() => {
     const handleGlobalClick = () => {
@@ -61,6 +67,17 @@ function App() {
 
     return () => window.removeEventListener("click", handleGlobalClick);
   }, [noteContextMenuOpen]);
+
+  useEffect(() => {
+    const unsubscribe = api.onContinuityConsumed(() => {
+      setSelectedNote({ name: "", isDirectory: false });
+      if (isMobile) {
+        setSidebarOpen(true);
+      }
+    });
+
+    return unsubscribe;
+  }, [isMobile]);
 
   async function saveNote(path: string, content: string) {
     await api.saveInternalFile(path, content);
@@ -107,22 +124,48 @@ function App() {
     document.documentElement.setAttribute("data-theme", theme);
     document.documentElement.setAttribute("device-type", deviceType);
     setIsMobile(deviceType === "mobile");
+
+    const continuityData = api.getContinuityData<{ name?: unknown }>();
+    if (
+      continuityData &&
+      typeof continuityData.name === "string" &&
+      continuityData.name.trim() !== ""
+    ) {
+      setPendingContinuityNoteName(
+        normalizeNoteName(continuityData.name.trim()),
+      );
+    }
   }, []);
 
   const { t } = useTranslation();
 
-  useEffect(() => {
-    fetchNotes().then((fetchedNotes) => {
-      setNotes(fetchedNotes);
-    });
-  }, []);
-
   async function selectNote(noteName: string) {
     setSelectedNote({ name: noteName, isDirectory: false });
+    api.startContinuity({ name: noteName });
     if (isMobile) {
       setSidebarOpen(false);
     }
   }
+
+  useEffect(() => {
+    fetchNotes().then((fetchedNotes) => {
+      setNotes(fetchedNotes);
+
+      if (!pendingContinuityNoteName) {
+        return;
+      }
+
+      const exists = fetchedNotes.some(
+        (note: any) => note.name === pendingContinuityNoteName,
+      );
+
+      if (exists) {
+        selectNote(pendingContinuityNoteName);
+      }
+
+      setPendingContinuityNoteName(null);
+    });
+  }, [isMobile, pendingContinuityNoteName]);
 
   const renameCurrentNote = (newTitle: string) => {
     if (!newTitle.trim()) return;

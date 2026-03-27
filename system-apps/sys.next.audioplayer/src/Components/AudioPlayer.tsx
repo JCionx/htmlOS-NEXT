@@ -6,6 +6,8 @@ import { useTranslation } from "react-i18next";
 
 interface AudioPlayerProps {
   audioUrl: string;
+  initialTime?: number;
+  onTimeUpdate?: (time: number) => void;
 }
 
 interface Metadata {
@@ -15,9 +17,14 @@ interface Metadata {
   picture?: string;
 }
 
-function AudioPlayer({ audioUrl }: AudioPlayerProps) {
+function AudioPlayer({
+  audioUrl,
+  initialTime = 0,
+  onTimeUpdate,
+}: AudioPlayerProps) {
   const [metadata, setMetadata] = useState<Metadata>({});
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const seekAppliedForUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
     let objectUrl: string | null = null;
@@ -65,6 +72,67 @@ function AudioPlayer({ audioUrl }: AudioPlayerProps) {
   }, [audioUrl]);
 
   const { t } = useTranslation();
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    seekAppliedForUrlRef.current = null;
+
+    const seekToInitialTime = () => {
+      if (seekAppliedForUrlRef.current === audioUrl) {
+        return;
+      }
+      seekAppliedForUrlRef.current = audioUrl;
+
+      if (!Number.isFinite(initialTime) || initialTime <= 0) {
+        return;
+      }
+
+      const maxTime =
+        Number.isFinite(audio.duration) && audio.duration > 0
+          ? Math.max(audio.duration - 0.25, 0)
+          : initialTime;
+      const targetTime = Math.min(initialTime, maxTime);
+      audio.currentTime = targetTime;
+      onTimeUpdate?.(targetTime);
+    };
+
+    if (audio.readyState >= 1) {
+      seekToInitialTime();
+    } else {
+      audio.addEventListener("loadedmetadata", seekToInitialTime, {
+        once: true,
+      });
+    }
+
+    return () => {
+      audio.removeEventListener("loadedmetadata", seekToInitialTime);
+    };
+  }, [audioUrl, initialTime, onTimeUpdate]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !onTimeUpdate) return;
+
+    const publishTime = () => {
+      const nextTime = audio.currentTime;
+      onTimeUpdate(nextTime);
+    };
+
+    publishTime();
+    audio.addEventListener("timeupdate", publishTime);
+    audio.addEventListener("seeked", publishTime);
+    audio.addEventListener("pause", publishTime);
+    audio.addEventListener("ended", publishTime);
+
+    return () => {
+      audio.removeEventListener("timeupdate", publishTime);
+      audio.removeEventListener("seeked", publishTime);
+      audio.removeEventListener("pause", publishTime);
+      audio.removeEventListener("ended", publishTime);
+    };
+  }, [audioUrl, onTimeUpdate]);
 
   useEffect(() => {
     if (!("mediaSession" in navigator)) return;

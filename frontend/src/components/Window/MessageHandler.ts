@@ -45,6 +45,8 @@ export interface MessageHandlerDependencies {
   requestTempUrl: (path: string) => Promise<string>;
   handleFilePick: (formats: string[]) => void;
   handleClose: () => void;
+  onStartContinuity: (appId: string, data: Record<string, unknown>) => void;
+  onDismissContinuity: (appId: string) => void;
 
   // ADD: settings + setters
   language: string;
@@ -751,6 +753,21 @@ export function setupMessageHandler(deps: MessageHandlerDependencies) {
         break;
       case "selectFile":
         deps.handleFilePick(messageData.formats || []);
+        break;
+      case "startContinuity":
+        if (
+          typeof messageData.data !== "object" ||
+          messageData.data === null ||
+          Array.isArray(messageData.data)
+        ) {
+          log("warn", deps, "startContinuity", "data must be an object.");
+          break;
+        }
+
+        deps.onStartContinuity(deps.id, messageData.data);
+        break;
+      case "dismissContinuity":
+        deps.onDismissContinuity(deps.id);
         break;
       case "loadInternalFile":
         if (messageData.path && isValidFilePath(messageData.path)) {

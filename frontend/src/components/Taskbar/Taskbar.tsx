@@ -20,6 +20,9 @@ interface TaskbarProps {
   minimizedWindowIds: string[];
   floating?: boolean;
   edges?: boolean;
+  hasContinuityLaunch?: boolean;
+  onOpenContinuityLaunch?: () => void;
+  continuityLaunchIcon?: string;
 }
 
 function Taskbar({
@@ -36,6 +39,9 @@ function Taskbar({
   minimizedWindowIds = [],
   floating = false,
   edges = false,
+  hasContinuityLaunch = false,
+  onOpenContinuityLaunch,
+  continuityLaunchIcon,
 }: TaskbarProps) {
   const taskbarRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState<string | undefined>(undefined);
@@ -71,6 +77,9 @@ function Taskbar({
           overlapping={windowsOverlappingTaskbar}
           floating={!floating}
           edges={edges}
+          hasContinuityLaunch={hasContinuityLaunch}
+          onOpenContinuityLaunch={onOpenContinuityLaunch}
+          continuityLaunchIcon={continuityLaunchIcon}
         />
         <ActivitiesButton
           onClick={onActivitiesButtonClick}
@@ -118,6 +127,9 @@ function Taskbar({
           overlapping={windowsOverlappingTaskbar}
           floating={!floating}
           edges={edges}
+          hasContinuityLaunch={hasContinuityLaunch}
+          onOpenContinuityLaunch={onOpenContinuityLaunch}
+          continuityLaunchIcon={continuityLaunchIcon}
         />
       </div>
     );

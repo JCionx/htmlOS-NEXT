@@ -1,6 +1,6 @@
 {
   "name": "@htmlos-next/api",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "license": "MIT",
   "author": "JCionx",
   "description": "Core API and system bindings for htmlOS NEXT.",

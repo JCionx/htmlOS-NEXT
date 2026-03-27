@@ -467,3 +467,53 @@ export async function deleteWallpaper(
   await deleteInternalFile(`wallpapers/${filename}`);
   return { success: true };
 }
+
+export function startContinuity(data: object): void {
+  sendMessage("startContinuity", { data });
+}
+
+export function dismissContinuity(): void {
+  sendMessage("dismissContinuity", {});
+}
+
+export function getContinuityData<
+  T extends Record<string, unknown>,
+>(): T | null {
+  const rawContinuityData = new URLSearchParams(window.location.search).get(
+    "continuityData",
+  );
+
+  if (!rawContinuityData) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(rawContinuityData);
+    if (
+      typeof parsed === "object" &&
+      parsed !== null &&
+      !Array.isArray(parsed)
+    ) {
+      return parsed as T;
+    }
+  } catch {
+    // Ignore invalid continuity payloads.
+  }
+
+  return null;
+}
+
+export function onContinuityConsumed(
+  callback: (appId: string | null) => void,
+): () => void {
+  const handler = (event: MessageEvent) => {
+    if (event.data?.type !== "continuityConsumed") {
+      return;
+    }
+
+    callback(typeof event.data?.appId === "string" ? event.data.appId : null);
+  };
+
+  window.addEventListener("message", handler);
+  return () => window.removeEventListener("message", handler);
+}

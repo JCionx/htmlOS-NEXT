@@ -1,18 +1,32 @@
 import { useLayoutEffect, useState } from "react";
 import { useEffect } from "react";
+import { io, type Socket } from "socket.io-client";
 import Desktop from "./components/Desktop/Desktop";
 import Authentication from "./components/Authentication/Authentication";
 import BootLoading from "./components/BootLoading/BootLoading";
 import { SettingsProvider, useSettings } from "./contexts/SettingsContext";
 
+interface ContinuityLaunch {
+  appId: string;
+  data: Record<string, unknown>;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 function AppContent({
   systemColorScheme,
   mobileMode,
   username,
+  continuityLaunch,
+  onConsumeContinuity,
 }: {
   systemColorScheme: "light" | "dark";
   mobileMode: boolean;
   username: string;
+  continuityLaunch: ContinuityLaunch | null;
+  onConsumeContinuity: () => void;
 }) {
   const { colorScheme } = useSettings();
 
@@ -29,6 +43,8 @@ function AppContent({
       mobileMode={mobileMode}
       colorScheme={colorScheme}
       username={username}
+      continuityLaunch={continuityLaunch}
+      onConsumeContinuity={onConsumeContinuity}
     />
   );
 }
@@ -74,6 +90,8 @@ function App() {
   }, []);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [continuityLaunch, setContinuityLaunch] =
+    useState<ContinuityLaunch | null>(null);
 
   useEffect(() => {
     fetch(import.meta.env.VITE_BACKEND_ADDRESS + "/auth/check", {
@@ -93,6 +111,128 @@ function App() {
       .catch(() => setIsAuthenticated(false));
   }, []);
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    const socket: Socket = io(import.meta.env.VITE_BACKEND_ADDRESS, {
+      withCredentials: true,
+      transports: ["websocket", "polling"],
+    });
+
+    socket.on("connect", () => {
+      (
+        window as typeof window & {
+          __continuitySocketId?: string;
+        }
+      ).__continuitySocketId = socket.id;
+    });
+
+    socket.on("continuity:sync", (payload: { items?: unknown[] }) => {
+      if (!Array.isArray(payload?.items)) {
+        return;
+      }
+
+      let newest: ContinuityLaunch | null = null;
+      let newestUpdatedAt = -1;
+
+      for (const item of payload.items) {
+        const typedItem = item as {
+          appId?: unknown;
+          data?: unknown;
+          updatedAt?: unknown;
+        };
+
+        console.log("[CONTINUITY][SYNC]", {
+          appId: typedItem?.appId,
+          data: typedItem?.data,
+        });
+
+        if (
+          typeof typedItem.appId === "string" &&
+          isRecord(typedItem.data) &&
+          typeof typedItem.updatedAt === "number"
+        ) {
+          if (typedItem.updatedAt > newestUpdatedAt) {
+            newestUpdatedAt = typedItem.updatedAt;
+            newest = {
+              appId: typedItem.appId,
+              data: typedItem.data,
+            };
+          }
+        }
+      }
+
+      if (newest) {
+        setContinuityLaunch({ appId: newest.appId, data: newest.data });
+      }
+    });
+
+    socket.on(
+      "continuity:update",
+      (payload: { appId?: unknown; data?: unknown }) => {
+        if (typeof payload?.appId !== "string" || !isRecord(payload?.data)) {
+          return;
+        }
+
+        console.log("[CONTINUITY][UPDATE]", {
+          appId: payload.appId,
+          data: payload.data,
+        });
+
+        setContinuityLaunch({
+          appId: payload.appId,
+          data: payload.data,
+        });
+      },
+    );
+
+    socket.on("continuity:consumed", (payload: { appId?: unknown }) => {
+      if (typeof payload?.appId !== "string") {
+        return;
+      }
+
+      window.dispatchEvent(
+        new CustomEvent("htmlos:continuity-consumed", {
+          detail: { appId: payload.appId },
+        }),
+      );
+    });
+
+    socket.on("continuity:dismiss", (payload: { appId?: unknown }) => {
+      if (typeof payload?.appId !== "string") {
+        return;
+      }
+
+      setContinuityLaunch((prev) => {
+        if (prev && prev.appId === payload.appId) {
+          return null;
+        }
+        return prev;
+      });
+    });
+
+    socket.on("disconnect", () => {
+      const win = window as typeof window & {
+        __continuitySocketId?: string;
+      };
+      if (win.__continuitySocketId === socket.id) {
+        delete win.__continuitySocketId;
+      }
+    });
+
+    return () => {
+      const win = window as typeof window & {
+        __continuitySocketId?: string;
+      };
+      if (win.__continuitySocketId === socket.id) {
+        delete win.__continuitySocketId;
+      }
+      socket.disconnect();
+    };
+  }, [isAuthenticated]);
+
   if (isAuthenticated) {
     return (
       <>
@@ -102,6 +242,8 @@ function App() {
             systemColorScheme={systemColorScheme}
             mobileMode={mobileMode}
             username={username}
+            continuityLaunch={continuityLaunch}
+            onConsumeContinuity={() => setContinuityLaunch(null)}
           />
         </SettingsProvider>
       </>

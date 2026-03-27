@@ -1,4 +1,7 @@
 const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const jwt = require('jsonwebtoken');
 //const https = require('https'); // Import https
 //const fs = require('fs'); // Import fs
 const app = express();
@@ -12,6 +15,9 @@ const appsRoutes = require('./routes/apps');
 const dataRoutes = require('./routes/data');
 const settingsRoutes = require('./routes/settings');
 const wallpapersRoutes = require('./routes/wallpapers');
+const continuityRoutes = require('./routes/continuity');
+
+const SECRET = process.env.JWT_SECRET;
 
 app.use(express.json({ limit: '50mb' }));
 app.use(cookieParser());
@@ -33,6 +39,10 @@ app.use('/apps', appsRoutes);
 app.use('/data', dataRoutes);
 app.use('/settings', settingsRoutes);
 app.use('/wallpapers', wallpapersRoutes);
+app.use('/continuity', continuityRoutes);
+
+const continuityStore = new Map();
+app.locals.continuityStore = continuityStore;
 
 // Global Error Handler
 app.use((err, req, res, next) => {
@@ -65,4 +75,82 @@ process.on('unhandledRejection', (reason, promise) => {
 //  console.log('Server running on https://0.0.0.0:4000 (accessible on your LAN)');
 //});
 
-app.listen(4000, '0.0.0.0', () => console.log('Server running on http://0.0.0.0:4000 (accessible on your LAN)'));
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: process.env.FRONTEND_ADDRESSES.split(',').map(addr => addr.trim()),
+    credentials: true,
+  },
+});
+
+app.locals.io = io;
+
+function parseCookieValue(cookieHeader, key) {
+  if (!cookieHeader) return null;
+  const parts = cookieHeader.split(';').map(part => part.trim());
+  for (const part of parts) {
+    if (part.startsWith(`${key}=`)) {
+      return decodeURIComponent(part.slice(key.length + 1));
+    }
+  }
+  return null;
+}
+
+io.use((socket, next) => {
+  const token = parseCookieValue(socket.handshake.headers.cookie, 'token');
+  if (!token) {
+    return next(new Error('Unauthorized'));
+  }
+
+  jwt.verify(token, SECRET, (err, user) => {
+    if (err) {
+      return next(new Error('Unauthorized'));
+    }
+    socket.user = user;
+    next();
+  });
+});
+
+io.on('connection', (socket) => {
+  const userId = String(socket.user.id);
+  const room = `user:${userId}`;
+  socket.join(room);
+
+  const userContinuity = continuityStore.get(userId);
+  const items = userContinuity
+    ? Array.from(userContinuity.entries()).map(([appId, value]) => ({
+        appId,
+        data: value.data,
+        updatedAt: value.updatedAt,
+      }))
+    : [];
+
+  socket.emit('continuity:sync', { items });
+
+  socket.on('disconnect', () => {
+    const userContinuity = continuityStore.get(userId);
+    if (!userContinuity) {
+      return;
+    }
+
+    const dismissedAppIds = [];
+
+    for (const [appId, value] of userContinuity.entries()) {
+      if (value?.sourceSocketId === socket.id) {
+        userContinuity.delete(appId);
+        dismissedAppIds.push(appId);
+      }
+    }
+
+    if (userContinuity.size === 0) {
+      continuityStore.delete(userId);
+    }
+
+    dismissedAppIds.forEach((appId) => {
+      io.to(room).emit('continuity:dismiss', { appId });
+    });
+  });
+});
+
+server.listen(4000, '0.0.0.0', () => console.log('Server running on http://0.0.0.0:4000 (accessible on your LAN)'));

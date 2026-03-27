@@ -26,6 +26,9 @@ interface WindowsProps {
   systemColorScheme: "light" | "dark";
   colorScheme: string;
   onOpenFile: (path: string, appId: string) => void;
+  onWindowClose?: (id: string) => void;
+  onStartContinuity: (appId: string, data: Record<string, unknown>) => void;
+  onDismissContinuity: (appId: string) => void;
 }
 
 function Windows({
@@ -47,8 +50,13 @@ function Windows({
   systemColorScheme,
   colorScheme,
   onOpenFile,
+  onWindowClose,
+  onStartContinuity,
+  onDismissContinuity,
 }: WindowsProps) {
   const handleWindowClose = (id: string) => {
+    onWindowClose?.(id);
+
     const remainingWindows = windows.filter((window) => window.id !== id);
 
     // In mobile mode, smoothly scroll to the next window before removing
@@ -247,6 +255,8 @@ function Windows({
             colorScheme={colorScheme}
             fileInput={windowConfig.fileInput}
             onOpenFile={onOpenFile}
+            onStartContinuity={onStartContinuity}
+            onDismissContinuity={onDismissContinuity}
           />
         ))}
       </div>

@@ -2,7 +2,7 @@ import { useState, useLayoutEffect, useEffect, useRef } from "react";
 import "./App.css";
 import ImageViewer from "./Components/ImageViewer";
 import AppIcon from "/icon.png";
-import * as api from "./api";
+import * as api from "@htmlos-next/api";
 
 import { ChevronLeft } from "lucide-react";
 
@@ -21,6 +21,9 @@ import { useTranslation } from "react-i18next";
 function App() {
   const [isMobile, setIsMobile] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [activeTempFilePath, setActiveTempFilePath] = useState<string | null>(
+    null,
+  );
   const [toolbarHidden, setToolbarHidden] = useState(false);
   const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -35,10 +38,44 @@ function App() {
     document.documentElement.setAttribute("device-type", deviceType);
     setIsMobile(deviceType === "mobile");
 
+    const continuityData = api.getContinuityData<{ tempFilePath?: unknown }>();
+    if (
+      continuityData &&
+      typeof continuityData.tempFilePath === "string" &&
+      continuityData.tempFilePath.trim() !== ""
+    ) {
+      const tempFilePath = continuityData.tempFilePath.trim();
+      setImageUrl(tempFilePath);
+      setActiveTempFilePath(tempFilePath);
+      return;
+    }
+
     const fileInputUrl = urlParams.get("fileInputUrl");
     if (fileInputUrl) {
       setImageUrl(fileInputUrl);
+      setActiveTempFilePath(fileInputUrl);
     }
+  }, []);
+
+  useEffect(() => {
+    if (!activeTempFilePath) {
+      api.dismissContinuity();
+      return;
+    }
+
+    api.startContinuity({
+      tempFilePath: activeTempFilePath,
+    });
+  }, [activeTempFilePath]);
+
+  useEffect(() => {
+    const unsubscribe = api.onContinuityConsumed(() => {
+      setImageUrl(null);
+      setActiveTempFilePath(null);
+      setToolbarHidden(false);
+    });
+
+    return unsubscribe;
   }, []);
 
   useEffect(() => {
@@ -84,12 +121,15 @@ function App() {
     ]);
     if (url) {
       setImageUrl(url);
+      setActiveTempFilePath(url);
     }
   };
 
   const handleBack = () => {
     setImageUrl(null);
+    setActiveTempFilePath(null);
     setToolbarHidden(false);
+    api.dismissContinuity();
   };
 
   const { t } = useTranslation();

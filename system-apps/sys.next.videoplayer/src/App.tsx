@@ -2,7 +2,7 @@ import { useState, useLayoutEffect, useEffect, useRef } from "react";
 import "./App.css";
 import VideoPlayer from "./Components/VideoPlayer";
 import AppIcon from "/icon.png";
-import * as api from "./api";
+import * as api from "@htmlos-next/api";
 
 import { ChevronLeft } from "lucide-react";
 
@@ -22,6 +22,11 @@ function App() {
   const [isMobile, setIsMobile] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [activeTempFilePath, setActiveTempFilePath] = useState<string | null>(
+    null,
+  );
+  const [resumeInitialTime, setResumeInitialTime] = useState(0);
+  const playbackPositionRef = useRef(0);
   const [toolbarHidden, setToolbarHidden] = useState(false);
   const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -36,11 +41,74 @@ function App() {
     setIsMobile(deviceType === "mobile");
     const language = urlParams.get("lang") || "en";
     i18n.changeLanguage(language);
+
+    const continuityData = api.getContinuityData<{
+      tempFilePath?: unknown;
+      currentTime?: unknown;
+    }>();
+    if (
+      continuityData &&
+      typeof continuityData.tempFilePath === "string" &&
+      continuityData.tempFilePath.trim() !== ""
+    ) {
+      const tempFilePath = continuityData.tempFilePath.trim();
+      const initialPosition =
+        typeof continuityData.currentTime === "number" &&
+        Number.isFinite(continuityData.currentTime) &&
+        continuityData.currentTime >= 0
+          ? continuityData.currentTime
+          : 0;
+
+      setVideoUrl(tempFilePath);
+      setActiveTempFilePath(tempFilePath);
+      setResumeInitialTime(initialPosition);
+      playbackPositionRef.current = initialPosition;
+      setIsPlaying(true);
+      return;
+    }
+
     const fileInputUrl = urlParams.get("fileInputUrl");
     if (fileInputUrl) {
       setVideoUrl(fileInputUrl);
+      setActiveTempFilePath(fileInputUrl);
+      setResumeInitialTime(0);
+      playbackPositionRef.current = 0;
       setIsPlaying(true);
     }
+  }, []);
+
+  useEffect(() => {
+    if (!isPlaying || !videoUrl || !activeTempFilePath) {
+      api.dismissContinuity();
+      return;
+    }
+
+    const publishContinuity = () => {
+      api.startContinuity({
+        tempFilePath: activeTempFilePath,
+        currentTime: Math.max(0, playbackPositionRef.current),
+      });
+    };
+
+    publishContinuity();
+    const intervalId = window.setInterval(publishContinuity, 750);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [isPlaying, videoUrl, activeTempFilePath]);
+
+  useEffect(() => {
+    const unsubscribe = api.onContinuityConsumed(() => {
+      setIsPlaying(false);
+      setVideoUrl(null);
+      setActiveTempFilePath(null);
+      setResumeInitialTime(0);
+      playbackPositionRef.current = 0;
+      setToolbarHidden(false);
+    });
+
+    return unsubscribe;
   }, []);
 
   useEffect(() => {
@@ -78,6 +146,9 @@ function App() {
     const url = await api.selectFile(["mp4", "mov"]);
     if (url) {
       setVideoUrl(url);
+      setActiveTempFilePath(url);
+      setResumeInitialTime(0);
+      playbackPositionRef.current = 0;
       setIsPlaying(true);
     }
   };
@@ -85,7 +156,11 @@ function App() {
   const handleBack = () => {
     setIsPlaying(false);
     setVideoUrl(null);
+    setActiveTempFilePath(null);
+    setResumeInitialTime(0);
+    playbackPositionRef.current = 0;
     setToolbarHidden(false);
+    api.dismissContinuity();
   };
 
   const { t } = useTranslation();
@@ -107,7 +182,13 @@ function App() {
 
       <Content toolbar={false} margin="none">
         {isPlaying && videoUrl ? (
-          <VideoPlayer videoUrl={videoUrl} />
+          <VideoPlayer
+            videoUrl={videoUrl}
+            initialTime={resumeInitialTime}
+            onTimeUpdate={(time) => {
+              playbackPositionRef.current = time;
+            }}
+          />
         ) : (
           <div className="no-content-container">
             <div className="no-content">

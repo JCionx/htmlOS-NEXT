@@ -79,6 +79,45 @@
     border-radius: 16px 0 0 0;
 }
 
+.statusbarContent {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.continuityButton {
+    background: none;
+    border: none;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    height: 100%;
+    padding: 4px;
+    transition: 0.2s;
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.continuityButton:disabled {
+    transform: translateY(100%);
+    width: 0;
+    opacity: 0;
+}
+
+.continuityIcon {
+    height: 100%;
+    object-fit: contain;
+    user-select: none;
+    max-height: 40px;
+}
+
+.continuityFallback {
+    font-size: 12px;
+    font-weight: 600;
+}
+
 .mobileStatusbar {
     width: 50%;
     height: calc(100% - 16px);
@@ -89,6 +128,7 @@
     justify-content: center;
     align-items: center;
     padding: 0 12px;
+    gap: 8px;
 }
 
 [data-theme="dark"] .mobileStatusbar {

@@ -7,6 +7,9 @@ interface StatusBarProps {
   overlapping?: boolean;
   floating?: boolean;
   edges?: boolean;
+  hasContinuityLaunch?: boolean;
+  onOpenContinuityLaunch?: () => void;
+  continuityLaunchIcon?: string;
 }
 
 const formatOSTime = (
@@ -34,8 +37,14 @@ function StatusBar({
   overlapping,
   floating,
   edges,
+  hasContinuityLaunch = false,
+  onOpenContinuityLaunch,
+  continuityLaunchIcon,
 }: StatusBarProps) {
   const [time, setTime] = useState(new Date());
+  const [cachedContinuityIcon, setCachedContinuityIcon] = useState<
+    string | undefined
+  >(continuityLaunchIcon);
 
   const { language, timezone, showSeconds, twentyFourHourClock } =
     useSettings();
@@ -45,9 +54,37 @@ function StatusBar({
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    if (continuityLaunchIcon) {
+      setCachedContinuityIcon(continuityLaunchIcon);
+    }
+  }, [continuityLaunchIcon]);
+
+  const continuityButton = (
+    <button
+      className={styles.continuityButton}
+      onClick={onOpenContinuityLaunch}
+      aria-label="Open continuity app"
+      type="button"
+      disabled={!hasContinuityLaunch}
+    >
+      {continuityLaunchIcon || cachedContinuityIcon ? (
+        <img
+          src={continuityLaunchIcon || cachedContinuityIcon}
+          alt="Continuity app icon"
+          className={styles.continuityIcon}
+          draggable={false}
+        />
+      ) : (
+        <span className={styles.continuityFallback}>C</span>
+      )}
+    </button>
+  );
+
   if (mobileMode) {
     return (
       <div className={styles.mobileStatusbar}>
+        {continuityButton}
         <p>
           {formatOSTime(
             time,
@@ -59,29 +96,30 @@ function StatusBar({
         </p>
       </div>
     );
-  } else {
-    return (
-      <div
-        className={`
-            ${styles.statusbar} ${overlapping ? styles.statusbarCollapsed : ""}
-            ${floating ? styles.statusbarExpanded : ""}
-            ${edges ? styles.statusbarEdges : ""}
-        `}
-      >
-        <div className={styles.statusbarContent}>
-          <p>
-            {formatOSTime(
-              time,
-              timezone,
-              language,
-              showSeconds,
-              twentyFourHourClock,
-            )}
-          </p>
-        </div>
-      </div>
-    );
   }
+
+  return (
+    <div
+      className={`
+        ${styles.statusbar} ${overlapping ? styles.statusbarCollapsed : ""}
+        ${floating ? styles.statusbarExpanded : ""}
+        ${edges ? styles.statusbarEdges : ""}
+      `}
+    >
+      <div className={styles.statusbarContent}>
+        {continuityButton}
+        <p>
+          {formatOSTime(
+            time,
+            timezone,
+            language,
+            showSeconds,
+            twentyFourHourClock,
+          )}
+        </p>
+      </div>
+    </div>
+  );
 }
 
 export default StatusBar;

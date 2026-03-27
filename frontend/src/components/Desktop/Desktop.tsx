@@ -18,13 +18,22 @@ interface DesktopProps {
   mobileMode: boolean;
   colorScheme: string;
   username: string;
+  continuityLaunch: {
+    appId: string;
+    data: Record<string, unknown>;
+  } | null;
+  onConsumeContinuity: () => void;
 }
+
+type ContinuityByApp = Record<string, Record<string, unknown>>;
 
 function Desktop({
   systemColorScheme,
   mobileMode,
   colorScheme,
   username,
+  continuityLaunch,
+  onConsumeContinuity,
 }: DesktopProps) {
   const {
     language,
@@ -42,6 +51,9 @@ function Desktop({
     useState<boolean>(false);
 
   const [minimizedWindowIds, setMinimizedWindowIds] = useState<string[]>([]);
+  const [continuityByApp, setContinuityByApp] = useState<ContinuityByApp>({});
+  const lastPublishedAppIdRef = useRef<string | null>(null);
+  const lastPublishedDataKeyRef = useRef<string>("");
 
   const zIndexRef = useRef(10);
   const [startMenuOpen, setStartMenuOpen] = useState(false);
@@ -264,6 +276,242 @@ function Desktop({
     }
   };
 
+  const dismissContinuityForApp = async (appId: string) => {
+    try {
+      const continuitySocketId = (
+        window as typeof window & {
+          __continuitySocketId?: string;
+        }
+      ).__continuitySocketId;
+
+      await fetch(
+        `${import.meta.env.VITE_BACKEND_ADDRESS}/continuity/dismiss`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(continuitySocketId
+              ? { "x-continuity-socket-id": continuitySocketId }
+              : {}),
+          },
+          credentials: "include",
+          body: JSON.stringify({ appId }),
+        },
+      );
+    } catch (err) {
+      console.error("Failed to dismiss continuity state", err);
+    }
+  };
+
+  const startContinuityForApp = async (
+    appId: string,
+    data: Record<string, unknown>,
+  ) => {
+    try {
+      const continuitySocketId = (
+        window as typeof window & {
+          __continuitySocketId?: string;
+        }
+      ).__continuitySocketId;
+
+      await fetch(`${import.meta.env.VITE_BACKEND_ADDRESS}/continuity/start`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(continuitySocketId
+            ? { "x-continuity-socket-id": continuitySocketId }
+            : {}),
+        },
+        credentials: "include",
+        body: JSON.stringify({ appId, data }),
+      });
+    } catch (err) {
+      console.error("Failed to publish continuity state", err);
+    }
+  };
+
+  const handleStartContinuity = (
+    appId: string,
+    data: Record<string, unknown>,
+  ) => {
+    setContinuityByApp((prev) => ({
+      ...prev,
+      [appId]: data,
+    }));
+  };
+
+  const handleDismissContinuity = (appId: string) => {
+    setContinuityByApp((prev) => {
+      if (!(appId in prev)) {
+        return prev;
+      }
+
+      const next = { ...prev };
+      delete next[appId];
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    const openWindowIds = new Set(
+      windows.map((windowConfig) => windowConfig.id),
+    );
+    setContinuityByApp((prev) => {
+      let changed = false;
+      const next: ContinuityByApp = {};
+
+      for (const [appId, data] of Object.entries(prev)) {
+        if (openWindowIds.has(appId)) {
+          next[appId] = data;
+        } else {
+          changed = true;
+        }
+      }
+
+      return changed ? next : prev;
+    });
+  }, [windows]);
+
+  useEffect(() => {
+    const continuityAppIds = Object.keys(continuityByApp);
+
+    const isEligibleWindow = (id: string) => {
+      return (
+        windows.some((windowConfig) => windowConfig.id === id) &&
+        !minimizedWindowIds.includes(id) &&
+        continuityByApp[id] !== undefined
+      );
+    };
+
+    let selectedAppId: string | null = null;
+
+    if (activeWindowId && isEligibleWindow(activeWindowId)) {
+      selectedAppId = activeWindowId;
+    } else if (continuityAppIds.length > 0) {
+      let topZIndex = -1;
+      for (const appId of continuityAppIds) {
+        if (!isEligibleWindow(appId)) {
+          continue;
+        }
+
+        const zIndex = windowZIndexes[appId] ?? 0;
+        if (zIndex > topZIndex) {
+          topZIndex = zIndex;
+          selectedAppId = appId;
+        }
+      }
+    }
+
+    const previousAppId = lastPublishedAppIdRef.current;
+
+    if (!selectedAppId) {
+      if (previousAppId) {
+        dismissContinuityForApp(previousAppId);
+        lastPublishedAppIdRef.current = null;
+        lastPublishedDataKeyRef.current = "";
+      }
+      return;
+    }
+
+    const selectedData = continuityByApp[selectedAppId];
+    if (!selectedData) {
+      return;
+    }
+
+    const dataKey = JSON.stringify(selectedData);
+
+    if (previousAppId && previousAppId !== selectedAppId) {
+      dismissContinuityForApp(previousAppId);
+    }
+
+    if (
+      previousAppId !== selectedAppId ||
+      lastPublishedDataKeyRef.current !== dataKey
+    ) {
+      startContinuityForApp(selectedAppId, selectedData);
+      lastPublishedAppIdRef.current = selectedAppId;
+      lastPublishedDataKeyRef.current = dataKey;
+    }
+  }, [
+    activeWindowId,
+    continuityByApp,
+    minimizedWindowIds,
+    windowZIndexes,
+    windows,
+  ]);
+
+  const handleOpenContinuityLaunch = async () => {
+    if (!continuityLaunch) {
+      return;
+    }
+
+    const app = installedApps.find((installedApp) => {
+      return installedApp.id === continuityLaunch.appId;
+    });
+
+    if (!app || !app.url) {
+      console.error("Continuity target app not found", continuityLaunch.appId);
+      onConsumeContinuity();
+      return;
+    }
+
+    const continuityData = encodeURIComponent(
+      JSON.stringify(continuityLaunch.data),
+    );
+    const continuityNonce = Date.now();
+    const continuityUrl = `${app.url}${app.url.includes("?") ? "&" : "?"}continuityData=${continuityData}&continuityNonce=${continuityNonce}`;
+
+    setWindows((prevWindows) => {
+      const existingIndex = prevWindows.findIndex(
+        (windowConfig) => windowConfig.id === app.id,
+      );
+
+      if (existingIndex >= 0) {
+        const updated = [...prevWindows];
+        updated[existingIndex] = {
+          ...updated[existingIndex],
+          url: continuityUrl,
+        };
+        return updated;
+      }
+
+      return [...prevWindows, { ...app, url: continuityUrl }];
+    });
+
+    handleWindowActivate(app.id);
+
+    try {
+      const continuitySocketId = (
+        window as typeof window & {
+          __continuitySocketId?: string;
+        }
+      ).__continuitySocketId;
+
+      await fetch(
+        `${import.meta.env.VITE_BACKEND_ADDRESS}/continuity/consume`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(continuitySocketId
+              ? { "x-continuity-socket-id": continuitySocketId }
+              : {}),
+          },
+          credentials: "include",
+          body: JSON.stringify({ appId: app.id }),
+        },
+      );
+    } catch (err) {
+      console.error("Failed to consume continuity state", err);
+    }
+
+    onConsumeContinuity();
+  };
+
+  const continuityLaunchIcon = continuityLaunch
+    ? installedApps.find((app) => app.id === continuityLaunch.appId)?.icon
+    : undefined;
+
   // Don't render until settings are loaded
   if (settingsLoading) {
     return null; // Or a loading spinner
@@ -302,6 +550,14 @@ function Desktop({
         systemColorScheme={systemColorScheme}
         colorScheme={colorScheme}
         onOpenFile={handleOpenFile}
+        onWindowClose={(id) => {
+          handleDismissContinuity(id);
+        }}
+        onStartContinuity={handleStartContinuity}
+        onDismissContinuity={(id) => {
+          handleDismissContinuity(id);
+          dismissContinuityForApp(id);
+        }}
       ></Windows>
       <StartMenu
         apps={installedApps}
@@ -336,6 +592,9 @@ function Desktop({
         minimizedWindowIds={minimizedWindowIds}
         floating={taskbarFloating}
         edges={taskbarEdges}
+        hasContinuityLaunch={Boolean(continuityLaunch)}
+        onOpenContinuityLaunch={handleOpenContinuityLaunch}
+        continuityLaunchIcon={continuityLaunchIcon}
       ></Taskbar>
       <NotificationArea mobileMode={mobileMode} />
     </>
