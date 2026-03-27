@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@htmlos-next/api": "^0.0.3",
-    "@htmlos-next/ui": "^0.0.13",
+    "@htmlos-next/ui": "^0.0.16",
     "i18next": "^25.8.11",
     "i18next-browser-languagedetector": "^8.2.1",
     "lucide-react": "^0.564.0",

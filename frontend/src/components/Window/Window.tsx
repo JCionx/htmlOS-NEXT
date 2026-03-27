@@ -527,6 +527,7 @@ function Window({
               "fullscreen",
               "clipboard-read",
               "clipboard-write",
+              "encrypted-media",
               permissions.cameraAccess ? "camera" : "",
               permissions.microphoneAccess ? "microphone" : "",
             ]
@@ -697,6 +698,7 @@ Input file URL: ${fileInput.url}`
                 "fullscreen",
                 "clipboard-read",
                 "clipboard-write",
+                "encrypted-media",
                 permissions.cameraAccess ? "camera" : "",
                 permissions.microphoneAccess ? "microphone" : "",
               ]

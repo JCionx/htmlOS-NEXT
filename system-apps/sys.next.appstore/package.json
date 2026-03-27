@@ -16,7 +16,7 @@
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@fortawesome/react-fontawesome": "^3.1.1",
     "@htmlos-next/api": "^0.0.2",
-    "@htmlos-next/ui": "^0.0.13",
+    "@htmlos-next/ui": "^0.0.16",
     "lucide-react": "^0.564.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
