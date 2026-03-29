@@ -373,6 +373,52 @@ function Desktop({
   }, [windows]);
 
   useEffect(() => {
+    const handleContinuityConsumed = (event: Event) => {
+      const customEvent = event as CustomEvent<{ appId?: unknown }>;
+      const appId =
+        typeof customEvent.detail?.appId === "string"
+          ? customEvent.detail.appId
+          : null;
+
+      if (!appId) {
+        return;
+      }
+
+      const isWindowOpen = windows.some(
+        (windowConfig) => windowConfig.id === appId,
+      );
+      if (!isWindowOpen) {
+        return;
+      }
+
+      if (mobileMode) {
+        setActivitiesOpen(false);
+        setStartMenuOpen(true);
+        setActiveWindowId("");
+        return;
+      }
+
+      window.dispatchEvent(
+        new CustomEvent("htmlos:force-minimize-window", {
+          detail: { appId },
+        }),
+      );
+    };
+
+    window.addEventListener(
+      "htmlos:continuity-consumed",
+      handleContinuityConsumed as EventListener,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "htmlos:continuity-consumed",
+        handleContinuityConsumed as EventListener,
+      );
+    };
+  }, [mobileMode, windows]);
+
+  useEffect(() => {
     const continuityAppIds = Object.keys(continuityByApp);
 
     const isEligibleWindow = (id: string) => {

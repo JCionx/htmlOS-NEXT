@@ -440,6 +440,37 @@ function Window({
     }
   };
 
+  useEffect(() => {
+    const handleForceMinimize = (event: Event) => {
+      if (mobileMode) {
+        return;
+      }
+
+      const customEvent = event as CustomEvent<{ appId?: unknown }>;
+      if (customEvent.detail?.appId !== id) {
+        return;
+      }
+
+      if (isMinimized) {
+        return;
+      }
+
+      onMinimize();
+    };
+
+    window.addEventListener(
+      "htmlos:force-minimize-window",
+      handleForceMinimize,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "htmlos:force-minimize-window",
+        handleForceMinimize,
+      );
+    };
+  }, [id, isMinimized, mobileMode]);
+
   const onMaximize = () => {
     onActivate(id);
 
