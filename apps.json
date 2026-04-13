@@ -98,6 +98,19 @@
         "entryPoint": "index.html",
         "iconPath": "icon.png"
       }
+    },
+    {
+      "author": "JCionx",
+      "description": "Wrapper for my Invidious instance. Expect instance instability.",
+      "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/invidious/icon.png",
+      "app": {
+        "id": "com.jcionx.applemusic",
+        "name": "Invidious",
+        "version": "1.0.0",
+        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/invidious/com.jcionx.invidious.zip",
+        "entryPoint": "index.html",
+        "iconPath": "icon.png"
+      }
     }
   ],
   "categories": [
