@@ -104,7 +104,7 @@
       "description": "Wrapper for my Invidious instance. Expect instance instability.",
       "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/invidious/icon.png",
       "app": {
-        "id": "com.jcionx.applemusic",
+        "id": "com.jcionx.invidious",
         "name": "Invidious",
         "version": "1.0.0",
         "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/invidious/com.jcionx.invidious.zip",
