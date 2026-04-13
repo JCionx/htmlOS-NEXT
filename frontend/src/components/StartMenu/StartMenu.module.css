@@ -53,7 +53,6 @@
     pointer-events: all;
     display: flex;
     flex-direction: column;
-    gap: 16px;
     color: var(--text);
 }
 
@@ -202,7 +201,7 @@
 }
 
 .mobileStartMenu .startMenuFooter {
-    margin: 16px;
+    margin: 0 16px 16px 16px;
 }
 
 .logoutButton {
