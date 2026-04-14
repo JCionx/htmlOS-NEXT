@@ -10,6 +10,7 @@ interface TextInputProps {
   disabled?: boolean;
   type?: "text" | "password" | "email" | "number" | "search" | "url" | "tel";
   className?: string;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
@@ -23,6 +24,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       disabled = false,
       type = "text",
       className,
+      onKeyDown,
     },
     ref,
   ) => {
@@ -37,6 +39,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
         onFocus={onFocus}
         onBlur={onBlur}
         disabled={disabled}
+        onKeyDown={onKeyDown}
       />
     );
   },

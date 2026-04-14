@@ -1,5 +1,6 @@
 .toolbarBtn {
     width: 32px;
+    min-width: 32px;
     height: 32px;
     border: none;
     outline: none;
@@ -24,6 +25,17 @@
 
 [device-type="mobile"] .toolbarBtn {
     width: 48px;
+    min-width: 48px;
     height: 48px;
     border-radius: 24px;
+}
+
+.toolbarBtnDisabled {
+    color: gray;
+    opacity: 0.8;
+    cursor: not-allowed;
+}
+
+.toolbarBtnDisabled:hover, .toolbarBtnDisabled:active {
+    background-color: var(--surface-bg);
 }

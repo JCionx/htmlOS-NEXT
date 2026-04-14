@@ -186,6 +186,16 @@ const DEFAULT_APPS = [
     name_locale:
       '{"en":"Settings","pt":"Definições","zh":"设置","es":"Ajustes","fr":"Paramètres","de":"Einstellungen"}',
   },
+  {
+    id: "sys.next.browser",
+    name: "Browser",
+    version: "1.0.0",
+    entry_point: "index.html",
+    icon_path: "icon.png",
+    permissions: '["diskAccess"]',
+    name_locale:
+      '{"en":"Browser","pt":"Navegador","zh":"浏览器","es":"Navegador","fr":"Navigateur","de":"Browser"}',
+  }
 ];
 
 // --- LOGIC ---

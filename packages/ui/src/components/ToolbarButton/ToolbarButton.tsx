@@ -1,6 +1,7 @@
 import styles from "./ToolbarButton.module.css";
 
 interface ToolbarButtonProps {
+  disabled?: boolean;
   onClick?: (
     e:
       | React.MouseEvent<HTMLButtonElement>
@@ -9,14 +10,19 @@ interface ToolbarButtonProps {
   children: React.ReactNode;
 }
 
-export function ToolbarButton({ onClick, children }: ToolbarButtonProps) {
+export function ToolbarButton({
+  disabled = false,
+  onClick,
+  children,
+}: ToolbarButtonProps) {
   return (
     <button
       onClick={(e) => {
         e.preventDefault();
         if (onClick) onClick(e);
       }}
-      className={styles.toolbarBtn}
+      className={`${styles.toolbarBtn} ${disabled ? styles.toolbarBtnDisabled : ""}`}
+      disabled={disabled}
     >
       {children}
     </button>

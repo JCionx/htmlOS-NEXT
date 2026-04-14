@@ -1,0 +1,33 @@
+{
+    "sidebar": {
+        "title": "All notes",
+        "button": "New Note"
+    },
+    "context": {
+        "duplicate": "Duplicate",
+        "rename": "Rename",
+        "delete": "Delete"
+    },
+    "popup": {
+        "new": {
+            "title": "New Note",
+            "description": "Enter a title for your new note",
+            "placeholder": "Note title",
+            "submit": "Add"
+        },
+        "rename": {
+            "title": "Rename Note",
+            "description": "Enter the new name for the selected note",
+            "submit": "Rename"
+        },
+        "delete": {
+            "title": "Delete Note",
+            "description": "Are you sure you want to delete this note?",
+            "submit": "Delete"
+        },
+        "cancel": "Cancel"
+    },
+    "empty": {
+        "title": "No note selected"
+    }
+}

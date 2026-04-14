@@ -39,3 +39,9 @@ export * from "./components/SelectInput/SelectInput";
 export * from "./components/Button/Button";
 
 export * from "./components/Balloon/Balloon";
+
+export * from "./components/Tab/Tab";
+
+export * from "./components/TabContainer/TabContainer";
+
+export * from "./components/TabBar/TabBar";

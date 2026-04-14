@@ -1,0 +1,33 @@
+{
+    "sidebar": {
+        "title": "所有笔记",
+        "button": "新建笔记"
+    },
+    "context": {
+        "duplicate": "副本",
+        "rename": "重命名",
+        "delete": "删除"
+    },
+    "popup": {
+        "new": {
+            "title": "新建笔记",
+            "description": "为您的新笔记输入标题",
+            "placeholder": "笔记标题",
+            "submit": "添加"
+        },
+        "rename": {
+            "title": "重命名笔记",
+            "description": "为所选笔记输入新名称",
+            "submit": "重命名"
+        },
+        "delete": {
+            "title": "删除笔记",
+            "description": "您确定要删除此笔记吗？",
+            "submit": "删除"
+        },
+        "cancel": "取消"
+    },
+    "empty": {
+        "title": "未选择笔记"
+    }
+}

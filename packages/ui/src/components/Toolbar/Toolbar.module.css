@@ -9,6 +9,7 @@
     justify-content: space-between;
     align-items: center;
     z-index: 990;
+    gap: 4px;
     transition:
         top 0.3s,
         left 0.3s,

@@ -2,8 +2,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
-const Unblocker = require('unblocker');
-const { Transform } = require('stream');
+const createProxy = require('./proxy');
 //const https = require('https'); // Import https
 //const fs = require('fs'); // Import fs
 const app = express();
@@ -29,63 +28,7 @@ app.use(cors({
   credentials: true
 }));
 
-const unblocker = new Unblocker({ 
-  prefix: '/proxy/',
-  responseMiddleware: [
-    (data) => {
-      if (data.contentType && data.contentType.includes('text/html')) {
-        let injected = false;
-        const injectTransform = new Transform({
-          transform(chunk, encoding, callback) {
-            let chunkStr = chunk.toString();
-            // Try to inject before </body>, if present in the current chunk
-            if (!injected && /<\/body>/i.test(chunkStr)) {
-              chunkStr = chunkStr.replace(/<\/body>/i, `
-                <script>
-                  document.addEventListener('click', function(e) {
-                    const link = e.target.closest('a');
-                    if (link && link.target === '_blank') {
-                      e.preventDefault();
-                      window.parent.postMessage({
-                        type: 'OPEN_PROXIED_WINDOW',
-                        url: link.href
-                      }, '*');
-                    }
-                  });
-                </script>
-              </body>`);
-              injected = true;
-            }
-            this.push(Buffer.from(chunkStr));
-            callback();
-          },
-          flush(callback) {
-            // If we didn't inject near </body> (perhaps the stream ended before or there was no body), append it at the end
-            if (!injected) {
-              this.push(Buffer.from(`
-                <script>
-                  document.addEventListener('click', function(e) {
-                    const link = e.target.closest('a');
-                    if (link && link.target === '_blank') {
-                      e.preventDefault();
-                      window.parent.postMessage({
-                        type: 'OPEN_PROXIED_WINDOW',
-                        url: link.href
-                      }, '*');
-                    }
-                  });
-                </script>
-              `));
-            }
-            callback();
-          }
-        });
-        
-        data.stream = data.stream.pipe(injectTransform);
-      }
-    }
-  ]
-});
+const unblocker = createProxy();
 app.use(unblocker);
 
 app.use((req, res, next) => {
