@@ -56,6 +56,21 @@
     },
     {
       "author": "JCionx",
+      "description": "Unofficial YouTube App for htmlOS NEXT.",
+      "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/youtube/icon.png",
+      "app": {
+        "id": "com.jcionx.youtube2",
+        "name": "YouTube",
+        "version": "1.0.0",
+        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/youtube/com.jcionx.youtube2.zip",
+        "entryPoint": "index.html",
+        "iconPath": "icon.png",
+        "pluginUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/youtube/plugin.js",
+        "pluginHash": "d0f8c522652629ac1f449e9b91f2e949f8bb9efe0306bec963ab243634f475ef"
+      }
+    },
+    {
+      "author": "JCionx",
       "description": "Another music player App to test system behavior with multiple apps supporting the same file types.",
       "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/music-player/icon.png",
       "screenshots": [
