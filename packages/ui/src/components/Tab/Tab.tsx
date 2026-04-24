@@ -16,7 +16,7 @@ export function Tab({ title, selected, onClick, canClose, onClose }: TabProps) {
       className={`${styles.tab} ${selected ? styles.tabSelected : ""}`}
       onClick={onClick}
     >
-      <span className={styles.tabTitle}>{title}</span>
+      <p className={styles.tabTitle}>{title}</p>
       {canClose && (
         <button
           className={styles.closeButton}

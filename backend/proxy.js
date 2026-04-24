@@ -4,55 +4,37 @@ const { Transform } = require('stream');
 function createProxy() {
   return new Unblocker({ 
     prefix: '/proxy/',
+    standardizeOrigin: true,
+    persistSession: true,
+    requestMiddleware: [
+      (data) => {
+        // Read htmlos_theme cookie from the client request
+        const clientCookies = data.clientRequest.headers['cookie'] || '';
+        const match = clientCookies.match(/htmlos_theme=(light|dark)/);
+        const theme = match ? match[1] : 'light';
+
+        // 1. Client Hints (HTTP)
+        data.headers['sec-ch-prefers-color-scheme'] = theme;
+        
+        // Pass theme to response middleware via data object
+        data.clientTheme = theme;
+        // Make sure it doesn't get stripped by mistake or conflict if the client sent none
+        data.headers['Sec-CH-Prefers-Color-Scheme'] = theme;
+      }
+    ],
     responseMiddleware: [
       (data) => {
         // Strip out headers that prevent iframe rendering
         if (data.headers) {
+          if (data.headers['set-cookie']) {
+            const cookies = data.headers['set-cookie'];
+            data.headers['set-cookie'] = (Array.isArray(cookies) ? cookies : [cookies]).map(cookie => {
+              return cookie + '; SameSite=None; Secure';
+            })
+          }
           delete data.headers['x-frame-options'];
           delete data.headers['content-security-policy'];
           delete data.headers['content-security-policy-report-only'];
-        }
-
-        // Intercept native file downloads sent via Content-Disposition headers
-        if (data.headers && data.headers['content-disposition'] && data.headers['content-disposition'].toLowerCase().includes('attachment')) {
-          // Change the response to an HTML page that instantly broadcasts our custom event
-          data.contentType = 'text/html';
-          if (data.headers['content-type']) {
-            data.headers['content-type'] = 'text/html';
-          }
-          
-          let extFilename = 'download';
-          const match = /filename="?([^"]+)"?/.exec(data.headers['content-disposition']);
-          if (match && match[1]) {
-            extFilename = match[1];
-          }
-
-          // Very important: Prevent errors when manually overriding a stream by clearing related chunk/size headers
-          delete data.headers['content-disposition'];
-          delete data.headers['content-length'];
-          delete data.headers['content-encoding']; 
-
-          const fallbackScript = `
-            <!DOCTYPE html>
-            <html><head><script>
-              const targetWindow = window.parent !== window ? window.parent : (window.opener ? (window.opener.parent || window.opener) : null);
-              if (targetWindow) {
-                targetWindow.postMessage({
-                  type: 'PROXIED_DOWNLOAD_INTERCEPTED',
-                  url: "${data.url}",
-                  filename: "${extFilename}"
-                }, '*');
-              }
-              if (window.opener) {
-                window.close(); // If it somehow opened in a popup
-              } else {
-                history.back(); // If it hijacked an iframe frame
-              }
-            </script></head><body></body></html>
-          `;
-          
-          data.stream = require('stream').Readable.from([Buffer.from(fallbackScript)]);
-          return; // Skip normal HTML injection below since we replaced the stream entirely
         }
 
         if (data.contentType && data.contentType.includes('text/html')) {
@@ -63,7 +45,37 @@ function createProxy() {
 
           const scriptToInject = `
             <script>
+              // 1. matchMedia Override (JS)
+              const originalMatchMedia = window.matchMedia;
+              window.matchMedia = function(query) {
+                if (query && query.includes('prefers-color-scheme')) {
+                  const isDarkQuery = query.includes('dark');
+                  const themeIsDark = '${data.clientTheme}' === 'dark';
+                  const matches = isDarkQuery === themeIsDark;
+                  return {
+                    matches: matches,
+                    media: query,
+                    onchange: null,
+                    addListener: function(fn) {},
+                    removeListener: function(fn) {},
+                    addEventListener: function(type, fn) {},
+                    removeEventListener: function(type, fn) {},
+                    dispatchEvent: function() { return true; }
+                  };
+                }
+                return originalMatchMedia.call(window, query);
+              };
+
               document.addEventListener('DOMContentLoaded', function() {
+                // 2. Meta color-scheme
+                let meta = document.querySelector('meta[name="color-scheme"]');
+                if (!meta) {
+                  meta = document.createElement('meta');
+                  meta.name = "color-scheme";
+                  document.head.appendChild(meta);
+                }
+                meta.content = "${data.clientTheme}";
+
                 window.parent.postMessage({
                   type: 'PROXIED_PAGE_LOADED',
                   url: "${remoteUrl}",
@@ -71,34 +83,9 @@ function createProxy() {
                 }, '*');
               });
 
-              // Intercept JS triggered downloads via a.click()
-              const originalClick = HTMLAnchorElement.prototype.click;
-              HTMLAnchorElement.prototype.click = function() {
-                if (this.hasAttribute('download')) {
-                  window.parent.postMessage({
-                    type: 'PROXIED_DOWNLOAD_INTERCEPTED',
-                    url: this.href,
-                    filename: this.getAttribute('download') || this.href.split('/').pop() || 'download'
-                  }, '*');
-                  return;
-                }
-                return originalClick.apply(this, arguments);
-              };
-
               document.addEventListener('click', function(e) {
                 const link = e.target.closest('a');
                 
-                if (link && link.hasAttribute('download')) {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  window.parent.postMessage({
-                    type: 'PROXIED_DOWNLOAD_INTERCEPTED',
-                    url: link.href,
-                    filename: link.getAttribute('download') || link.href.split('/').pop() || 'download'
-                  }, '*');
-                  return;
-                }
-
                 if (link && link.target === '_blank') {
                   e.preventDefault();
                   e.stopPropagation();
@@ -109,21 +96,35 @@ function createProxy() {
                 }
               }, true); // use capture phase to intercept early
             </script>
+            <style>
+              /* 3. CSS color-scheme */
+              :root { color-scheme: ${data.clientTheme} !important; }
+            </style>
           `;
+
+          const themeD = data.clientTheme === 'dark' ? 'min-width: 0' : 'max-width: 0';
+          const themeL = data.clientTheme === 'light' ? 'min-width: 0' : 'max-width: 0';
 
           const injectTransform = new Transform({
             transform(chunk, encoding, callback) {
               let chunkStr = chunk.toString();
-              // Try to inject before </body>, if present in the current chunk
-              if (!injected && /<\/body>/i.test(chunkStr)) {
-                chunkStr = chunkStr.replace(/<\/body>/i, scriptToInject + '\n</body>');
+              
+              // 4. CSS @media override in inline styles or HTML text
+              chunkStr = chunkStr.replace(/\(\s*prefers-color-scheme\s*:\s*dark\s*\)/gi, '(' + themeD + ')');
+              chunkStr = chunkStr.replace(/\(\s*prefers-color-scheme\s*:\s*light\s*\)/gi, '(' + themeL + ')');
+
+              if (!injected && /<head[^>]*>/i.test(chunkStr)) {
+                chunkStr = chunkStr.replace(/(<head[^>]*>)/i, '$1' + scriptToInject);
+                injected = true;
+              } else if (!injected && /<\/body>/i.test(chunkStr)) {
+                chunkStr = chunkStr.replace(/(<\/body>)/i, scriptToInject + '$1');
                 injected = true;
               }
+              
               this.push(Buffer.from(chunkStr));
               callback();
             },
             flush(callback) {
-              // If we didn't inject near </body>, append it at the end
               if (!injected) {
                 this.push(Buffer.from(scriptToInject));
               }
@@ -131,7 +132,27 @@ function createProxy() {
             }
           });
           
+          delete data.headers['content-length'];
+
           data.stream = data.stream.pipe(injectTransform);
+        } else if (data.contentType && data.contentType.includes('text/css')) {
+          const themeD = data.clientTheme === 'dark' ? 'min-width: 0' : 'max-width: 0';
+          const themeL = data.clientTheme === 'light' ? 'min-width: 0' : 'max-width: 0';
+
+          const cssTransform = new Transform({
+            transform(chunk, encoding, callback) {
+              let chunkStr = chunk.toString();
+              chunkStr = chunkStr.replace(/\(\s*prefers-color-scheme\s*:\s*dark\s*\)/gi, '(' + themeD + ')');
+              chunkStr = chunkStr.replace(/\(\s*prefers-color-scheme\s*:\s*light\s*\)/gi, '(' + themeL + ')');
+              this.push(Buffer.from(chunkStr));
+              callback();
+            }
+          });
+
+          // Prevent content-length mismatch errors due to string replacement making it shorter/longer
+          delete data.headers['content-length'];
+
+          data.stream = data.stream.pipe(cssTransform);
         }
       }
     ]

@@ -857,7 +857,6 @@ export function setupMessageHandler(deps: MessageHandlerDependencies) {
           log("warn", deps, "moveInternalFile", "Invalid path.");
         }
         break;
-
       case "deleteInternalFile":
         if (messageData.path && isValidFilePath(messageData.path)) {
           try {
@@ -890,7 +889,38 @@ export function setupMessageHandler(deps: MessageHandlerDependencies) {
           log("warn", deps, "deleteInternalFile", "Invalid path.");
         }
         break;
-
+      case "createInternalDirectory":
+        if (messageData.path && isValidFilePath(messageData.path)) {
+          try {
+            await fetchBackend("/data/create-folder", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                path: `config/${deps.id}/${messageData.path}`,
+              }),
+            });
+            postMessageToIframe(deps.iframeRef, {
+              type: "createDirectorySuccess",
+              path: messageData.path,
+            });
+          } catch (err) {
+            log(
+              "error",
+              deps,
+              "createInternalDirectory",
+              "Failed to create directory.",
+              err,
+            );
+            postMessageToIframe(deps.iframeRef, {
+              type: "createDirectoryError",
+              path: messageData.path,
+              error: err instanceof Error ? err.message : String(err),
+            });
+          }
+        } else {
+          log("warn", deps, "createInternalDirectory", "Invalid path.");
+        }
+        break;
       case "listInternalDirectory":
         if (
           typeof messageData.path === "string" &&

@@ -298,6 +298,35 @@ router.post("/uninstall", authenticateToken, async (req, res) => {
       fs.rmSync(configDir, { recursive: true, force: true });
     }
 
+    // Check if any other users still have this app installed
+    const remainingApp = await new Promise((resolve, reject) => {
+      db.get(
+        "SELECT 1 FROM apps WHERE id = ? LIMIT 1",
+        [appId],
+        (err, row) => {
+          if (err) reject(err);
+          else resolve(row);
+        }
+      );
+    });
+
+    // If no other user has the app, clean up the plugin
+    if (!remainingApp) {
+      await new Promise((resolve, reject) => {
+        db.run("DELETE FROM plugins WHERE id = ?", [appId], function (err) {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+
+      const pluginPath = path.join(__dirname, "../plugins", `${appId}.js`);
+      // Optional: also clean up .mjs if you chose that extension
+      const pluginMjsPath = path.join(__dirname, "../plugins", `${appId}.mjs`);
+      
+      if (fs.existsSync(pluginPath)) fs.rmSync(pluginPath, { force: true });
+      if (fs.existsSync(pluginMjsPath)) fs.rmSync(pluginMjsPath, { force: true });
+    }
+
     res.json({ success: true, message: "App uninstalled successfully" });
   } catch (error) {
     console.error("Failed to uninstall app:", error);
@@ -499,7 +528,51 @@ router.post("/install", authenticateToken, async (req, res) => {
       );
     }
 
-    res.json({ success: true, message: "App installed successfully" });
+    if (app.pluginUrl && app.pluginHash) {
+      // Save or update file pluginUrl to <appid>.js under /plugins if the hash matches
+      const pluginPath = path.join(
+        __dirname,
+        "../plugins",
+        `${appId}.js`,
+      );
+
+      const pluginResponse = await new Promise((resolve, reject) => {
+        protocol.get(app.pluginUrl, (response) => {
+          if (response.statusCode !== 200) {
+            reject(new Error(`Failed to download plugin: ${response.statusCode}`));
+            return;
+          }
+
+          const data = [];
+          response.on("data", (chunk) => data.push(chunk));
+          response.on("end", () => resolve(Buffer.concat(data)));
+        }).on("error", reject);
+      });
+
+      const crypto = require("crypto");
+      const hash = crypto.createHash("sha256").update(pluginResponse).digest("hex");
+
+      if (hash !== app.pluginHash) {
+        throw new Error("Plugin hash mismatch");
+      }
+
+      fs.writeFileSync(pluginPath, pluginResponse);
+
+      await new Promise((resolve, reject) => {
+        db.run(
+          "INSERT INTO plugins (id, enabled) VALUES (?, 0) ON CONFLICT(id) DO NOTHING",
+          [appId],
+          function (err) {
+            if (err) reject(err);
+            else resolve();
+          }
+        );
+      });
+
+      console.log(`Plugin ${appId} downloaded and saved successfully. Run "node cli.js enable ${appId}" to enable it.`);
+    }
+
+    res.json({ success: true, message: "App installed successfully." });
   } catch (error) {
     console.error("Failed to install app:", error);
 

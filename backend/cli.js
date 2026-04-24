@@ -25,7 +25,7 @@ const exitCLI = (code = 0) => {
 async function addUser(username, password) {
   if (!username || !password) {
     console.error(
-      "❌ Error: Missing username or password.\nUsage: node cli.js user add <username> <password>",
+      "Error: Missing username or password.\nUsage: node cli.js user add <username> <password>",
     );
     return exitCLI(1);
   }
@@ -40,8 +40,8 @@ async function addUser(username, password) {
       function (err) {
         if (err) {
           if (err.code === "SQLITE_CONSTRAINT")
-            console.error(`❌ Error: User '${username}' already exists.`);
-          else console.error("❌ Database error:", err);
+            console.error(`Error: User '${username}' already exists.`);
+          else console.error("Database error:", err);
           return exitCLI(1);
         }
 
@@ -64,13 +64,13 @@ async function addUser(username, password) {
         seedUserData(userId);
 
         console.log(
-          `✅ Success: User '${username}' created with ID ${userId}.`,
+          `Success: User '${username}' created with ID ${userId}.`,
         );
         exitCLI(0);
       },
     );
   } catch (err) {
-    console.error("❌ Internal error:", err);
+    console.error("Internal error:", err);
     exitCLI(1);
   }
 }
@@ -78,13 +78,13 @@ async function addUser(username, password) {
 async function removeUser(username) {
   if (!username) {
     console.error(
-      "❌ Error: Missing username.\nUsage: node cli.js user remove <username>",
+      "Error: Missing username.\nUsage: node cli.js user remove <username>",
     );
     return exitCLI(1);
   }
 
   const answer = await askQuestion(
-    `⚠️ WARNING: Are you sure you want to permanently delete user '${username}'? (y/N): `,
+    `WARNING: Are you sure you want to permanently delete user '${username}'? (y/N): `,
   );
   if (answer.toLowerCase() !== "y") {
     console.log("Aborted.");
@@ -93,7 +93,7 @@ async function removeUser(username) {
 
   db.get("SELECT id FROM users WHERE username = ?", [username], (err, user) => {
     if (err || !user) {
-      console.error(`❌ Error: User '${username}' not found.`);
+      console.error(`Error: User '${username}' not found.`);
       return exitCLI(1);
     }
 
@@ -106,7 +106,7 @@ async function removeUser(username) {
       db.run("DELETE FROM settings WHERE user_id = ?", [userId]);
       db.run("DELETE FROM users WHERE id = ?", [userId], (err) => {
         if (err) {
-          console.error("❌ Failed to delete user from database.");
+          console.error("Failed to delete user from database.");
           return exitCLI(1);
         }
 
@@ -117,7 +117,7 @@ async function removeUser(username) {
         }
 
         console.log(
-          `✅ Success: User '${username}' and all associated data have been deleted.`,
+          `Success: User '${username}' and all associated data have been deleted.`,
         );
         exitCLI(0);
       });
@@ -128,7 +128,7 @@ async function removeUser(username) {
 async function editUser(currentUsername, newUsername, newPassword) {
   if (!currentUsername || (!newUsername && !newPassword)) {
     console.error(
-      "❌ Error: Missing arguments.\nUsage: node cli.js user edit <current_username> <new_username> [new_password]",
+      "Error: Missing arguments.\nUsage: node cli.js user edit <current_username> <new_username> [new_password]",
     );
     return exitCLI(1);
   }
@@ -138,7 +138,7 @@ async function editUser(currentUsername, newUsername, newPassword) {
     [currentUsername],
     async (err, user) => {
       if (err || !user) {
-        console.error(`❌ Error: User '${currentUsername}' not found.`);
+        console.error(`Error: User '${currentUsername}' not found.`);
         return exitCLI(1);
       }
 
@@ -165,12 +165,12 @@ async function editUser(currentUsername, newUsername, newPassword) {
         if (err) {
           if (err.code === "SQLITE_CONSTRAINT")
             console.error(
-              `❌ Error: Username '${newUsername}' is already taken.`,
+              `Error: Username '${newUsername}' is already taken.`,
             );
-          else console.error("❌ Database error:", err);
+          else console.error("Database error:", err);
           return exitCLI(1);
         }
-        console.log(`✅ Success: User '${currentUsername}' updated.`);
+        console.log(`Success: User '${currentUsername}' updated.`);
         exitCLI(0);
       });
     },
@@ -180,13 +180,13 @@ async function editUser(currentUsername, newUsername, newPassword) {
 async function resetUser(username) {
   if (!username) {
     console.error(
-      "❌ Error: Missing username.\nUsage: node cli.js user reset <username>",
+      "Error: Missing username.\nUsage: node cli.js user reset <username>",
     );
     return exitCLI(1);
   }
 
   const answer = await askQuestion(
-    `⚠️ WARNING: This will wipe ALL files, apps, and settings for '${username}'. Proceed? (y/N): `,
+    `WARNING: This will wipe ALL files, apps, and settings for '${username}'. Proceed? (y/N): `,
   );
   if (answer.toLowerCase() !== "y") {
     console.log("Aborted.");
@@ -195,7 +195,7 @@ async function resetUser(username) {
 
   db.get("SELECT id FROM users WHERE username = ?", [username], (err, user) => {
     if (err || !user) {
-      console.error(`❌ Error: User '${username}' not found.`);
+      console.error(`Error: User '${username}' not found.`);
       return exitCLI(1);
     }
 
@@ -225,11 +225,63 @@ async function resetUser(username) {
         // Re-run seeder to restore defaults
         seedUserData(userId);
 
-        console.log(`✅ Success: User '${username}' has been factory reset.`);
+        console.log(`Success: User '${username}' has been factory reset.`);
         exitCLI(0);
       });
     });
   });
+}
+
+async function enablePlugin(appId) {
+  if (!appId) {
+    console.error(
+      "Error: Missing app ID.\nUsage: node cli.js plugin enable <app_id>",
+    );
+    return exitCLI(1);
+  }
+
+  db.run(
+    "UPDATE plugins SET enabled = 1 WHERE id = ?",
+    [appId],
+    function (err) {
+      if (err) {
+        console.error("Database error:", err);
+        return exitCLI(1);
+      }
+      if (this.changes === 0) {
+        console.error(`Error: Plugin '${appId}' not found.`);
+        return exitCLI(1);
+      }
+      console.log(`Success: Plugin '${appId}' has been enabled.`);
+      exitCLI(0);
+    },
+  );
+}
+
+async function disablePlugin(appId) {
+  if (!appId) {
+    console.error(
+      "Error: Missing app ID.\nUsage: node cli.js plugin disable <app_id>",
+    );
+    return exitCLI(1);
+  }
+
+  db.run(
+    "UPDATE plugins SET enabled = 0 WHERE id = ?",
+    [appId],
+    function (err) {
+      if (err) {
+        console.error("Database error:", err);
+        return exitCLI(1);
+      }
+      if (this.changes === 0) {
+        console.error(`Error: Plugin '${appId}' not found.`);
+        return exitCLI(1);
+      }
+      console.log(`Success: Plugin '${appId}' has been disabled.`);
+      exitCLI(0);
+    },
+  );
 }
 
 // --- COMMAND ROUTER ---
@@ -253,7 +305,19 @@ if (command === "user") {
       resetUser(args[2]);
       break;
     default:
-      console.error("❌ Unknown action. Available: add, remove, edit, reset");
+      console.error("Unknown action. Available: add, remove, edit, reset");
+      exitCLI(1);
+  }
+} else if (command === "plugin") {
+  switch (action) {
+    case "enable":
+      enablePlugin(args[2]);
+      break;
+    case "disable":
+      disablePlugin(args[2]);
+      break;
+    default:
+      console.error("Unknown action. Available: enable, disable");
       exitCLI(1);
   }
 } else {
@@ -264,5 +328,7 @@ if (command === "user") {
     "  node cli.js user edit <current_username> <new_username> [new_password]",
   );
   console.log("  node cli.js user reset <username>");
+  console.log("  node cli.js plugin enable <app_id>");
+  console.log("  node cli.js plugin disable <app_id>");
   exitCLI(1);
 }

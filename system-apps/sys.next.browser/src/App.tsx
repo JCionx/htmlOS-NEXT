@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useRef } from "react";
+import { useState, useLayoutEffect, useRef, useEffect } from "react";
 import "./App.css";
 import {
   Plus,
@@ -7,8 +7,12 @@ import {
   Home,
   ArrowRight,
   RotateCw,
+  Ellipsis,
+  Star,
+  StarOff,
+  Clock,
 } from "lucide-react";
-//import * as api from "@htmlos-next/api";
+import * as api from "@htmlos-next/api";
 import {
   AppShell,
   Toolbar,
@@ -20,6 +24,8 @@ import {
   Tab,
   TabBar,
   TabContainer,
+  ContextMenu,
+  SidebarItem,
 } from "@htmlos-next/ui";
 import i18n from "./i18n";
 //import { useTranslation } from "react-i18next";
@@ -50,8 +56,24 @@ function App() {
   const [selectedTabIndex, setSelectedTabIndex] = useState(0);
   const [inputValue, setInputValue] = useState(homepage);
 
+  const [moreContextMenuOpen, setMoreContextMenuOpen] = useState(false);
+
   // Store refs for each Browser component based on their index
   const tabRefs = useRef<Record<number, BrowserHandle | null>>({});
+
+  const addressBarRef = useRef<HTMLInputElement>(null);
+
+  const [favorites, setFavorites] = useState<{ title: string; url: string }[]>(
+    [],
+  );
+
+  const [history, setHistory] = useState<{ title: string; url: string }[]>([]);
+
+  const [siteStorage, setSiteStorage] = useState({
+    local: {},
+    session: {},
+    cookies: "",
+  });
 
   const handleAddTab = () => {
     const newTab: BrowserTab = {
@@ -66,9 +88,6 @@ function App() {
 
   const handleOpenNewTab = (url: string) => {
     let cleanUrl = url;
-    // node-unblocker rewrites target="_blank" links dynamically to have the proxy base.
-    // E.g., http://100.75.34.102:4000/proxy/https://...
-    // We only care about everything after /proxy/
     const proxyIndex = cleanUrl.indexOf("/proxy/");
     if (proxyIndex !== -1) {
       cleanUrl = cleanUrl.substring(proxyIndex + 7);
@@ -126,15 +145,121 @@ function App() {
     document.documentElement.setAttribute("data-theme", theme);
     document.documentElement.setAttribute("device-type", deviceType);
     setIsMobile(deviceType === "mobile");
+
+    // Set a root cookie so the backend proxy node-unblocker can read the OS theme
+    document.cookie = "htmlos_theme=" + theme + "; path=/;";
   }, []);
 
   // Update input text whenever the active tab URL changes
   useLayoutEffect(() => {
     if (tabs[selectedTabIndex]) {
       const activeUrl = tabs[selectedTabIndex].url;
-      setInputValue(activeUrl === "about:blank" ? "" : activeUrl);
+      setInputValue(activeUrl.startsWith("about:") ? "" : activeUrl);
+
+      if (activeUrl === "about:blank") {
+        setTimeout(() => {
+          addressBarRef.current?.focus();
+        }, 0);
+      }
     }
   }, [selectedTabIndex, tabs[selectedTabIndex]?.url]);
+
+  useEffect(() => {
+    const handleGlobalClick = () => {
+      if (moreContextMenuOpen) {
+        setMoreContextMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("click", handleGlobalClick);
+
+    return () => window.removeEventListener("click", handleGlobalClick);
+  }, [moreContextMenuOpen]);
+
+  useEffect(() => {
+    async function loadData() {
+      // 1. Load favorites first
+      const favoritesData = await api.loadInternalFileAsText("favorites.json");
+      if (favoritesData) {
+        try {
+          const parsedFavorites = JSON.parse(favoritesData);
+          setFavorites(parsedFavorites);
+        } catch (e) {
+          console.error("Failed to parse favorites.json:", e);
+        }
+      }
+
+      // 2. Load history sequentially afterward to prevent temp token race conditions
+      const historyData = await api.loadInternalFileAsText("history.json");
+      if (historyData) {
+        try {
+          const parsedHistory = JSON.parse(historyData);
+          setHistory(parsedHistory);
+        } catch (e) {
+          console.error("Failed to parse history.json:", e);
+        }
+      }
+
+      // Load storage
+      try {
+        const [localStr, sessionStr, cookieStr] = await Promise.all([
+          api.loadInternalFileAsText("localstorage.json").catch(() => null),
+          api.loadInternalFileAsText("sessionstorage.json").catch(() => null),
+          api.loadInternalFileAsText("cookies.json").catch(() => null),
+        ]);
+
+        setSiteStorage({
+          local: localStr ? JSON.parse(localStr) : {},
+          session: sessionStr ? JSON.parse(sessionStr) : {},
+          cookies: cookieStr || "",
+        });
+      } catch (e) {}
+    }
+    loadData();
+  }, []);
+
+  async function saveFavorites(newFavorites: { title: string; url: string }[]) {
+    setFavorites(newFavorites);
+    await api.saveInternalFile("favorites.json", JSON.stringify(newFavorites));
+  }
+
+  async function addFavorite(title: string, url: string) {
+    const newFavorites = [...favorites, { title, url }];
+    await saveFavorites(newFavorites);
+  }
+
+  async function removeFavorite(url: string) {
+    const newFavorites = favorites.filter((fav) => fav.url !== url);
+    await saveFavorites(newFavorites);
+  }
+
+  async function saveHistory(newHistory: { title: string; url: string }[]) {
+    setHistory(newHistory);
+    api.saveInternalFile("history.json", JSON.stringify(newHistory));
+  }
+
+  async function addToHistory(title: string, url: string) {
+    const newHistory = [{ title, url }, ...history];
+    await saveHistory(newHistory);
+  }
+
+  async function clearHistory() {
+    setHistory([]);
+    await api.saveInternalFile("history.json", JSON.stringify([]));
+  }
+
+  const handleStorageUpdate = async (type: string, data: any) => {
+    if (type === "localStorage") {
+      await api.saveInternalFile("localstorage.json", JSON.stringify(data));
+      setSiteStorage((prev) => ({ ...prev, local: data }));
+    } else if (type === "sessionStorage") {
+      await api.saveInternalFile("sessionstorage.json", JSON.stringify(data));
+      setSiteStorage((prev) => ({ ...prev, session: data }));
+    } else if (type === "cookies") {
+      await api.saveInternalFile("cookies.json", data);
+      setSiteStorage((prev) => ({ ...prev, cookies: data }));
+    }
+  };
 
   const handlePageLoad = (
     index: number,
@@ -203,30 +328,39 @@ function App() {
   const currentTab = tabs[selectedTabIndex];
 
   return (
-    <AppShell isMobile={isMobile} sidebarOpen={false} sidebar={<></>}>
+    <AppShell
+      isMobile={isMobile}
+      sidebarOpen={false}
+      sidebar={<></>}
+      accentColor="#4ADFB5"
+    >
       <Toolbar>
-        <ToolbarActions>
-          <ToolbarButton
-            onClick={() => tabRefs.current[selectedTabIndex]?.goBack()}
-            disabled={!currentTab?.canGoBack}
-          >
-            <Icon icon={ChevronLeft} />
-          </ToolbarButton>
-          <ToolbarButton
-            onClick={() => tabRefs.current[selectedTabIndex]?.goForward()}
-            disabled={!currentTab?.canGoForward}
-          >
-            <Icon icon={ChevronRight} />
-          </ToolbarButton>
-        </ToolbarActions>
-        <ToolbarButton
-          onClick={() => tabRefs.current[selectedTabIndex]?.refresh()}
-        >
-          <Icon icon={RotateCw} />
-        </ToolbarButton>
+        {!isMobile && (
+          <>
+            <ToolbarActions>
+              <ToolbarButton
+                onClick={() => tabRefs.current[selectedTabIndex]?.goBack()}
+                disabled={!currentTab?.canGoBack}
+              >
+                <Icon icon={ChevronLeft} />
+              </ToolbarButton>
+              <ToolbarButton
+                onClick={() => tabRefs.current[selectedTabIndex]?.goForward()}
+                disabled={!currentTab?.canGoForward}
+              >
+                <Icon icon={ChevronRight} />
+              </ToolbarButton>
+            </ToolbarActions>
+            <ToolbarButton
+              onClick={() => tabRefs.current[selectedTabIndex]?.refresh()}
+            >
+              <Icon icon={RotateCw} />
+            </ToolbarButton>
+          </>
+        )}
 
-        {/* We use inputValue directly so users can type without it prematurely updating the iframe */}
         <TextInput
+          ref={addressBarRef}
           placeholder="Search or enter website name"
           value={inputValue}
           onChange={setInputValue}
@@ -235,28 +369,96 @@ function App() {
           }}
         />
 
-        <ToolbarButton onClick={handleNavigate}>
-          <Icon icon={ArrowRight} />
-        </ToolbarButton>
+        {!isMobile && (
+          <ToolbarButton onClick={handleNavigate}>
+            <Icon icon={ArrowRight} />
+          </ToolbarButton>
+        )}
         <ToolbarActions>
           <ToolbarButton
-            onClick={() =>
-              handlePageLoad(
-                selectedTabIndex,
-                "New Tab",
-                homepage,
-                false,
-                false,
-              )
-            }
+            onClick={(e) => {
+              e.stopPropagation();
+              setMoreContextMenuOpen(true);
+            }}
           >
-            <Icon icon={Home} />
+            <Icon icon={Ellipsis} />
           </ToolbarButton>
           <ToolbarButton onClick={handleAddTab}>
             <Icon icon={Plus} />
           </ToolbarButton>
         </ToolbarActions>
       </Toolbar>
+      <ContextMenu open={moreContextMenuOpen} from="top-right">
+        {isMobile && (
+          <>
+            <SidebarItem
+              onClick={() => tabRefs.current[selectedTabIndex]?.goBack()}
+              //disabled={!currentTab?.canGoBack}
+            >
+              <Icon icon={ChevronLeft} />
+              Go Back
+            </SidebarItem>
+            <SidebarItem
+              onClick={() => tabRefs.current[selectedTabIndex]?.goForward()}
+              //disabled={!currentTab?.canGoForward}
+            >
+              <Icon icon={ChevronRight} />
+              Go Forward
+            </SidebarItem>
+            <SidebarItem
+              onClick={() => tabRefs.current[selectedTabIndex]?.refresh()}
+            >
+              <Icon icon={RotateCw} />
+              Reload
+            </SidebarItem>
+          </>
+        )}
+        <SidebarItem
+          onClick={() => {
+            setTabs((prev) => {
+              const newTabs = [...prev];
+              newTabs[selectedTabIndex].url = "about:blank";
+              return newTabs;
+            });
+            setMoreContextMenuOpen(false);
+          }}
+        >
+          <Icon icon={Home} />
+          Go to the Homepage
+        </SidebarItem>
+        {favorites.some((fav) => fav.url === currentTab.url) ? (
+          <SidebarItem
+            onClick={() => {
+              removeFavorite(currentTab.url);
+            }}
+          >
+            <Icon icon={StarOff} />
+            Remove from Favorites
+          </SidebarItem>
+        ) : (
+          <SidebarItem
+            onClick={() => {
+              addFavorite(currentTab.title, currentTab.url);
+            }}
+          >
+            <Icon icon={Star} />
+            Add to Favorites
+          </SidebarItem>
+        )}
+        <SidebarItem
+          onClick={() => {
+            setTabs((prev) => {
+              const newTabs = [...prev];
+              newTabs[selectedTabIndex].url = "about:history";
+              return newTabs;
+            });
+            setMoreContextMenuOpen(false);
+          }}
+        >
+          <Icon icon={Clock} />
+          History
+        </SidebarItem>
+      </ContextMenu>
       <Content expanded={true}>
         <TabBar>
           <TabContainer>
@@ -285,6 +487,13 @@ function App() {
             }
             onOpenNewTab={handleOpenNewTab}
             onDownload={handleDownload}
+            favorites={favorites}
+            globalHistory={history}
+            onAddToGlobalHistory={addToHistory}
+            onClearGlobalHistory={clearHistory}
+            siteStorage={siteStorage}
+            onStorageUpdate={handleStorageUpdate}
+            isMobile={isMobile}
           />
         ))}
       </Content>

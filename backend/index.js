@@ -3,13 +3,63 @@ const http = require('http');
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const createProxy = require('./proxy');
-//const https = require('https'); // Import https
-//const fs = require('fs'); // Import fs
+const fs = require('fs'); // Import fs
+const path = require('path'); // Import path
+const { pathToFileURL } = require('url');
+const { db } = require('./db');
+
 const app = express();
+const PLUGINS_DIR = path.join(__dirname, 'plugins');
+
+async function bootPlugins() {
+  if (!fs.existsSync(PLUGINS_DIR)) {
+    fs.mkdirSync(PLUGINS_DIR);
+  }
+
+  const files = fs.readdirSync(PLUGINS_DIR);
+
+  for (const file of files) {
+    if (file.endsWith('.js') || file.endsWith('.mjs') || file.endsWith('.cjs')) {
+      const appId = path.parse(file).name;
+
+      try {
+        // Check if the plugin is enabled in the database
+        const isEnabled = await new Promise((resolve, reject) => {
+          db.get('SELECT enabled FROM plugins WHERE id = ?', [appId], (err, row) => {
+            if (err) reject(err);
+            else resolve(row ? row.enabled === 1 : false);
+          });
+        });
+
+        // Skip if not enabled
+        if (!isEnabled) {
+          continue;
+        }
+
+        const pluginPath = path.join(PLUGINS_DIR, file);
+        const plugin = await import(pathToFileURL(pluginPath).href);
+        const init = plugin.default?.default || plugin.default || plugin;
+
+        if (typeof init === 'function') {
+          const router = express.Router();
+          await init(router);
+          app.use(`/api/apps/${appId}`, router);
+
+          console.log(`Successfully loaded plugin: ${appId}`);
+        }
+      } catch (err) {
+        console.log(`Failed to load plugin ${appId}:`, err);
+      }
+    }
+  }
+}
+
+app.set('trust proxy', 1); // Trust reverse proxy headers (e.g., X-Forwarded-Proto)
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const originCheck = require('./middleware/originCheck');
+const { authenticateToken } = require('./middleware/authenticateToken');
 
 const authRoutes = require('./routes/auth');
 const appsRoutes = require('./routes/apps');
@@ -29,6 +79,7 @@ app.use(cors({
 }));
 
 const unblocker = createProxy();
+app.use('/proxy', authenticateToken); // Verify token for all /proxy/* paths
 app.use(unblocker);
 
 app.use((req, res, next) => {
@@ -157,4 +208,9 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(4000, '0.0.0.0', () => console.log('Server running on http://0.0.0.0:4000 (accessible on your LAN)'));
+async function startServer() {
+  await bootPlugins();
+  server.listen(4000, '0.0.0.0', () => console.log('Server running on http://0.0.0.0:4000 (accessible on your LAN)'));
+}
+
+startServer();
