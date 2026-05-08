@@ -57,16 +57,16 @@
     {
       "author": "JCionx",
       "description": "Unofficial YouTube App for htmlOS NEXT.",
-      "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/youtube/icon.png",
+      "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/com.jcionx.youtube/icon.png",
       "app": {
-        "id": "com.jcionx.youtube2",
+        "id": "com.jcionx.youtube",
         "name": "YouTube",
         "version": "1.0.0",
-        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/youtube/com.jcionx.youtube2.zip",
+        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/youtube/com.jcionx.youtube.zip",
         "entryPoint": "index.html",
         "iconPath": "icon.png",
-        "pluginUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/youtube/plugin.js",
-        "pluginHash": "d0f8c522652629ac1f449e9b91f2e949f8bb9efe0306bec963ab243634f475ef"
+        "pluginUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/com.jcionx.youtube/com.jcionx.youtube.js",
+        "pluginHash": "9413e3f01f64e824013bc563e57013d9a1bdb7515fb8b5f3b811e807687d3a92"
       }
     },
     {
