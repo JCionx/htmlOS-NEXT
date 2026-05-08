@@ -62,7 +62,7 @@
         "id": "com.jcionx.youtube",
         "name": "YouTube",
         "version": "1.0.0",
-        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/youtube/com.jcionx.youtube.zip",
+        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/com.jcionx.youtube/com.jcionx.youtube.zip",
         "entryPoint": "index.html",
         "iconPath": "icon.png",
         "pluginUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/com.jcionx.youtube/com.jcionx.youtube.js",
