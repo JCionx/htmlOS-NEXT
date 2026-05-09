@@ -241,7 +241,7 @@ async function enablePlugin(appId) {
   }
 
   db.run(
-    "UPDATE plugins SET enabled = 1 WHERE id = ?",
+    "INSERT INTO plugins (id, enabled) VALUES (?, 1) ON CONFLICT(id) DO UPDATE SET enabled = 1",
     [appId],
     function (err) {
       if (err) {
@@ -320,6 +320,14 @@ if (command === "user") {
       console.error("Unknown action. Available: enable, disable");
       exitCLI(1);
   }
+} else if ((command === "enable" || command === "disable") && action === "plugin") {
+  const appId = args[2];
+
+  if (command === "enable") {
+    enablePlugin(appId);
+  } else {
+    disablePlugin(appId);
+  }
 } else {
   console.log("Usage:");
   console.log("  node cli.js user add <username> <password>");
@@ -330,5 +338,7 @@ if (command === "user") {
   console.log("  node cli.js user reset <username>");
   console.log("  node cli.js plugin enable <app_id>");
   console.log("  node cli.js plugin disable <app_id>");
+  console.log("  node cli.js enable plugin <app_id>");
+  console.log("  node cli.js disable plugin <app_id>");
   exitCLI(1);
 }

@@ -569,7 +569,7 @@ router.post("/install", authenticateToken, async (req, res) => {
         );
       });
 
-      console.log(`Plugin ${appId} downloaded and saved successfully. Run "node cli.js enable ${appId}" to enable it.`);
+      console.log(`Plugin ${appId} downloaded and saved successfully. Run "node cli.js plugin enable ${appId}" to enable it.`);
     }
 
     res.json({ success: true, message: "App installed successfully." });

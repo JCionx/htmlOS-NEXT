@@ -1,4 +1,11 @@
-import { Mic, AppWindowMac, Video, Scaling, HardDrive } from "lucide-react";
+import {
+  Mic,
+  AppWindowMac,
+  Video,
+  Scaling,
+  HardDrive,
+  Plug,
+} from "lucide-react";
 import type { AppData } from "../App";
 import { ListItem, Icon, Balloon } from "@htmlos-next/ui";
 import { useEffect, useRef, useState } from "react";
@@ -11,6 +18,7 @@ interface PermissionListProps {
 }
 
 type PermissionTranslationKey =
+  | "pluginRequired"
   | "fullDiskAccess"
   | "positionManipulation"
   | "microphoneAccess"
@@ -28,6 +36,7 @@ const BALLOON_ANIMATION_MS = 300;
 const mapPermissionToTranslationKey = (
   permission: string,
 ): PermissionTranslationKey => {
+  if (permission === "pluginRequired") return "pluginRequired";
   if (permission === "diskAccess") return "fullDiskAccess";
   if (permission === "positionManipulation") return "positionManipulation";
   if (permission === "microphoneAccess") return "microphoneAccess";
@@ -137,6 +146,16 @@ function PermissionList({ app }: PermissionListProps) {
     <div className="permissions">
       <h3>{t("overview.permissions.title")}</h3>
       <div>
+        {app.app.pluginUrl && (
+          <div
+            onClick={(event) => handlePermissionClick(event, "pluginRequired")}
+          >
+            <ListItem>
+              <Icon icon={Plug} color="selected" />
+              {t("overview.permissions.pluginRequired.title")}
+            </ListItem>
+          </div>
+        )}
         {app.app.permissions?.map((permission) => {
           const translationKey = mapPermissionToTranslationKey(permission);
 

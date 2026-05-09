@@ -32,11 +32,19 @@
 			"microphoneAccess": {
 				"title": "Accès au microphone",
 				"description": "Les applications disposant de cette autorisation peuvent accéder à votre microphone."
+			},
+			"pluginRequired": {
+				"title": "Plugin requis",
+				"description": "Les applications disposant de cette autorisation nécessitent un plugin qui doit être activé manuellement par l'administrateur du serveur. Activez les plugins à vos risques et périls, car ils peuvent potentiellement accéder à toutes les données du serveur."
 			}
 		}
-
-	}
-	,
+	},
+	"pluginPopup": {
+		"title": "Plugin requis",
+		"step1": "Cette application nécessite un plugin backend. Les plugins backend peuvent potentiellement accéder à toutes les données du serveur ; vous assumez donc l'entière responsabilité de tout dommage pouvant être causé par l'activation du plugin. Pour activer le plugin, exécutez cette commande dans le répertoire backend :",
+		"step2": "puis redémarrez le serveur backend.",
+		"submit": "Fermer"
+	},
 	"noApps": "Aucune application disponible.",
 	"loading": "Chargement..."
 }

@@ -68,12 +68,13 @@ function AppDetail({
         </Card>
       )}
 
-      {selectedApp.app.permissions &&
-        selectedApp.app.permissions.length > 0 && (
-          <Card>
-            <PermissionList app={selectedApp}></PermissionList>
-          </Card>
-        )}
+      {((selectedApp.app.permissions &&
+        selectedApp.app.permissions.length > 0) ||
+        selectedApp.app.pluginUrl) && (
+        <Card>
+          <PermissionList app={selectedApp}></PermissionList>
+        </Card>
+      )}
 
       <Card>
         <MetadataItem>

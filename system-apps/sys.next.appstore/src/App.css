@@ -80,3 +80,12 @@ h3 {
     width: 32px;
     height: 32px;
 }
+
+.code-block {
+    background-color: var(--surface-bg);
+    margin: 0;
+    padding: 8px;
+    border-radius: 5px;
+    overflow-x: scroll;
+    user-select: text;
+}

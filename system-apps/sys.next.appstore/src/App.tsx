@@ -2,7 +2,6 @@ import { useState, useEffect, useLayoutEffect } from "react";
 import "./App.css";
 import { ChevronLeft, LayoutGrid } from "lucide-react";
 
-// --- IMPORT YOUR NEW API ---
 import * as api from "@htmlos-next/api";
 
 import {
@@ -18,6 +17,11 @@ import {
   ToolbarActions,
   ToolbarButton,
   ListItem,
+  Popup,
+  PopupTitle,
+  PopupDescription,
+  PopupActions,
+  PopupButton,
 } from "@htmlos-next/ui";
 import AppDetail from "./components/AppDetail";
 
@@ -50,6 +54,7 @@ export interface AppData {
     defaultY?: number;
     borderless?: boolean;
     permissions?: string[];
+    pluginUrl?: string;
   };
 }
 
@@ -76,7 +81,13 @@ function App() {
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  const [pluginWarningPopupOpen, setPluginWarningPopupOpen] = useState(false);
+
   const { t } = useTranslation();
+
+  const closePopups = () => {
+    setPluginWarningPopupOpen(false);
+  };
 
   useLayoutEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -133,6 +144,10 @@ function App() {
     try {
       // 1. Trigger the install through the API
       await api.installApp(app.app, app.app.packageUrl);
+
+      if (app.app.pluginUrl) {
+        setPluginWarningPopupOpen(true);
+      }
 
       // 2. If it succeeds, update state
       setInstalledApps((prev) => [...prev, app.app.id]);
@@ -293,6 +308,21 @@ function App() {
           <EmptyView icon={LayoutGrid} label={t("loading")} />
         )}
       </Content>
+      <Popup open={pluginWarningPopupOpen}>
+        <PopupTitle>{t("pluginPopup.title")}</PopupTitle>
+        <PopupDescription>{t("pluginPopup.step1")}</PopupDescription>
+        <pre className="code-block">{`node cli.js plugin enable ${selectedApp?.app.id}`}</pre>
+        <PopupDescription>{t("pluginPopup.step2")}</PopupDescription>
+        <PopupActions orientation="horizontal">
+          <PopupButton
+            onClick={() => {
+              closePopups();
+            }}
+          >
+            {t("pluginPopup.submit")}
+          </PopupButton>
+        </PopupActions>
+      </Popup>
     </AppShell>
   );
 }

@@ -11,45 +11,91 @@ const { db } = require('./db');
 const app = express();
 const PLUGINS_DIR = path.join(__dirname, 'plugins');
 
+function getPluginBundleBaseUrl() {
+  return (process.env.PLUGIN_BUNDLE_BASE_URL || '').replace(/\/+$/, '');
+}
+
+function getPluginBundleCandidates(appId) {
+  return [
+    path.join(PLUGINS_DIR, `${appId}.js`),
+    path.join(PLUGINS_DIR, `${appId}.cjs`),
+    path.join(PLUGINS_DIR, `${appId}.mjs`),
+  ];
+}
+
+function getLocalPluginBundle(appId) {
+  return getPluginBundleCandidates(appId).find((candidate) => fs.existsSync(candidate)) || null;
+}
+
+async function downloadPluginBundle(appId) {
+  const baseUrl = getPluginBundleBaseUrl();
+  if (!baseUrl) {
+    return null;
+  }
+
+  const bundleUrl = `${baseUrl}/${encodeURIComponent(appId)}.js`;
+  const response = await fetch(bundleUrl);
+
+  if (!response.ok) {
+    throw new Error(`Failed to download plugin bundle: ${response.status} ${response.statusText}`);
+  }
+
+  const bundlePath = path.join(PLUGINS_DIR, `${appId}.js`);
+  const bundleCode = await response.text();
+  await fs.promises.writeFile(bundlePath, bundleCode, 'utf8');
+  return bundlePath;
+}
+
+async function resolvePluginBundle(appId) {
+  const localBundle = getLocalPluginBundle(appId);
+  if (localBundle) {
+    return localBundle;
+  }
+
+  return await downloadPluginBundle(appId);
+}
+
+async function getEnabledPluginIds() {
+  return await new Promise((resolve, reject) => {
+    db.all('SELECT id FROM plugins WHERE enabled = 1', [], (err, rows) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      resolve((rows || []).map((row) => row.id));
+    });
+  });
+}
+
 async function bootPlugins() {
   if (!fs.existsSync(PLUGINS_DIR)) {
     fs.mkdirSync(PLUGINS_DIR);
   }
 
-  const files = fs.readdirSync(PLUGINS_DIR);
+  const enabledPluginIds = await getEnabledPluginIds();
 
-  for (const file of files) {
-    if (file.endsWith('.js') || file.endsWith('.mjs') || file.endsWith('.cjs')) {
-      const appId = path.parse(file).name;
+  for (const appId of enabledPluginIds) {
+    try {
+      const pluginPath = await resolvePluginBundle(appId);
 
-      try {
-        // Check if the plugin is enabled in the database
-        const isEnabled = await new Promise((resolve, reject) => {
-          db.get('SELECT enabled FROM plugins WHERE id = ?', [appId], (err, row) => {
-            if (err) reject(err);
-            else resolve(row ? row.enabled === 1 : false);
-          });
-        });
-
-        // Skip if not enabled
-        if (!isEnabled) {
-          continue;
-        }
-
-        const pluginPath = path.join(PLUGINS_DIR, file);
-        const plugin = await import(pathToFileURL(pluginPath).href);
-        const init = plugin.default?.default || plugin.default || plugin;
-
-        if (typeof init === 'function') {
-          const router = express.Router();
-          await init(router);
-          app.use(`/api/apps/${appId}`, router);
-
-          console.log(`Successfully loaded plugin: ${appId}`);
-        }
-      } catch (err) {
-        console.log(`Failed to load plugin ${appId}:`, err);
+      if (!pluginPath) {
+        console.log(`Skipping enabled plugin ${appId}: no local bundle and PLUGIN_BUNDLE_BASE_URL is not set.`);
+        continue;
       }
+
+      const plugin = await import(pathToFileURL(pluginPath).href);
+      const init = plugin.default?.default || plugin.default || plugin;
+
+      if (typeof init === 'function') {
+        const router = express.Router();
+        await init(router);
+        app.use(`/api/apps/${appId}`, router);
+
+        console.log(`Successfully loaded plugin: ${appId}`);
+      }
+    } catch (err) {
+      console.log(`Failed to load plugin ${appId}:`, err);
     }
   }
 }
