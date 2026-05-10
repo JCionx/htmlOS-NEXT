@@ -39,19 +39,21 @@
     {
       "author": "JCionx",
       "description": "Unofficial Apple Music App for htmlOS NEXT. You can play songs from your Apple Music Library.",
-      "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/icon.svg",
+      "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/com.jcionx.applemusic/icon.png",
       "screenshots": [
-        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/1.jpeg",
-        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/2.jpeg",
-        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/3.jpeg"
+        "https://jcionx.github.io/htmlOS-NEXT/apps/com.jcionx.applemusic/screenshots/1.webp",
+        "https://jcionx.github.io/htmlOS-NEXT/apps/com.jcionx.applemusic/screenshots/2.webp",
+        "https://jcionx.github.io/htmlOS-NEXT/apps/com.jcionx.applemusic/screenshots/3.webp",
+        "https://jcionx.github.io/htmlOS-NEXT/apps/com.jcionx.applemusic/screenshots/4.webp",
+        "https://jcionx.github.io/htmlOS-NEXT/apps/com.jcionx.applemusic/screenshots/5.webp"
       ],
       "app": {
         "id": "com.jcionx.applemusic",
         "name": "Apple Music",
         "version": "1.0.0",
-        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/apple-music.zip",
-        "entryPoint": "dist/index.html",
-        "iconPath": "icon.svg"
+        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/com.jcionx.applemusic/com.jcionx.applemusic.zip",
+        "entryPoint": "index.html",
+        "iconPath": "icon.png"
       }
     },
     {
