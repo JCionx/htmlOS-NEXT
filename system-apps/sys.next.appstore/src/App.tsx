@@ -76,7 +76,9 @@ function App() {
   );
   const [selectedApp, setSelectedApp] = useState<AppData | null>(null);
   const [isInstalling, setIsInstalling] = useState(false);
-  const [installedApps, setInstalledApps] = useState<string[]>([]);
+  const [installedApps, setInstalledApps] = useState<
+    Record<string, { version: string }>
+  >({});
 
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -108,8 +110,14 @@ function App() {
     })
       .then((res) => res.json())
       .then((apps) => {
-        const appIds = apps.map((app: any) => app.id);
-        setInstalledApps(appIds);
+        const appMap = apps.reduce(
+          (acc: Record<string, { version: string }>, app: any) => {
+            acc[app.id] = { version: app.version };
+            return acc;
+          },
+          {},
+        );
+        setInstalledApps(appMap);
       })
       .catch((err) => console.error("Failed to fetch installed apps:", err));
 
@@ -150,7 +158,10 @@ function App() {
       }
 
       // 2. If it succeeds, update state
-      setInstalledApps((prev) => [...prev, app.app.id]);
+      setInstalledApps((prev) => ({
+        ...prev,
+        [app.app.id]: { version: app.app.version },
+      }));
 
       // 3. Request parent to refresh app list
       api.refreshAppList();

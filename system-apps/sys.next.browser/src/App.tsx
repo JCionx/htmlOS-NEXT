@@ -491,7 +491,18 @@ function App() {
             globalHistory={history}
             onAddToGlobalHistory={addToHistory}
             onClearGlobalHistory={clearHistory}
+            onRemoveFavorite={removeFavorite}
             siteStorage={siteStorage}
+            onInstallApp={(data) => {
+              window.parent.postMessage(
+                {
+                  type: "browserInstallApp",
+                  app: data.app,
+                  packageUrl: data.packageUrl,
+                },
+                "*",
+              );
+            }}
             onStorageUpdate={handleStorageUpdate}
             isMobile={isMobile}
           />
@@ -500,5 +511,4 @@ function App() {
     </AppShell>
   );
 }
-
 export default App;

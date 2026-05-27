@@ -336,7 +336,14 @@ router.post("/uninstall", authenticateToken, async (req, res) => {
 
 router.post("/install", authenticateToken, async (req, res) => {
   const userId = req.user.id;
-  const { app, packageUrl } = req.body;
+  const { app, packageUrl, callerAppId } = req.body;
+  
+  // Security: Only allow app installations from trusted system apps
+  const APPSTORE_APP_ID = process.env.APPSTORE_APP_ID || "sys.next.appstore";
+  const BROWSER_APP_ID = process.env.BROWSER_APP_ID || "sys.next.browser";
+  if (callerAppId !== APPSTORE_APP_ID && callerAppId !== BROWSER_APP_ID) {
+    return res.status(403).json({ error: "Only the App Store or Browser can install apps" });
+  }
 
   if (!app || !packageUrl) {
     return res.status(400).json({ error: "Missing app or packageUrl" });
@@ -388,6 +395,9 @@ router.post("/install", authenticateToken, async (req, res) => {
     appId,
   );
 
+  let isUpdate = false;
+  let configBackupPath = null;
+
   try {
     // Check if app already exists
     const existingApp = await new Promise((resolve, reject) => {
@@ -401,13 +411,68 @@ router.post("/install", authenticateToken, async (req, res) => {
       );
     });
 
+    // Handle update if app already exists
     if (existingApp) {
-      return res.status(400).json({ error: "App already installed" });
+      // Compare versions: simple numeric comparison
+      const existingVersion = existingApp.version
+        ? existingApp.version.split(".").map(Number)
+        : [0];
+      const newVersion = app.version
+        ? app.version.split(".").map(Number)
+        : [0];
+
+      // Compare versions element by element
+      let versionComparison = 0;
+      for (
+        let i = 0;
+        i < Math.max(existingVersion.length, newVersion.length);
+        i++
+      ) {
+        const existing = existingVersion[i] || 0;
+        const newer = newVersion[i] || 0;
+        if (newer > existing) {
+          versionComparison = 1;
+          break;
+        } else if (newer < existing) {
+          versionComparison = -1;
+          break;
+        }
+      }
+
+      if (versionComparison <= 0) {
+        return res.status(400).json({
+          error: "Installed version is equal to or newer than the package version",
+        });
+      }
+
+      isUpdate = true;
     }
 
-    // Create app directory
+    // Create app directory or backup config folder for updates
     if (!fs.existsSync(appDir)) {
       fs.mkdirSync(appDir, { recursive: true });
+    } else if (isUpdate) {
+      // Backup config folder if it exists
+      const configPath = path.join(appDir, "config");
+      if (fs.existsSync(configPath)) {
+        configBackupPath = path.join(appDir, ".config_backup");
+        if (fs.existsSync(configBackupPath)) {
+          fs.rmSync(configBackupPath, { recursive: true, force: true });
+        }
+        fs.cpSync(configPath, configBackupPath, { recursive: true });
+      }
+
+      // Remove old app files (but keep config folder if exists)
+      fs.readdirSync(appDir).forEach((file) => {
+        const filePath = path.join(appDir, file);
+        if (file !== "config" && file !== ".config_backup") {
+          if (fs.lstatSync(filePath).isDirectory()) {
+            fs.rmSync(filePath, { recursive: true, force: true });
+          } else {
+            fs.unlinkSync(filePath);
+          }
+        }
+      });
     }
 
     // Download and unzip the app
@@ -471,7 +536,7 @@ router.post("/install", authenticateToken, async (req, res) => {
         .on("error", reject);
     });
 
-    // Add app to database with optional fields
+    // Add or update app in database
     const permissions = app.permissions
       ? JSON.stringify(app.permissions)
       : null;
@@ -479,36 +544,81 @@ router.post("/install", authenticateToken, async (req, res) => {
     const nameLocale = localePayload ? JSON.stringify(localePayload) : null;
     const filetypes = normalizeFiletypes(app.filetypes);
 
-    await new Promise((resolve, reject) => {
-      db.run(
-        "INSERT INTO apps (id, user_id, name, version, entry_point, icon_path, allow_resize, allow_maximize, default_width, default_height, min_width, min_height, max_width, max_height, default_x, default_y, borderless, permissions, name_locale) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [
-          appId,
-          userId,
-          app.name,
-          app.version || null,
-          app.entryPoint,
-          app.iconPath || null,
-          app.allowResize !== undefined ? (app.allowResize ? 1 : 0) : null,
-          app.allowMaximize !== undefined ? (app.allowMaximize ? 1 : 0) : null,
-          app.defaultWidth || null,
-          app.defaultHeight || null,
-          app.minWidth || null,
-          app.minHeight || null,
-          app.maxWidth || null,
-          app.maxHeight || null,
-          app.defaultX || null,
-          app.defaultY || null,
-          app.borderless !== undefined ? (app.borderless ? 1 : 0) : null,
-          permissions,
-          nameLocale,
-        ],
-        function (err) {
-          if (err) reject(err);
-          else resolve();
-        },
-      );
-    });
+    if (isUpdate) {
+      // Update existing app with new metadata
+      await new Promise((resolve, reject) => {
+        db.run(
+          "UPDATE apps SET name = ?, version = ?, entry_point = ?, icon_path = ?, allow_resize = ?, allow_maximize = ?, default_width = ?, default_height = ?, min_width = ?, min_height = ?, max_width = ?, max_height = ?, default_x = ?, default_y = ?, borderless = ?, permissions = ?, name_locale = ? WHERE id = ? AND user_id = ?",
+          [
+            app.name,
+            app.version || null,
+            app.entryPoint,
+            app.iconPath || null,
+            app.allowResize !== undefined ? (app.allowResize ? 1 : 0) : null,
+            app.allowMaximize !== undefined ? (app.allowMaximize ? 1 : 0) : null,
+            app.defaultWidth || null,
+            app.defaultHeight || null,
+            app.minWidth || null,
+            app.minHeight || null,
+            app.maxWidth || null,
+            app.maxHeight || null,
+            app.defaultX || null,
+            app.defaultY || null,
+            app.borderless !== undefined ? (app.borderless ? 1 : 0) : null,
+            permissions,
+            nameLocale,
+            appId,
+            userId,
+          ],
+          function (err) {
+            if (err) reject(err);
+            else resolve();
+          },
+        );
+      });
+
+      // Restore config folder if it was backed up
+      if (configBackupPath && fs.existsSync(configBackupPath)) {
+        const configPath = path.join(appDir, "config");
+        if (fs.existsSync(configPath)) {
+          fs.rmSync(configPath, { recursive: true, force: true });
+        }
+        fs.cpSync(configBackupPath, configPath, { recursive: true });
+        fs.rmSync(configBackupPath, { recursive: true, force: true });
+      }
+    } else {
+      // Insert new app
+      await new Promise((resolve, reject) => {
+        db.run(
+          "INSERT INTO apps (id, user_id, name, version, entry_point, icon_path, allow_resize, allow_maximize, default_width, default_height, min_width, min_height, max_width, max_height, default_x, default_y, borderless, permissions, name_locale) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+          [
+            appId,
+            userId,
+            app.name,
+            app.version || null,
+            app.entryPoint,
+            app.iconPath || null,
+            app.allowResize !== undefined ? (app.allowResize ? 1 : 0) : null,
+            app.allowMaximize !== undefined ? (app.allowMaximize ? 1 : 0) : null,
+            app.defaultWidth || null,
+            app.defaultHeight || null,
+            app.minWidth || null,
+            app.minHeight || null,
+            app.maxWidth || null,
+            app.maxHeight || null,
+            app.defaultX || null,
+            app.defaultY || null,
+            app.borderless !== undefined ? (app.borderless ? 1 : 0) : null,
+            permissions,
+            nameLocale,
+          ],
+          function (err) {
+            if (err) reject(err);
+            else resolve();
+          },
+        );
+      });
+    }
 
     if (filetypes.length > 0) {
       await Promise.all(
@@ -572,13 +682,28 @@ router.post("/install", authenticateToken, async (req, res) => {
       console.log(`Plugin ${appId} downloaded and saved successfully. Run "node cli.js plugin enable ${appId}" to enable it.`);
     }
 
-    res.json({ success: true, message: "App installed successfully." });
+    res.json({
+      success: true,
+      message: isUpdate
+        ? "App updated successfully."
+        : "App installed successfully.",
+    });
   } catch (error) {
     console.error("Failed to install app:", error);
 
     // Clean up on error
-    if (fs.existsSync(appDir)) {
+    if (!isUpdate && fs.existsSync(appDir)) {
       fs.rmSync(appDir, { recursive: true, force: true });
+    } else if (isUpdate) {
+      // Restore config folder from backup if update failed
+      if (configBackupPath && fs.existsSync(configBackupPath)) {
+        const configPath = path.join(appDir, "config");
+        if (fs.existsSync(configPath)) {
+          fs.rmSync(configPath, { recursive: true, force: true });
+        }
+        fs.cpSync(configBackupPath, configPath, { recursive: true });
+        fs.rmSync(configBackupPath, { recursive: true, force: true });
+      }
     }
 
     res.status(500).json({ error: error.message || "Installation failed" });

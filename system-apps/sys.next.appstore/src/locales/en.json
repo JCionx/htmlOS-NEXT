@@ -6,6 +6,7 @@
     "overview": {
         "by": "by",
         "install": "Install",
+        "update": "Update",
         "installed": "Installed",
         "installing": "Installing...",
         "screenshots": "Screenshots",

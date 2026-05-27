@@ -952,14 +952,15 @@ export function setupMessageHandler(deps: MessageHandlerDependencies) {
         }
         break;
       case "installApp":
-        if (deps.id === "sys.next.appstore") {
+        if (deps.id === "sys.next.appstore" || deps.id === "sys.next.browser") {
           try {
             const data = await fetchBackend("/apps/install", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 app: messageData.app,
-                packageUrl: messageData.packageUrl,
+                packageUrl: messageData.app.packageUrl,
+                callerAppId: deps.id,
               }),
             });
             if (data.success) {

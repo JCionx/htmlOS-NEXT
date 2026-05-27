@@ -9,6 +9,7 @@ import "../../assets/fonts/inter.css";
 import type { WindowConfig } from "../../types/window";
 import NotificationArea from "../NotificationArea/NotificationArea";
 
+import InstallPopup from "../InstallPopup/InstallPopup";
 interface WindowZIndexes {
   [key: string]: number;
 }
@@ -62,6 +63,23 @@ function Desktop({
   const [filePickerFormats, setFilePickerFormats] = useState<string[]>([]);
   const [requestedFilePath, setRequestedFilePath] = useState("");
 
+  const [installPopupOpen, setInstallPopupOpen] = useState(false);
+  const [pendingInstallApp, setPendingInstallApp] = useState<any>(null);
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
+
+  // Helper to compare versions (returns 1 if v1 > v2, -1 if v1 < v2, 0 if equal)
+  const compareVersions = (v1: string, v2: string): number => {
+    const parts1 = v1.split(".").map(Number);
+    const parts2 = v2.split(".").map(Number);
+    for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+      const p1 = parts1[i] || 0;
+      const p2 = parts2[i] || 0;
+      if (p1 > p2) return 1;
+      if (p1 < p2) return -1;
+    }
+    return 0;
+  };
+
   useEffect(() => {
     if (requestedFilePath !== "") {
       setFilePickerOpen(false);
@@ -106,6 +124,88 @@ function Desktop({
     }
   }, [wallpaper]);
 
+  // Listen for app installation requests from Browser
+  useEffect(() => {
+    const handleInstallAppMessage = (event: MessageEvent) => {
+      if (event.data && event.data.type === "browserInstallApp") {
+        const incomingApp = event.data.app;
+        
+        // Check if app is already installed
+        const installedApp = installedApps.find(
+          (a) => a.id === incomingApp.id
+        );
+        
+        if (installedApp) {
+          // App is installed - check version
+          const versionCmp = compareVersions(
+            incomingApp.version || "0.0.0",
+            installedApp.version || "0.0.0"
+          );
+          
+          // Only show popup if new version is greater
+          if (versionCmp > 0) {
+            setPendingInstallApp(incomingApp);
+            setIsUpdateMode(true);
+            setInstallPopupOpen(true);
+          }
+          // If same or older version, silently do nothing
+        } else {
+          // App is not installed - show popup for fresh install
+          setPendingInstallApp(incomingApp);
+          setIsUpdateMode(false);
+          setInstallPopupOpen(true);
+        }
+      }
+    };
+
+    window.addEventListener("message", handleInstallAppMessage);
+    return () => window.removeEventListener("message", handleInstallAppMessage);
+  }, [installedApps, compareVersions]);
+
+  const handleInstallRequest = async (appArg?: any) => {
+    const appToInstall = appArg || pendingInstallApp;
+
+    if (!appToInstall?.packageUrl) {
+      console.error("Invalid install request", appToInstall);
+      setInstallPopupOpen(false);
+      setPendingInstallApp(null);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_ADDRESS}/apps/install`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            app: appToInstall,
+            packageUrl: appToInstall.packageUrl,
+            callerAppId: "sys.next.browser",
+          }),
+        },
+      );
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to install app");
+      }
+
+      window.postMessage({ type: "refreshAppList" }, "*");
+    } catch (error) {
+      console.error("Failed to install app from browser prompt:", error);
+    } finally {
+      setInstallPopupOpen(false);
+      setPendingInstallApp(null);
+    }
+  };
+
+  const handleCancelInstall = () => {
+    setInstallPopupOpen(false);
+    setPendingInstallApp(null);
+  };
+
   // Fetch apps and initialize windows
   useEffect(() => {
     const fetchApps = async () => {
@@ -132,6 +232,7 @@ function Desktop({
             app.id +
             "/" +
             app.icon_path,
+          version: app.version,
           ...(app.allow_resize != null && {
             allowResize: app.allow_resize === 1,
           }),
@@ -570,6 +671,15 @@ function Desktop({
           formats={filePickerFormats}
           setRequestedFilePath={(path) => setRequestedFilePath(path)}
           mobileMode={mobileMode}
+        />
+      )}
+      {installPopupOpen && pendingInstallApp && (
+        <InstallPopup
+          app={pendingInstallApp}
+          mobileMode={mobileMode}
+          onInstall={handleInstallRequest}
+          onCancel={handleCancelInstall}
+          isUpdate={isUpdateMode}
         />
       )}
       <Windows

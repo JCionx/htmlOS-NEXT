@@ -17,6 +17,36 @@
             "all": "All files",
             "submit": "Select"
         },
+        "install": {
+            "version": "Version:",
+            "unverifiedWarning": "This app isn't verified and its support and safety isn't guaranteed. Do you want to install it anyway?",
+            "pluginInfo": "This app requires a plugin to be manually enabled. After installation, run the following command on the backend:",
+            "install": "Install",
+            "update": "Update"
+        },
         "cancel": "Cancel"
+    },
+    "overview": {
+        "permissions": {
+            "title": "Permissions",
+            "fullDiskAccess": {
+                "title": "Full Disk Access"
+            },
+            "positionManipulation": {
+                "title": "Window Position & Size"
+            },
+            "microphoneAccess": {
+                "title": "Microphone Access"
+            },
+            "cameraAccess": {
+                "title": "Camera Access"
+            },
+            "spawnChildWindows": {
+                "title": "Spawn Windows"
+            },
+            "pluginRequired": {
+                "title": "Plugin Required"
+            }
+        }
     }
 }

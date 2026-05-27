@@ -30,7 +30,9 @@ interface BrowserProps {
   globalHistory: { title: string; url: string }[];
   onAddToGlobalHistory: (title: string, url: string) => void;
   onClearGlobalHistory: () => void;
+  onRemoveFavorite?: (url: string) => void;
   siteStorage: any;
+  onInstallApp?: (app: any) => void;
   onStorageUpdate: (type: string, data: any) => void;
   isMobile: boolean;
 }
@@ -47,7 +49,9 @@ const Browser = forwardRef<BrowserHandle, BrowserProps>(
       globalHistory,
       onAddToGlobalHistory,
       onClearGlobalHistory,
+      onRemoveFavorite,
       siteStorage,
+      onInstallApp,
       onStorageUpdate,
       isMobile,
     },
@@ -145,6 +149,8 @@ const Browser = forwardRef<BrowserHandle, BrowserProps>(
             onDownload(data.url, data.filename);
           } else if (data && data.type === "PROXIED_STORAGE_UPDATE") {
             onStorageUpdate(data.storageType, data.data);
+          } else if (data && data.type === "installApp" && onInstallApp) {
+            onInstallApp(data);
           }
         }
       };
@@ -154,7 +160,15 @@ const Browser = forwardRef<BrowserHandle, BrowserProps>(
       return () => {
         window.removeEventListener("message", handleMessage);
       };
-    }, [currentIndex, history, onPageLoad, onOpenNewTab, onDownload]);
+    }, [
+      currentIndex,
+      history,
+      onPageLoad,
+      onOpenNewTab,
+      onDownload,
+      onStorageUpdate,
+      onInstallApp,
+    ]);
 
     // When the top-level URL bar manually changes the URL, we need to navigate
     useEffect(() => {
@@ -194,6 +208,7 @@ const Browser = forwardRef<BrowserHandle, BrowserProps>(
           favorites={favorites}
           navigateTo={(url: string) => setCurrentIframeUrl(url)}
           visible={visible}
+          onRemoveFavorite={onRemoveFavorite}
         />
       );
     }

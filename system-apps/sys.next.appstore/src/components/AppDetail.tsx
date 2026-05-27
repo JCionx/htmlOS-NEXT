@@ -1,7 +1,7 @@
 interface AppDetailProps {
   selectedApp: AppData;
   isInstalling: boolean;
-  installedApps: string[];
+  installedApps: Record<string, { version: string }>;
   handleInstallApp: (app: AppData) => void;
 }
 
@@ -38,14 +38,20 @@ function AppDetail({
           <Button
             onClick={() => handleInstallApp(selectedApp)}
             disabled={
-              isInstalling || installedApps.includes(selectedApp.app.id)
+              isInstalling ||
+              (installedApps[selectedApp.app.id] &&
+                installedApps[selectedApp.app.id].version >=
+                  selectedApp.app.version)
             }
           >
             {isInstalling
               ? t("overview.installing")
-              : installedApps.includes(selectedApp.app.id)
-                ? t("overview.installed")
-                : t("overview.install")}
+              : installedApps[selectedApp.app.id]?.version <
+                  selectedApp.app.version
+                ? t("overview.update")
+                : installedApps[selectedApp.app.id]
+                  ? t("overview.installed")
+                  : t("overview.install")}
           </Button>
         </div>
       </Card>

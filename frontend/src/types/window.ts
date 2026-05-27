@@ -3,6 +3,7 @@ export interface WindowConfig {
   title?: string;
   url?: string;
   icon?: string;
+  version?: string;
   defaultX?: number;
   defaultY?: number;
   borderless?: boolean;
