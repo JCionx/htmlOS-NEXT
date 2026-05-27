@@ -58,6 +58,19 @@
     },
     {
       "author": "JCionx",
+      "description": "Jellyfin client for htmlOS.",
+      "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/com.jcionx.jellyfin/icon.png",
+      "app": {
+        "id": "com.jcionx.jellyfin",
+        "name": "Jellyfin",
+        "version": "1.0.0",
+        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/com.jcionx.jellyfin/com.jcionx.jellyfin.zip",
+        "entryPoint": "index.html",
+        "iconPath": "icon.png"
+      }
+    },
+    {
+      "author": "JCionx",
       "description": "Unofficial YouTube App for htmlOS NEXT.",
       "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/com.jcionx.youtube/icon.png",
       "app": {
