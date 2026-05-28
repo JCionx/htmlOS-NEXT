@@ -99,11 +99,12 @@ async function removeUser(username) {
 
     const userId = user.id;
 
-    // Delete from DB (Filetypes, Apps, Settings, Users)
+    // Delete from DB (Filetypes, Apps, Settings, PinnedApps, Users)
     db.serialize(() => {
       db.run("DELETE FROM filetypes WHERE user_id = ?", [userId]);
       db.run("DELETE FROM apps WHERE user_id = ?", [userId]);
       db.run("DELETE FROM settings WHERE user_id = ?", [userId]);
+      db.run("DELETE FROM pinnedApps WHERE user_id = ?", [userId]);
       db.run("DELETE FROM users WHERE id = ?", [userId], (err) => {
         if (err) {
           console.error("Failed to delete user from database.");
@@ -205,7 +206,8 @@ async function resetUser(username) {
     db.serialize(() => {
       db.run("DELETE FROM filetypes WHERE user_id = ?", [userId]);
       db.run("DELETE FROM apps WHERE user_id = ?", [userId]);
-      db.run("DELETE FROM settings WHERE user_id = ?", [userId], () => {
+      db.run("DELETE FROM settings WHERE user_id = ?", [userId]);
+      db.run("DELETE FROM pinnedApps WHERE user_id = ?", [userId], () => {
         // Wipe file system
         const userDir = path.join(__dirname, "data", String(userId));
         if (fs.existsSync(userDir)) {
