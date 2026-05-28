@@ -181,11 +181,11 @@ function StartMenu({
         method: "POST",
         credentials: "include", // CRITICAL for clearing the HTTP-only cookie
       });
-      // Redirect cleanly to login
-      window.location.href = "/login";
+      // Redirect cleanly to home
+      window.location.href = "/";
     } catch (error) {
       console.error("Failed to log out:", error);
-      window.location.href = "/login"; // Fallback redirect if the network fails
+      window.location.href = "/"; // Fallback redirect if the network fails
     }
   };
 
