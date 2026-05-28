@@ -35,7 +35,7 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/htmlos-next-frontend:latest
+          tags: ghcr.io/${{ toLower(github.repository_owner) }}/htmlos-next-frontend:latest
           build-args: |
             VITE_BACKEND_ADDRESS=${{ secrets.VITE_BACKEND_ADDRESS }}
 
@@ -45,4 +45,4 @@ jobs:
           context: .
           file: ./backend/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/htmlos-next-backend:latest
+          tags: ghcr.io/${{ toLower(github.repository_owner) }}/htmlos-next-backend:latest
