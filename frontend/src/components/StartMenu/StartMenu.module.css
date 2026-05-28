@@ -98,14 +98,20 @@
     align-items: center;
     justify-content: center;
     width: 90px;
-    height: 88px;
+    min-height: 88px;
     font-size: small;
     gap: 6px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     text-align: center;
     transition: 0.2s;
+}
+
+.appTitle {
+    display: block;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.1;
 }
 
 .mobileStartMenu .startMenuTitle {

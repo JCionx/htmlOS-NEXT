@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { runtime } from "../../runtimeConfig";
 import { useTranslation } from "react-i18next";
 import styles from "./FilePicker.module.css";
 import File from "./components/File";
@@ -38,7 +39,7 @@ function FilePicker({
       const backendPath = path.startsWith("/") ? path.slice(1) : path;
       console.log("Listing files in:", backendPath);
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_ADDRESS}/data/list`,
+        `${runtime.VITE_BACKEND_ADDRESS}/data/list`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

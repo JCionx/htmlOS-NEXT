@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import styles from "./Window.module.css";
 import { setupMessageHandler } from "./MessageHandler";
+import { runtime } from "../../runtimeConfig";
 import { useSettings } from "../../contexts/SettingsContext";
 import closeButtonIcon from "./assets/icons/close-button.svg";
 import maximizeButtonIcon from "./assets/icons/maximize-button.svg";
@@ -513,19 +514,16 @@ function Window({
   const overlayPointerEvents = isActive && !isDragging ? "none" : "auto";
 
   async function requestTempUrl(path: string) {
-    const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_ADDRESS}/data/temp`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path }),
-        credentials: "include",
-      },
-    );
+    const response = await fetch(`${runtime.VITE_BACKEND_ADDRESS}/data/temp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path }),
+      credentials: "include",
+    });
 
     const { url } = await response.json();
 
-    return `${import.meta.env.VITE_BACKEND_ADDRESS}${url}`;
+    return `${runtime.VITE_BACKEND_ADDRESS}${url}`;
   }
 
   if (mobileMode) {

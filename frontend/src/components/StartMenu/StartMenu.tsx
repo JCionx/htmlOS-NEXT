@@ -4,6 +4,7 @@ import type { MouseEvent, TouchEvent } from "react";
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import ContextMenu from "../ContextMenu/ContextMenu";
+import { runtime } from "../../runtimeConfig";
 
 import DefaultIcon from "./assets/default.png";
 
@@ -176,7 +177,7 @@ function StartMenu({
   // --- LOGOUT LOGIC ---
   const handleLogout = async () => {
     try {
-      await fetch(import.meta.env.VITE_BACKEND_ADDRESS + "/auth/logout", {
+      await fetch(runtime.VITE_BACKEND_ADDRESS + "/auth/logout", {
         method: "POST",
         credentials: "include", // CRITICAL for clearing the HTTP-only cookie
       });

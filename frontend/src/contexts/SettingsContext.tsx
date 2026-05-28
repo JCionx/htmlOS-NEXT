@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import i18n from "../i18n";
+import { runtime } from "../runtimeConfig";
 
 interface SettingsContextType {
   language: string;
@@ -33,17 +34,14 @@ const SettingsContext = createContext<SettingsContextType | undefined>(
 );
 
 async function fetchSettings() {
-  const response = await fetch(
-    `${import.meta.env.VITE_BACKEND_ADDRESS}/settings`,
-    {
-      credentials: "include",
-    },
-  );
+  const response = await fetch(`${runtime.VITE_BACKEND_ADDRESS}/settings`, {
+    credentials: "include",
+  });
   return response.json();
 }
 
 async function updateSetting(setting: string, value: string) {
-  await fetch(`${import.meta.env.VITE_BACKEND_ADDRESS}/settings`, {
+  await fetch(`${runtime.VITE_BACKEND_ADDRESS}/settings`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ setting, value }),

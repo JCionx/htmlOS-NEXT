@@ -154,15 +154,6 @@ const DEFAULT_APPS = [
       '{"en":"Video Player","pt":"Leitor de Vídeo","zh":"视频播放器","es":"Reproductor de Video","fr":"Lecteur Vidéo","de":"Videoplayer"}',
   },
   {
-    id: "sys.next.apitest",
-    name: "API Test",
-    version: "1.0.0",
-    entry_point: "index.html",
-    icon_path: "icon.png",
-    permissions:
-      '["positionManipulation", "windowSpawning", "cameraAccess", "microphoneAccess"]',
-  },
-  {
     id: "sys.next.audioplayer",
     name: "Audio Player",
     version: "1.0.0",

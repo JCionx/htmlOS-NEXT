@@ -2,6 +2,7 @@ import { useState } from "react";
 import styles from "./Authentication.module.css";
 import SmallLogo from "./assets/small-logo.png";
 import { EyeClosed, LucideEye } from "lucide-react";
+import { runtime } from "../../runtimeConfig";
 
 interface AuthenticationProps {
   mobileMode: boolean;
@@ -18,7 +19,7 @@ function Authentication({ mobileMode }: AuthenticationProps) {
     setError("");
     try {
       const response = await fetch(
-        import.meta.env.VITE_BACKEND_ADDRESS + "/auth/login",
+        runtime.VITE_BACKEND_ADDRESS + "/auth/login",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -1,5 +1,6 @@
 import { useLayoutEffect, useState } from "react";
 import { useEffect } from "react";
+import { runtime } from "./runtimeConfig";
 import { io, type Socket } from "socket.io-client";
 import Desktop from "./components/Desktop/Desktop";
 import Authentication from "./components/Authentication/Authentication";
@@ -50,8 +51,8 @@ function AppContent({
 }
 
 function App() {
-  const [mobileMode] = useState(() =>
-    window.matchMedia("(max-width: 768px)").matches,
+  const [mobileMode] = useState(
+    () => window.matchMedia("(max-width: 768px)").matches,
   );
   const [username, setUsername] = useState("Username");
   const [systemColorScheme, setSystemColorScheme] = useState<"light" | "dark">(
@@ -78,7 +79,7 @@ function App() {
     useState<ContinuityLaunch | null>(null);
 
   useEffect(() => {
-    fetch(import.meta.env.VITE_BACKEND_ADDRESS + "/auth/check", {
+    fetch(runtime.VITE_BACKEND_ADDRESS + "/auth/check", {
       credentials: "include",
     })
       .then(async (res) => {
@@ -100,7 +101,7 @@ function App() {
       return;
     }
 
-    const socket: Socket = io(import.meta.env.VITE_BACKEND_ADDRESS, {
+    const socket: Socket = io(runtime.VITE_BACKEND_ADDRESS, {
       withCredentials: true,
       transports: ["websocket", "polling"],
     });

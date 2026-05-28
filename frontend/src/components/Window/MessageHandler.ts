@@ -1,4 +1,5 @@
 import type { RefObject } from "react";
+import { runtime } from "../../runtimeConfig";
 
 export interface MessageHandlerDependencies {
   id: string;
@@ -83,13 +84,10 @@ function isValidFilePath(path: string): boolean {
 }
 
 async function fetchBackend(endpoint: string, options: RequestInit = {}) {
-  const response = await fetch(
-    `${import.meta.env.VITE_BACKEND_ADDRESS}${endpoint}`,
-    {
-      credentials: "include",
-      ...options,
-    },
-  );
+  const response = await fetch(`${runtime.VITE_BACKEND_ADDRESS}${endpoint}`, {
+    credentials: "include",
+    ...options,
+  });
   return response.json();
 }
 
@@ -614,11 +612,7 @@ export function setupMessageHandler(deps: MessageHandlerDependencies) {
           formData.append("file", messageData.file);
           formData.append("path", messageData.path);
 
-          xhr.open(
-            "POST",
-            `${import.meta.env.VITE_BACKEND_ADDRESS}/data/upload`,
-            true,
-          );
+          xhr.open("POST", `${runtime.VITE_BACKEND_ADDRESS}/data/upload`, true);
           xhr.withCredentials = true;
 
           xhr.upload.onprogress = (event) => {
@@ -686,7 +680,7 @@ export function setupMessageHandler(deps: MessageHandlerDependencies) {
             if (data.url) {
               postMessageToIframe(deps.iframeRef, {
                 type: "downloadFolderSuccess",
-                url: `${import.meta.env.VITE_BACKEND_ADDRESS}${data.url}`,
+                url: `${runtime.VITE_BACKEND_ADDRESS}${data.url}`,
               });
             } else {
               throw new Error(data.error || "Failed to download folder");
@@ -1115,7 +1109,7 @@ export function setupMessageHandler(deps: MessageHandlerDependencies) {
               .map((app: any) => ({
                 id: app.id,
                 name: app.locale?.[deps.language] ?? app.name,
-                icon: `${import.meta.env.VITE_BACKEND_ADDRESS}/apps/run/${app.id}/${app.icon_path}`,
+                icon: `${runtime.VITE_BACKEND_ADDRESS}/apps/run/${app.id}/${app.icon_path}`,
                 version: app.version,
               }));
             postMessageToIframe(deps.iframeRef, {

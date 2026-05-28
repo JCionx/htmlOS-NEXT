@@ -8,6 +8,7 @@ import "../../App.css";
 import "../../assets/fonts/inter.css";
 import type { WindowConfig } from "../../types/window";
 import NotificationArea from "../NotificationArea/NotificationArea";
+import { runtime } from "../../runtimeConfig";
 
 import InstallPopup from "../InstallPopup/InstallPopup";
 interface WindowZIndexes {
@@ -116,7 +117,7 @@ function Desktop({
         backgroundUrl = `url("./${filename}")`;
       } else {
         // User-uploaded wallpapers are stored in backend
-        backgroundUrl = `url("${import.meta.env.VITE_BACKEND_ADDRESS}/wallpapers/user/${wallpaper}")`;
+        backgroundUrl = `url("${runtime.VITE_BACKEND_ADDRESS}/wallpapers/user/${wallpaper}")`;
       }
 
       document.body.style.backgroundImage = backgroundUrl;
@@ -173,7 +174,7 @@ function Desktop({
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_ADDRESS}/apps/install`,
+        `${runtime.VITE_BACKEND_ADDRESS}/apps/install`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -210,7 +211,7 @@ function Desktop({
     const fetchApps = async () => {
       try {
         const appsRes = await fetch(
-          import.meta.env.VITE_BACKEND_ADDRESS + "/apps/list",
+          runtime.VITE_BACKEND_ADDRESS + "/apps/list",
           {
             credentials: "include",
           },
@@ -219,18 +220,8 @@ function Desktop({
         const configs: WindowConfig[] = apps.map((app: any, _idx: number) => ({
           id: app.id,
           title: app.locale?.[language] ?? app.name,
-          url:
-            import.meta.env.VITE_BACKEND_ADDRESS +
-            "/apps/run/" +
-            app.id +
-            "/" +
-            app.entry_point,
-          icon:
-            import.meta.env.VITE_BACKEND_ADDRESS +
-            "/apps/run/" +
-            app.id +
-            "/" +
-            app.icon_path,
+          url: `${runtime.VITE_BACKEND_ADDRESS}/apps/run/${app.id}/${app.entry_point}`,
+          icon: `${runtime.VITE_BACKEND_ADDRESS}/apps/run/${app.id}/${app.icon_path}`,
           version: app.version,
           ...(app.allow_resize != null && {
             allowResize: app.allow_resize === 1,
@@ -267,7 +258,7 @@ function Desktop({
 
       try {
         const pinnedRes = await fetch(
-          import.meta.env.VITE_BACKEND_ADDRESS + "/apps/pinned",
+          runtime.VITE_BACKEND_ADDRESS + "/apps/pinned",
           {
             credentials: "include",
           },
@@ -332,15 +323,12 @@ function Desktop({
     }
 
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_ADDRESS}/apps/pinned`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ appId }),
-        },
-      );
+      const res = await fetch(`${runtime.VITE_BACKEND_ADDRESS}/apps/pinned`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ appId }),
+      });
       applyPinnedRows(await res.json());
     } catch (err) {
       console.error("Failed to pin app:", err);
@@ -352,7 +340,7 @@ function Desktop({
 
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_ADDRESS}/apps/pinned/${encodeURIComponent(appId)}`,
+        `${runtime.VITE_BACKEND_ADDRESS}/apps/pinned/${encodeURIComponent(appId)}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -369,7 +357,7 @@ function Desktop({
 
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_ADDRESS}/apps/pinned/reorder`,
+        `${runtime.VITE_BACKEND_ADDRESS}/apps/pinned/reorder`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -466,7 +454,7 @@ function Desktop({
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_ADDRESS}/data/temp`,
+        `${runtime.VITE_BACKEND_ADDRESS}/data/temp`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -475,7 +463,7 @@ function Desktop({
         },
       );
       const { url } = await response.json();
-      const tempUrl = `${import.meta.env.VITE_BACKEND_ADDRESS}${url}`;
+      const tempUrl = `${runtime.VITE_BACKEND_ADDRESS}${url}`;
 
       const fileInput = { path, url: tempUrl };
 
@@ -505,20 +493,17 @@ function Desktop({
         }
       ).__continuitySocketId;
 
-      await fetch(
-        `${import.meta.env.VITE_BACKEND_ADDRESS}/continuity/dismiss`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(continuitySocketId
-              ? { "x-continuity-socket-id": continuitySocketId }
-              : {}),
-          },
-          credentials: "include",
-          body: JSON.stringify({ appId }),
+      await fetch(`${runtime.VITE_BACKEND_ADDRESS}/continuity/dismiss`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(continuitySocketId
+            ? { "x-continuity-socket-id": continuitySocketId }
+            : {}),
         },
-      );
+        credentials: "include",
+        body: JSON.stringify({ appId }),
+      });
     } catch (err) {
       console.error("Failed to dismiss continuity state", err);
     }
@@ -535,7 +520,7 @@ function Desktop({
         }
       ).__continuitySocketId;
 
-      await fetch(`${import.meta.env.VITE_BACKEND_ADDRESS}/continuity/start`, {
+      await fetch(`${runtime.VITE_BACKEND_ADDRESS}/continuity/start`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -754,20 +739,17 @@ function Desktop({
         }
       ).__continuitySocketId;
 
-      await fetch(
-        `${import.meta.env.VITE_BACKEND_ADDRESS}/continuity/consume`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(continuitySocketId
-              ? { "x-continuity-socket-id": continuitySocketId }
-              : {}),
-          },
-          credentials: "include",
-          body: JSON.stringify({ appId: app.id }),
+      await fetch(`${runtime.VITE_BACKEND_ADDRESS}/continuity/consume`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(continuitySocketId
+            ? { "x-continuity-socket-id": continuitySocketId }
+            : {}),
         },
-      );
+        credentials: "include",
+        body: JSON.stringify({ appId: app.id }),
+      });
     } catch (err) {
       console.error("Failed to consume continuity state", err);
     }
