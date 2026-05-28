@@ -1,2 +1,6 @@
 .DS_Store
 backend/plugins/
+
+/docs/.vitepress/dist/
+/docs/.vitepress/cache/
+/docs/node_modules/
