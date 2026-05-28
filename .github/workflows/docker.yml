@@ -16,6 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set lowercase registry owner
+        run: |
+          owner="${{ github.repository_owner }}"
+          owner_lower=$(printf "%s" "$owner" | tr '[:upper:]' '[:lower:]')
+          echo "OWNER_LOWER=$owner_lower" >> $GITHUB_ENV
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
@@ -35,7 +41,7 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: ghcr.io/${{ toLower(github.repository_owner) }}/htmlos-next-frontend:latest
+          tags: ghcr.io/${{ env.OWNER_LOWER }}/htmlos-next-frontend:latest
           build-args: |
             VITE_BACKEND_ADDRESS=${{ secrets.VITE_BACKEND_ADDRESS }}
 
@@ -45,4 +51,4 @@ jobs:
           context: .
           file: ./backend/Dockerfile
           push: true
-          tags: ghcr.io/${{ toLower(github.repository_owner) }}/htmlos-next-backend:latest
+          tags: ghcr.io/${{ env.OWNER_LOWER }}/htmlos-next-backend:latest
