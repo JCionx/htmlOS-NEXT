@@ -27,3 +27,5 @@ pnpm-debug.log*
 
 .vitepress/dist/
 .vitepress/cache/
+
+.obsidian/

@@ -1,11 +1,11 @@
-If you want to forward htmlOS NEXT securely from anywhere using a custom domain (e.g., `next.yourdomain.com`), you can route your traffic through **Nginx Proxy Manager (NPM)**.
+If you want to forward htmlOS NEXT securely with a custom domain (e.g., `next.yourdomain.com`), you can route your traffic through **Nginx Proxy Manager (NPM)**.
 
 This guide will walk you through configuring **htmlOS NEXT** to be forwarded by **NPM**.
 
 ## Step 1: Forward the frontend
 Open your **Nginx Proxy Manager** interface and select **Proxy Hosts**.
 
-![[Pasted image 20260528211646.png|387]]
+!["Proxy Hosts"](./images/proxy-hosts.png)
 
 Then click the **Add Proxy Host** button.
 
@@ -14,14 +14,14 @@ Then fill in the details:
 - The hostname and port where the frontend is located
 - Block Common Exploits (optional)
 
-![[Pasted image 20260528211926.png|460]]
+!["Frontend Details"](./images/details-frontend.png)
 
 If you want HTTPS support, switch to the **SSL** tab, and:
 - Select your SSL certificate
 - Enable **Force SSL**
 - Enable **HTTP/2 Support**
 
-![[Pasted image 20260528212202.png|463]]
+!["SSL Tab"](./images/ssl.png)
 
 Click the **Save** button.
 ## Step 2: Forward the backend
@@ -34,14 +34,14 @@ Then fill in the details:
 - Block Common Exploits (optional)
 - Websockets Support (needed for the continuity feature)
 
-![[Pasted image 20260528212441.png|462]]
+!["Backend Details"](./images/details-backend.png)
 
 If you want HTTPS support, switch to the **SSL** tab, and:
 - Select your SSL certificate
 - Enable **Force SSL**
 - Enable **HTTP/2 Support**
 
-![[Pasted image 20260528212202.png|467]]
+!["SSL Tab"](./images/ssl.png)
 
 Click the **Save** button.
 

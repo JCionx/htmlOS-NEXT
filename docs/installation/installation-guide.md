@@ -57,8 +57,6 @@ Now you might want to know how to create a new user, since for security reasons,
 
 You might want to access **htmlOS NEXT** from anywhere. You might be interesting in forwarding it to a domain you own. For that, we can use Nginx Proxy Manager. See the guide [Forwarding with NPM](./forwarding-with-nginx-proxy-manager.md).
 
----
-
 ## 2. Manual Installation
 Use this method if you want to run the application locally for development purposes.
 
