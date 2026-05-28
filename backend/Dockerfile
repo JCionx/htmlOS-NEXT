@@ -31,7 +31,6 @@ WORKDIR /app
 COPY --from=builder /src/backend /app
 # copy built system apps (backend expects built apps in /app/apps)
 COPY --from=builder /src/backend/apps /app/apps
-COPY --from=builder /src/plugins /app/plugins
 
 ENV NODE_ENV=production
 EXPOSE 4000
