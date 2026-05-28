@@ -1,5 +1,14 @@
 const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database("./users.db");
+const fs = require("fs");
+const path = require("path");
+
+// Create db directory if it doesn't exist
+const dbDir = path.join(__dirname, "db");
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+}
+
+const db = new sqlite3.Database(path.join(dbDir, "users.db"));
 
 db.serialize(() => {
   // Seed default tables
