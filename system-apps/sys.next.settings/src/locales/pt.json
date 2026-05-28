@@ -46,7 +46,7 @@
     "taskbarstyle": "Estilo da barra de tarefas",
     "floating": "Flutuante",
     "expanded": "Expandida",
-    "appearence": "Aparencia",
+    "appearence": "Aparência",
     "system": "Sistema",
     "light": "Claro",
     "dark": "Escuro",
@@ -62,8 +62,8 @@
     }
   },
   "developeroptions": {
-    "showreloadbutton": "Mostrar botao de recarregar",
-    "showinspectbutton": "Mostrar botao de inspecionar"
+    "showreloadbutton": "Mostrar botão de recarregar",
+    "showinspectbutton": "Mostrar botão de inspecionar"
   },
   "loadingsettings": "Carregando definições..."
 }

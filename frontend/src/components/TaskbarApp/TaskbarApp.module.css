@@ -26,6 +26,22 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    cursor: default;
+}
+
+.taskbarAppContainer:hover,
+.taskbarAppContainer:active {
+    cursor: default;
+}
+
+.taskbarApp {
+    cursor: default;
+}
+
+.taskbarAppContainerPinnedClosed,
+.taskbarAppContainerPinnedClosed:hover,
+.taskbarAppContainerPinnedClosed:active {
+    cursor: default;
 }
 
 .taskbarAppFocusIndicator {
@@ -77,4 +93,12 @@
 .taskbarAppMinimized {
     opacity: 0.6;
     transform: scale(0.6);
+}
+
+.taskbarAppPinnedClosed {
+    transform: scale(0.6);
+}
+
+.taskbarAppPinnedClosed:hover {
+    transform: scale(0.75);
 }

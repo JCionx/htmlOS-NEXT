@@ -27,8 +27,8 @@
 				"description": "Apps com esta permissão podem aceder todos os ficheiros da sua conta de utilizador."
 			},
 			"cameraAccess": {
-				"title": "Acesso à câmera",
-				"description": "Apps com esta permissão podem aceder à sua câmera."
+				"title": "Acesso à câmara",
+				"description": "Apps com esta permissão podem aceder à sua câmara."
 			},
 			"microphoneAccess": {
 				"title": "Acesso ao microfone",
@@ -36,13 +36,13 @@
 			},
 			"pluginRequired": {
 				"title": "Plugin necessário",
-				"description": "Apps com esta permissão precisam de um plugin que deve ser ativado manualmente pelo administrador do servidor. Ative plugins por sua conta e risco, pois eles podem potencialmente acessar todos os dados do servidor."
+				"description": "Apps com esta permissão precisam de um plugin que deve ser ativado manualmente pelo administrador do servidor. Ative plugins por sua conta e risco, pois eles podem potencialmente aceder todos os dados do servidor."
 			}
 		}
 	},
 	"pluginPopup": {
 		"title": "Plugin necessário",
-		"step1": "Este aplicativo precisa de um plugin de backend. Plugins de backend podem potencialmente acessar todos os dados do servidor, portanto você assume total responsabilidade por quaisquer danos que possam ser causados pela ativação do plugin. Para ativar o plugin, execute este comando no diretório backend:",
+		"step1": "Este aplicativo precisa de um plugin de backend. Plugins de backend podem potencialmente aceder todos os dados do servidor, portanto você assume total responsabilidade por quaisquer danos que possam ser causados pela ativação do plugin. Para ativar o plugin, execute este comando no diretório backend:",
 		"step2": "Em seguida, reinicie o servidor backend.",
 		"submit": "Fechar"
 	},

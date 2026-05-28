@@ -196,7 +196,7 @@ function App() {
     if (view === "category" && selectedCategory) {
       return getCategoryName(selectedCategory, i18n.language);
     }
-    return "Featured";
+    return t("sidebar.featured");
   };
 
   const getCategoryName = (category: Category, language: string): string => {

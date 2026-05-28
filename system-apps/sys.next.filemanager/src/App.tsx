@@ -247,6 +247,7 @@ function App() {
       await api.createFolder(backendPath);
       listFiles(currentPath);
       setNewFolderPopupOpen(false);
+      setInputValue("");
     } catch (e) {
       alert("Failed to create folder");
     }
@@ -254,6 +255,7 @@ function App() {
 
   const handleRenameRequest = (path: string) => {
     setTargetItem(path);
+    setInputValue(path.split("/").pop() || "");
     setRenamePopupOpen(true);
   };
 
@@ -275,6 +277,7 @@ function App() {
       listFiles(currentPath);
       setRenamePopupOpen(false);
       setTargetItem(null);
+      setInputValue("");
     } catch (e) {
       alert("Failed to rename");
     }
@@ -515,7 +518,12 @@ function App() {
               <ClipboardPaste size={isMobile ? 24 : 18} />
             </ToolbarButton>
           )}
-          <ToolbarButton onClick={() => setNewFolderPopupOpen(true)}>
+          <ToolbarButton
+            onClick={() => {
+              setInputValue("");
+              setNewFolderPopupOpen(true);
+            }}
+          >
             <FolderPlus size={isMobile ? 24 : 18} />
           </ToolbarButton>
           <ToolbarButton
@@ -583,7 +591,9 @@ function App() {
                 }}
               >
                 <Icon icon={FolderIcon} />
-                {entry.name}
+                <span className={styles.entryName} title={entry.name}>
+                  {entry.name}
+                </span>
               </ListItem>
             ) : (
               <ListItem
@@ -608,7 +618,9 @@ function App() {
                 }}
               >
                 <Icon icon={FileIcon} />
-                {entry.name}
+                <span className={styles.entryName} title={entry.name}>
+                  {entry.name}
+                </span>
               </ListItem>
             );
           })

@@ -50,7 +50,9 @@ function AppContent({
 }
 
 function App() {
-  const [mobileMode, setMobileMode] = useState(false);
+  const [mobileMode] = useState(() =>
+    window.matchMedia("(max-width: 768px)").matches,
+  );
   const [username, setUsername] = useState("Username");
   const [systemColorScheme, setSystemColorScheme] = useState<"light" | "dark">(
     window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -69,24 +71,6 @@ function App() {
     setSystemColorScheme(media.matches ? "dark" : "light");
     media.addEventListener("change", listener);
     return () => media.removeEventListener("change", listener);
-  }, []);
-
-  // Detect mobile mode based on screen width
-  useEffect(() => {
-    const checkMobileMode = () => {
-      setMobileMode(window.matchMedia("(max-width: 768px)").matches);
-    };
-
-    // Initial check
-    checkMobileMode();
-
-    // Add event listener for window resize
-    window.addEventListener("resize", checkMobileMode);
-
-    // Cleanup event listener on unmount
-    return () => {
-      window.removeEventListener("resize", checkMobileMode);
-    };
   }, []);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);

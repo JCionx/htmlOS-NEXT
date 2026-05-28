@@ -9,6 +9,46 @@ const unzipper = require("unzipper");
 
 const { authenticateToken } = require("../middleware/authenticateToken");
 
+function dbAll(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.all(sql, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
+
+function dbGet(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.get(sql, params, (err, row) => {
+      if (err) reject(err);
+      else resolve(row);
+    });
+  });
+}
+
+function dbRun(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function (err) {
+      if (err) reject(err);
+      else resolve(this);
+    });
+  });
+}
+
+async function ensurePinnedAppsTable() {
+  await dbRun(`
+    CREATE TABLE IF NOT EXISTS pinnedApps (
+      user_id INTEGER,
+      app_id TEXT,
+      position INTEGER NOT NULL DEFAULT 0,
+      FOREIGN KEY(user_id) REFERENCES users(id),
+      FOREIGN KEY(user_id, app_id) REFERENCES apps(user_id, id),
+      PRIMARY KEY(user_id, app_id)
+    )
+  `);
+}
+
 function normalizeLocale(locale) {
   if (!locale || typeof locale !== "object" || Array.isArray(locale)) {
     return null;
@@ -77,6 +117,135 @@ router.get("/list", authenticateToken, (req, res) => {
 
     res.json(apps);
   });
+});
+
+router.get("/pinned", authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    await ensurePinnedAppsTable();
+    const rows = await dbAll(
+      `SELECT pinnedApps.app_id AS appId, pinnedApps.position
+       FROM pinnedApps
+       INNER JOIN apps ON apps.id = pinnedApps.app_id AND apps.user_id = pinnedApps.user_id
+       WHERE pinnedApps.user_id = ?
+       ORDER BY pinnedApps.position ASC, pinnedApps.app_id ASC`,
+      [userId],
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("Failed to list pinned apps:", err);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+router.post("/pinned", authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  const { appId } = req.body;
+
+  if (typeof appId !== "string" || !appId.trim()) {
+    return res.status(400).json({ error: "Missing appId" });
+  }
+
+  try {
+    await ensurePinnedAppsTable();
+    const app = await dbGet("SELECT id FROM apps WHERE user_id = ? AND id = ?", [
+      userId,
+      appId,
+    ]);
+
+    if (!app) {
+      return res.status(404).json({ error: "App not found" });
+    }
+
+    const positionRow = await dbGet(
+      "SELECT COALESCE(MAX(position), -1) + 1 AS nextPosition FROM pinnedApps WHERE user_id = ?",
+      [userId],
+    );
+
+    await dbRun(
+      `INSERT INTO pinnedApps (user_id, app_id, position)
+       VALUES (?, ?, ?)
+       ON CONFLICT(user_id, app_id) DO NOTHING`,
+      [userId, appId, positionRow?.nextPosition ?? 0],
+    );
+
+    const rows = await dbAll(
+      "SELECT app_id AS appId, position FROM pinnedApps WHERE user_id = ? ORDER BY position ASC, app_id ASC",
+      [userId],
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("Failed to pin app:", err);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+router.delete("/pinned/:appId", authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  const appId = req.params.appId;
+
+  try {
+    await ensurePinnedAppsTable();
+    await dbRun("DELETE FROM pinnedApps WHERE user_id = ? AND app_id = ?", [
+      userId,
+      appId,
+    ]);
+
+    const rows = await dbAll(
+      "SELECT app_id AS appId, position FROM pinnedApps WHERE user_id = ? ORDER BY position ASC, app_id ASC",
+      [userId],
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("Failed to unpin app:", err);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+router.post("/pinned/reorder", authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  const { appIds } = req.body;
+
+  if (!Array.isArray(appIds) || appIds.some((id) => typeof id !== "string")) {
+    return res.status(400).json({ error: "Expected appIds array" });
+  }
+
+  try {
+    await ensurePinnedAppsTable();
+    const pinnedRows = await dbAll(
+      "SELECT app_id AS appId FROM pinnedApps WHERE user_id = ?",
+      [userId],
+    );
+    const pinnedIds = new Set(pinnedRows.map((row) => row.appId));
+    const orderedPinnedIds = appIds.filter((appId) => pinnedIds.has(appId));
+    const missingPinnedIds = [...pinnedIds].filter(
+      (appId) => !orderedPinnedIds.includes(appId),
+    );
+    const finalOrder = [...orderedPinnedIds, ...missingPinnedIds];
+
+    await Promise.all(
+      finalOrder.map((appId, position) =>
+        dbRun(
+          "UPDATE pinnedApps SET position = ? WHERE user_id = ? AND app_id = ?",
+          [position, userId, appId],
+        ),
+      ),
+    );
+
+    const rows = await dbAll(
+      "SELECT app_id AS appId, position FROM pinnedApps WHERE user_id = ? ORDER BY position ASC, app_id ASC",
+      [userId],
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("Failed to reorder pinned apps:", err);
+    res.status(500).json({ error: "Database error" });
+  }
 });
 
 router.get("/filetypes", authenticateToken, (req, res) => {
@@ -154,6 +323,11 @@ router.post("/filetypes/set-default", authenticateToken, async (req, res) => {
 router.get("/delete/:id", authenticateToken, (req, res) => {
   const appId = req.params.id;
   const userId = req.user.id;
+
+  db.run("DELETE FROM pinnedApps WHERE app_id = ? AND user_id = ?", [
+    appId,
+    userId,
+  ]);
 
   db.run("DELETE FROM filetypes WHERE app_id = ? AND user_id = ?", [
     appId,
@@ -255,6 +429,17 @@ router.post("/uninstall", authenticateToken, async (req, res) => {
     await new Promise((resolve, reject) => {
       db.run(
         "DELETE FROM apps WHERE id = ? AND user_id = ?",
+        [appId, userId],
+        function (err) {
+          if (err) reject(err);
+          else resolve();
+        },
+      );
+    });
+
+    await new Promise((resolve, reject) => {
+      db.run(
+        "DELETE FROM pinnedApps WHERE app_id = ? AND user_id = ?",
         [appId, userId],
         function (err) {
           if (err) reject(err);

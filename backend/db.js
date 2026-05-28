@@ -40,6 +40,16 @@ db.serialize(() => {
     `CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, setting TEXT NOT NULL, value TEXT, FOREIGN KEY(user_id) REFERENCES users(id), UNIQUE(user_id, setting))`,
   );
   db.run(
+    `CREATE TABLE IF NOT EXISTS pinnedApps (
+        user_id INTEGER,
+        app_id TEXT,
+        position INTEGER NOT NULL DEFAULT 0,
+        FOREIGN KEY(user_id) REFERENCES users(id),
+        FOREIGN KEY(user_id, app_id) REFERENCES apps(user_id, id),
+        PRIMARY KEY(user_id, app_id)
+      )`,
+  );
+  db.run(
     `CREATE TABLE IF NOT EXISTS plugins (id TEXT PRIMARY KEY, enabled BOOLEAN)`
   )
 });

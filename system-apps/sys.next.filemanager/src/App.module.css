@@ -32,3 +32,12 @@
     background-color: #007bff;
     transition: width 0.2s ease;
 }
+
+.entryName {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

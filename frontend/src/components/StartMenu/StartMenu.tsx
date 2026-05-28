@@ -1,11 +1,13 @@
 import styles from "./StartMenu.module.css";
 import type { WindowConfig } from "../../types/window";
+import type { MouseEvent, TouchEvent } from "react";
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import ContextMenu from "../ContextMenu/ContextMenu";
 
 import DefaultIcon from "./assets/default.png";
 
-import { Search, LogOut } from "lucide-react";
+import { Search, LogOut, Pin, PinOff } from "lucide-react";
 
 interface TaskbarProps {
   apps: WindowConfig[];
@@ -14,6 +16,73 @@ interface TaskbarProps {
   openApp: (appId: string) => void;
   mobileMode?: boolean;
   username?: string;
+  pinnedAppIds?: string[];
+  onPinApp?: (appId: string) => void;
+  onUnpinApp?: (appId: string) => void;
+}
+
+interface StartMenuAppItemProps {
+  app: WindowConfig;
+  openApp: (appId: string) => void;
+  onOpenContextMenu: (
+    appId: string,
+    e: MouseEvent<HTMLDivElement> | TouchEvent<HTMLDivElement>,
+  ) => void;
+}
+
+function StartMenuAppItem({
+  app,
+  openApp,
+  onOpenContextMenu,
+}: StartMenuAppItemProps) {
+  const touchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressTriggeredRef = useRef(false);
+
+  const clearTouchTimer = () => {
+    if (touchTimerRef.current) {
+      clearTimeout(touchTimerRef.current);
+      touchTimerRef.current = null;
+    }
+  };
+
+  return (
+    <div
+      className={styles.appItem}
+      onClick={() => {
+        clearTouchTimer();
+        if (longPressTriggeredRef.current) {
+          longPressTriggeredRef.current = false;
+          return;
+        }
+        openApp(app.id);
+      }}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        onOpenContextMenu(app.id, e);
+      }}
+      onTouchStart={(e) => {
+        longPressTriggeredRef.current = false;
+        touchTimerRef.current = setTimeout(() => {
+          longPressTriggeredRef.current = true;
+          e.preventDefault();
+          onOpenContextMenu(app.id, e);
+        }, 500);
+      }}
+      onTouchEnd={clearTouchTimer}
+      onTouchMove={clearTouchTimer}
+    >
+      <img
+        src={app.icon ? app.icon : DefaultIcon}
+        alt={`${app.title}'s app icon`}
+        className={styles.appIcon}
+        onError={(e) => {
+          e.currentTarget.src = DefaultIcon;
+          e.currentTarget.onerror = null;
+        }}
+      />
+      <span className={styles.appTitle}>{app.title}</span>
+    </div>
+  );
 }
 
 function StartMenu({
@@ -23,10 +92,20 @@ function StartMenu({
   openApp,
   mobileMode,
   username = "Username",
+  pinnedAppIds = [],
+  onPinApp,
+  onUnpinApp,
 }: TaskbarProps) {
   const [search, setSearch] = useState("");
+  const [contextMenu, setContextMenu] = useState<{
+    open: boolean;
+    x: number;
+    y: number;
+    appId: string | null;
+  }>({ open: false, x: 0, y: 0, appId: null });
   const searchInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const pinnedAppIdSet = new Set(pinnedAppIds);
 
   const { t } = useTranslation();
 
@@ -39,6 +118,59 @@ function StartMenu({
   const filteredApps = apps.filter(
     (app) =>
       app.title && app.title.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const handleAppContextMenu = (
+    appId: string,
+    e: MouseEvent<HTMLDivElement> | TouchEvent<HTMLDivElement>,
+  ) => {
+    let x: number;
+    let y: number;
+
+    if ("clientX" in e) {
+      x = e.clientX;
+      y = e.clientY;
+    } else {
+      x = e.touches[0].clientX;
+      y = e.touches[0].clientY;
+    }
+
+    e.stopPropagation();
+    setContextMenu({ open: true, x, y, appId });
+  };
+
+  const contextAppId = contextMenu.appId;
+  const contextAppIsPinned = contextAppId
+    ? pinnedAppIdSet.has(contextAppId)
+    : false;
+
+  const pinContextMenu = (
+    <ContextMenu
+      open={contextMenu.open}
+      x={contextMenu.x}
+      y={contextMenu.y}
+      onClose={() => setContextMenu((prev) => ({ ...prev, open: false }))}
+    >
+      {contextAppId && (
+        <button
+          className={styles.contextMenuItem}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (contextAppIsPinned) {
+              onUnpinApp?.(contextAppId);
+            } else {
+              onPinApp?.(contextAppId);
+            }
+            setContextMenu((prev) => ({ ...prev, open: false }));
+          }}
+        >
+          {contextAppIsPinned ? <PinOff size={16} /> : <Pin size={16} />}
+          <span>
+            {contextAppIsPinned ? "Unpin from taskbar" : "Pin to taskbar"}
+          </span>
+        </button>
+      )}
+    </ContextMenu>
   );
 
   // --- LOGOUT LOGIC ---
@@ -90,22 +222,12 @@ function StartMenu({
             <div className={styles.appsContainer}>
               <div className={styles.apps}>
                 {filteredApps.map((app) => (
-                  <div
+                  <StartMenuAppItem
                     key={app.id}
-                    className={styles.appItem}
-                    onClick={() => openApp(app.id)}
-                  >
-                    <img
-                      src={app.icon ? app.icon : DefaultIcon}
-                      alt={`${app.title}'s app icon`}
-                      className={styles.appIcon}
-                      onError={(e) => {
-                        e.currentTarget.src = DefaultIcon;
-                        e.currentTarget.onerror = null;
-                      }}
-                    />
-                    <span className={styles.appTitle}>{app.title}</span>
-                  </div>
+                    app={app}
+                    openApp={openApp}
+                    onOpenContextMenu={handleAppContextMenu}
+                  />
                 ))}
               </div>
             </div>
@@ -118,6 +240,7 @@ function StartMenu({
             </button>
           </div>
         </div>
+        {pinContextMenu}
       </div>
     );
   } else {
@@ -151,22 +274,12 @@ function StartMenu({
             <div className={styles.appsContainer}>
               <div className={styles.apps}>
                 {filteredApps.map((app) => (
-                  <div
+                  <StartMenuAppItem
                     key={app.id}
-                    className={styles.appItem}
-                    onClick={() => openApp(app.id)}
-                  >
-                    <img
-                      src={app.icon ? app.icon : DefaultIcon}
-                      alt={`${app.title}'s app icon`}
-                      className={styles.appIcon}
-                      onError={(e) => {
-                        e.currentTarget.src = DefaultIcon;
-                        e.currentTarget.onerror = null;
-                      }}
-                    />
-                    <span className={styles.appTitle}>{app.title}</span>
-                  </div>
+                    app={app}
+                    openApp={openApp}
+                    onOpenContextMenu={handleAppContextMenu}
+                  />
                 ))}
               </div>
             </div>
@@ -179,6 +292,7 @@ function StartMenu({
             </button>
           </div>
         </div>
+        {pinContextMenu}
       </div>
     );
   }

@@ -45,6 +45,7 @@ function Desktop({
   } = useSettings();
 
   const [installedApps, setInstalledApps] = useState<WindowConfig[]>([]);
+  const [pinnedAppIds, setPinnedAppIds] = useState<string[]>([]);
   const [windows, setWindows] = useState<WindowConfig[]>([]);
   const [activeWindowId, setActiveWindowId] = useState<string | null>(null);
   const [windowZIndexes, setWindowZIndexes] = useState<WindowZIndexes>({});
@@ -129,19 +130,17 @@ function Desktop({
     const handleInstallAppMessage = (event: MessageEvent) => {
       if (event.data && event.data.type === "browserInstallApp") {
         const incomingApp = event.data.app;
-        
+
         // Check if app is already installed
-        const installedApp = installedApps.find(
-          (a) => a.id === incomingApp.id
-        );
-        
+        const installedApp = installedApps.find((a) => a.id === incomingApp.id);
+
         if (installedApp) {
           // App is installed - check version
           const versionCmp = compareVersions(
             incomingApp.version || "0.0.0",
-            installedApp.version || "0.0.0"
+            installedApp.version || "0.0.0",
           );
-          
+
           // Only show popup if new version is greater
           if (versionCmp > 0) {
             setPendingInstallApp(incomingApp);
@@ -210,13 +209,13 @@ function Desktop({
   useEffect(() => {
     const fetchApps = async () => {
       try {
-        const res = await fetch(
+        const appsRes = await fetch(
           import.meta.env.VITE_BACKEND_ADDRESS + "/apps/list",
           {
             credentials: "include",
           },
         );
-        const apps = await res.json();
+        const apps = await appsRes.json();
         const configs: WindowConfig[] = apps.map((app: any, _idx: number) => ({
           id: app.id,
           title: app.locale?.[language] ?? app.name,
@@ -265,6 +264,28 @@ function Desktop({
       } catch (e) {
         console.error("Failed to fetch apps:", e);
       }
+
+      try {
+        const pinnedRes = await fetch(
+          import.meta.env.VITE_BACKEND_ADDRESS + "/apps/pinned",
+          {
+            credentials: "include",
+          },
+        );
+        const pinnedApps = await pinnedRes.json();
+
+        if (Array.isArray(pinnedApps)) {
+          setPinnedAppIds(
+            pinnedApps
+              .map((pinnedApp: { appId?: unknown }) => pinnedApp.appId)
+              .filter(
+                (appId: unknown): appId is string => typeof appId === "string",
+              ),
+          );
+        }
+      } catch (e) {
+        console.error("Failed to fetch pinned apps:", e);
+      }
     };
     fetchApps();
 
@@ -279,6 +300,105 @@ function Desktop({
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
   }, [language]);
+
+  const openAppById = (appId: string) => {
+    const app = installedApps.find((app) => app.id === appId);
+    const isAppOpen = windows.some((win) => win.id === appId);
+    if (isAppOpen) {
+      handleWindowActivate(appId);
+      return;
+    }
+    if (app) {
+      setWindows((prevWindows) => [...prevWindows, app]);
+      handleWindowActivate(appId);
+    }
+  };
+
+  const applyPinnedRows = (rows: unknown) => {
+    if (!Array.isArray(rows)) {
+      return;
+    }
+
+    setPinnedAppIds(
+      rows
+        .map((pinnedApp: { appId?: unknown }) => pinnedApp.appId)
+        .filter((appId: unknown): appId is string => typeof appId === "string"),
+    );
+  };
+
+  const handlePinApp = async (appId: string) => {
+    if (!pinnedAppIds.includes(appId)) {
+      setPinnedAppIds((prev) => [...prev, appId]);
+    }
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_ADDRESS}/apps/pinned`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ appId }),
+        },
+      );
+      applyPinnedRows(await res.json());
+    } catch (err) {
+      console.error("Failed to pin app:", err);
+    }
+  };
+
+  const handleUnpinApp = async (appId: string) => {
+    setPinnedAppIds((prev) => prev.filter((id) => id !== appId));
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_ADDRESS}/apps/pinned/${encodeURIComponent(appId)}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
+      applyPinnedRows(await res.json());
+    } catch (err) {
+      console.error("Failed to unpin app:", err);
+    }
+  };
+
+  const handleReorderPinnedApps = async (appIds: string[]) => {
+    setPinnedAppIds(appIds);
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_ADDRESS}/apps/pinned/reorder`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ appIds }),
+        },
+      );
+      applyPinnedRows(await res.json());
+    } catch (err) {
+      console.error("Failed to reorder pinned apps:", err);
+    }
+  };
+
+  const handleCloseApp = (appId: string) => {
+    handleDismissContinuity(appId);
+    setWindows((prev) =>
+      prev.filter((windowConfig) => windowConfig.id !== appId),
+    );
+    setMinimizedWindowIds((prev) => prev.filter((id) => id !== appId));
+    setWindowZIndexes((prev) => {
+      const next = { ...prev };
+      delete next[appId];
+      return next;
+    });
+
+    if (activeWindowId === appId) {
+      handleWindowActivate("");
+    }
+  };
 
   const handleWindowActivate = (id: string) => {
     setActiveWindowId(id);
@@ -719,20 +839,12 @@ function Desktop({
         apps={installedApps}
         menuOpen={startMenuOpen}
         setMenuOpen={(open) => setStartMenuOpen(open)}
-        openApp={(appId) => {
-          const app = installedApps.find((app) => app.id === appId);
-          const isAppOpen = windows.some((win) => win.id === appId);
-          if (isAppOpen) {
-            handleWindowActivate(appId);
-            return;
-          }
-          if (app) {
-            setWindows((prevWindows) => [...prevWindows, app]);
-            handleWindowActivate(appId);
-          }
-        }}
+        openApp={openAppById}
         mobileMode={mobileMode}
         username={username}
+        pinnedAppIds={pinnedAppIds}
+        onPinApp={handlePinApp}
+        onUnpinApp={handleUnpinApp}
       ></StartMenu>
       <Taskbar
         windows={windows}
@@ -751,6 +863,13 @@ function Desktop({
         hasContinuityLaunch={Boolean(continuityLaunch)}
         onOpenContinuityLaunch={handleOpenContinuityLaunch}
         continuityLaunchIcon={continuityLaunchIcon}
+        installedApps={installedApps}
+        pinnedAppIds={pinnedAppIds}
+        onOpenApp={openAppById}
+        onPinApp={handlePinApp}
+        onUnpinApp={handleUnpinApp}
+        onCloseApp={handleCloseApp}
+        onReorderPinnedApps={handleReorderPinnedApps}
       ></Taskbar>
       <NotificationArea mobileMode={mobileMode} />
     </>
