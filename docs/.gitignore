@@ -25,7 +25,7 @@ pnpm-debug.log*
 *~
 \#*\#
 
-.vitepress/dist/
+.vitepress/
 .vitepress/cache/
 
 .obsidian/

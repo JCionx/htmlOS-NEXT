@@ -72,9 +72,6 @@ function Desktop({
   const [isUpdateMode, setIsUpdateMode] = useState(false);
 
   const [onboardingOpen, setOnboardingOpen] = useState(false);
-  const [onboardingCompleted, setOnboardingCompleted] = useState<
-    boolean | null
-  >(null);
 
   // Helper to compare versions (returns 1 if v1 > v2, -1 if v1 < v2, 0 if equal)
   const compareVersions = (v1: string, v2: string): number => {
@@ -295,13 +292,11 @@ function Desktop({
         );
         const settings = await settingsRes.json();
         const completed = settings.onboardingCompleted === "true";
-        setOnboardingCompleted(completed);
         if (!completed) {
           setOnboardingOpen(true);
         }
       } catch (e) {
         console.error("Failed to fetch onboarding setting:", e);
-        setOnboardingCompleted(false);
         setOnboardingOpen(true);
       }
     };
@@ -799,7 +794,6 @@ function Desktop({
         <Onboarding
           onClose={async () => {
             setOnboardingOpen(false);
-            setOnboardingCompleted(true);
             // Save setting to database
             try {
               await fetch(`${runtime.VITE_BACKEND_ADDRESS}/settings`, {
