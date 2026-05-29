@@ -1,5 +1,6 @@
 data/
 apps/*
+db/*
 users.db
 logs
 *.log

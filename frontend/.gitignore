@@ -33,3 +33,5 @@ coverage/
 .cache/
 .next/
 out/
+
+.env
