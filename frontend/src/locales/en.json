@@ -26,6 +26,30 @@
         },
         "cancel": "Cancel"
     },
+    "onboarding": {
+        "welcome": "Welcome to",
+        "mainTitle": "htmlOS NEXT",
+        "next": "Next",
+        "selectLanguage": "Select your language",
+        "language_en": "English",
+        "language_pt": "Portuguese",
+        "language_es": "Spanish",
+        "language_zh": "Chinese",
+        "language_fr": "French",
+        "language_de": "German",
+        "chooseColorScheme": "Choose a color scheme",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System",
+        "canChangeLater": "You can always change this later in Settings.",
+        "chooseTaskbarStyle": "Choose a taskbar style",
+        "floating": "Floating",
+        "expanded": "Expanded"
+    ,
+    "chooseTaskbarAlignment": "Choose the taskbar alignment",
+    "center": "Center",
+    "edges": "Edges"
+    },
     "overview": {
         "permissions": {
             "title": "Permissions",

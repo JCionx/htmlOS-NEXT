@@ -11,7 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@htmlos-next/api": "^0.0.3",
+    "@htmlos-next/api": "^0.0.5",
     "@htmlos-next/ui": "^0.0.16",
     "lucide-react": "^0.564.0",
     "react": "^19.2.0",

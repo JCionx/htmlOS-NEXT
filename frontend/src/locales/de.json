@@ -18,5 +18,28 @@
             "submit": "Auswählen"
         },
         "cancel": "Abbrechen"
+    },
+    "onboarding": {
+        "welcome": "Willkommen bei",
+        "mainTitle": "htmlOS NEXT",
+        "next": "Weiter",
+        "selectLanguage": "Wählen Sie Ihre Sprache",
+        "language_en": "Englisch",
+        "language_pt": "Portugiesisch",
+        "language_es": "Spanisch",
+        "language_zh": "Chinesisch",
+        "language_fr": "Französisch",
+        "language_de": "Deutsch",
+        "chooseColorScheme": "Wählen Sie ein Farbschema",
+        "light": "Hell",
+        "dark": "Dunkel",
+        "system": "System",
+        "canChangeLater": "Sie können dies später jederzeit in den Einstellungen ändern.",
+        "chooseTaskbarStyle": "Wählen Sie einen Taskbar-Stil",
+        "floating": "Schwebend",
+        "expanded": "Erweitert",
+        "chooseTaskbarAlignment": "Wählen Sie die Taskbar-Ausrichtung",
+        "center": "Zentrieren",
+        "edges": "Kanten"
     }
 }

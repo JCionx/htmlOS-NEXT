@@ -1186,6 +1186,203 @@ export function setupMessageHandler(deps: MessageHandlerDependencies) {
         }
         break;
       }
+      case "changeUsername":
+        if (deps.id === "sys.next.settings") {
+          if (typeof messageData.newUsername === "string") {
+            try {
+              const response = await fetchBackend("/auth/change-username", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ newUsername: messageData.newUsername }),
+              });
+
+              postMessageToIframe(deps.iframeRef, {
+                type: "changeUsernameSuccess",
+                ...response,
+              });
+            } catch (err) {
+              log(
+                "error",
+                deps,
+                "changeUsername",
+                "Failed to change username.",
+                err,
+              );
+              postMessageToIframe(deps.iframeRef, {
+                type: "changeUsernameError",
+                error: err instanceof Error ? err.message : String(err),
+              });
+            }
+          } else {
+            log("warn", deps, "changeUsername", "Invalid newUsername.");
+          }
+        } else {
+          log(
+            "warn",
+            deps,
+            "changeUsername",
+            "Unauthorized app attempted to change username.",
+          );
+        }
+        break;
+      case "changePassword":
+        if (deps.id === "sys.next.settings") {
+          if (
+            typeof messageData.currentPassword === "string" &&
+            typeof messageData.newPassword === "string"
+          ) {
+            try {
+              const response = await fetchBackend("/auth/change-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  currentPassword: messageData.currentPassword,
+                  newPassword: messageData.newPassword,
+                }),
+              });
+
+              postMessageToIframe(deps.iframeRef, {
+                type: "changePasswordSuccess",
+                ...response,
+              });
+            } catch (err) {
+              log(
+                "error",
+                deps,
+                "changePassword",
+                "Failed to change password.",
+                err,
+              );
+              postMessageToIframe(deps.iframeRef, {
+                type: "changePasswordError",
+                error: err instanceof Error ? err.message : String(err),
+              });
+            }
+          } else {
+            log("warn", deps, "changePassword", "Invalid password parameters.");
+          }
+        } else {
+          log(
+            "warn",
+            deps,
+            "changePassword",
+            "Unauthorized app attempted to change password.",
+          );
+        }
+        break;
+      case "getFileTypes":
+        if (
+          deps.id === "sys.next.settings" ||
+          deps.id === "sys.next.filemanager"
+        ) {
+          try {
+            const response = await fetchBackend("/apps/filetypes");
+
+            postMessageToIframe(deps.iframeRef, {
+              type: "fileTypes",
+              filetypes: response,
+            });
+          } catch (err) {
+            log(
+              "error",
+              deps,
+              "getFileTypes",
+              "Failed to fetch file types.",
+              err,
+            );
+            postMessageToIframe(deps.iframeRef, {
+              type: "fileTypesError",
+              error: err instanceof Error ? err.message : String(err),
+            });
+          }
+        } else {
+          log(
+            "warn",
+            deps,
+            "getFileTypes",
+            "Unauthorized app attempted to get file types.",
+          );
+        }
+        break;
+      case "setDefaultApp":
+        if (deps.id === "sys.next.settings") {
+          if (
+            typeof messageData.filetype === "string" &&
+            typeof messageData.appId === "string"
+          ) {
+            try {
+              const response = await fetchBackend(
+                "/apps/filetypes/set-default",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    filetype: messageData.filetype,
+                    appId: messageData.appId,
+                  }),
+                },
+              );
+
+              postMessageToIframe(deps.iframeRef, {
+                type: "setDefaultAppSuccess",
+                ...response,
+              });
+            } catch (err) {
+              log(
+                "error",
+                deps,
+                "setDefaultApp",
+                "Failed to set default app.",
+                err,
+              );
+              postMessageToIframe(deps.iframeRef, {
+                type: "setDefaultAppError",
+                error: err instanceof Error ? err.message : String(err),
+              });
+            }
+          } else {
+            log("warn", deps, "setDefaultApp", "Invalid parameters.");
+          }
+        } else {
+          log(
+            "warn",
+            deps,
+            "setDefaultApp",
+            "Unauthorized app attempted to set default app.",
+          );
+        }
+        break;
+      case "getInstalledAppsList":
+        if (deps.id === "sys.next.settings") {
+          try {
+            const response = await fetchBackend("/apps/list");
+
+            postMessageToIframe(deps.iframeRef, {
+              type: "installedAppsList",
+              apps: response,
+            });
+          } catch (err) {
+            log(
+              "error",
+              deps,
+              "getInstalledAppsList",
+              "Failed to fetch apps list.",
+              err,
+            );
+            postMessageToIframe(deps.iframeRef, {
+              type: "installedAppsListError",
+              error: err instanceof Error ? err.message : String(err),
+            });
+          }
+        } else {
+          log(
+            "warn",
+            deps,
+            "getInstalledAppsList",
+            "Unauthorized app attempted to get installed apps list.",
+          );
+        }
+        break;
     }
   };
 

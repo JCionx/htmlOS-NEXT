@@ -556,20 +556,8 @@ router.post("/install", authenticateToken, async (req, res) => {
     return res.status(400).json({ error: "Invalid package URL" });
   }
 
-  if (parsedUrl.protocol !== "https:") {
+  if (parsedUrl.protocol !== "https:" && process.env.ALLOW_UNSECURE_INSTALLS !== "true") {
     return res.status(400).json({ error: "Package URL must use HTTPS" });
-  }
-
-  // Allowlist of trusted domains for app packages
-  const trustedDomains = ["jcionx.github.io", "github.com"];
-  const isTrusted = trustedDomains.some(
-    (domain) =>
-      parsedUrl.hostname === domain ||
-      parsedUrl.hostname.endsWith("." + domain),
-  );
-
-  if (!isTrusted) {
-    return res.status(400).json({ error: "Untrusted package source" });
   }
 
   const appDir = path.join(

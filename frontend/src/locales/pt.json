@@ -19,4 +19,28 @@
         },
         "cancel": "Cancelar"
     }
+,
+    "onboarding": {
+        "welcome": "Bem-vindo ao",
+        "mainTitle": "htmlOS NEXT",
+        "next": "Próximo",
+        "selectLanguage": "Seleciona o teu idioma",
+        "language_en": "Inglês",
+        "language_pt": "Português",
+        "language_es": "Espanhol",
+        "language_zh": "Chinês",
+        "language_fr": "Francês",
+        "language_de": "Alemão",
+        "chooseColorScheme": "Escolhe o esquema de cores",
+        "light": "Claro",
+        "dark": "Escuro",
+        "system": "Sistema",
+        "canChangeLater": "Podes alterar mais tarde nas Definições.",
+        "chooseTaskbarStyle": "Escolhe o estilo da barra de tarefas",
+        "floating": "Flutuante",
+        "expanded": "Expandido",
+        "chooseTaskbarAlignment": "Escolhe o alinhamento da barra de tarefas",
+        "center": "Centro",
+        "edges": "Bordas"
+    }
 }

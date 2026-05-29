@@ -1,3 +1,4 @@
+# Getting Inside the Backend Directory
 This step is needed if you need to use the CLI tool.
 ## If using Docker:
 Run this command on your host:

@@ -1,3 +1,5 @@
+# Installation Guide
+
 You can deploy and run **htmlOS NEXT** using one of two methods:
 1. **Docker Compose** (recommended)
 2. **Manual Installation**

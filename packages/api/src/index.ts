@@ -354,39 +354,69 @@ const getBackendAddress = () =>
     : window.location.origin;
 
 export async function getFileTypes(): Promise<any> {
-  const response = await fetch(`${getBackendAddress()}/apps/filetypes`, {
-    credentials: "include",
+  sendMessage("getFileTypes", {});
+  return new Promise((resolve, reject) => {
+    const handler = (event: MessageEvent) => {
+      const data = event.data;
+      if (data?.type === "fileTypes") {
+        window.removeEventListener("message", handler);
+        resolve(data.filetypes);
+      } else if (data?.type === "fileTypesError") {
+        window.removeEventListener("message", handler);
+        reject(new Error(data.error || "Failed to fetch filetypes"));
+      }
+    };
+    window.addEventListener("message", handler);
+    setTimeout(() => {
+      window.removeEventListener("message", handler);
+      reject(new Error("getFileTypes request timed out"));
+    }, 10000);
   });
-  if (!response.ok) throw new Error("Failed to fetch filetypes");
-  return response.json();
 }
 
 export async function setDefaultApp(
   filetype: string,
   appId: string,
 ): Promise<any> {
-  const response = await fetch(
-    `${getBackendAddress()}/apps/filetypes/set-default`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ filetype, appId }),
-      credentials: "include",
-    },
-  );
-  if (!response.ok) {
-    const data = await response.json();
-    throw new Error(data.error || "Failed to set default app");
-  }
-  return response.json();
+  sendMessage("setDefaultApp", { filetype, appId });
+  return new Promise((resolve, reject) => {
+    const handler = (event: MessageEvent) => {
+      const data = event.data;
+      if (data?.type === "setDefaultAppSuccess") {
+        window.removeEventListener("message", handler);
+        resolve(data);
+      } else if (data?.type === "setDefaultAppError") {
+        window.removeEventListener("message", handler);
+        reject(new Error(data.error || "Failed to set default app"));
+      }
+    };
+    window.addEventListener("message", handler);
+    setTimeout(() => {
+      window.removeEventListener("message", handler);
+      reject(new Error("setDefaultApp request timed out"));
+    }, 10000);
+  });
 }
 
 export async function getInstalledAppsList(): Promise<any[]> {
-  const response = await fetch(`${getBackendAddress()}/apps/list`, {
-    credentials: "include",
+  sendMessage("getInstalledAppsList", {});
+  return new Promise((resolve, reject) => {
+    const handler = (event: MessageEvent) => {
+      const data = event.data;
+      if (data?.type === "installedAppsList") {
+        window.removeEventListener("message", handler);
+        resolve(data.apps);
+      } else if (data?.type === "installedAppsListError") {
+        window.removeEventListener("message", handler);
+        reject(new Error(data.error || "Failed to fetch apps list"));
+      }
+    };
+    window.addEventListener("message", handler);
+    setTimeout(() => {
+      window.removeEventListener("message", handler);
+      reject(new Error("getInstalledAppsList request timed out"));
+    }, 10000);
   });
-  if (!response.ok) throw new Error("Failed to fetch apps list");
-  return response.json();
 }
 
 export async function getCurrentUser(): Promise<any> {
@@ -401,34 +431,48 @@ export async function getCurrentUser(): Promise<any> {
 }
 
 export async function changeUsername(newUsername: string): Promise<any> {
-  const response = await fetch(`${getBackendAddress()}/auth/change-username`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ newUsername }),
-    credentials: "include",
+  sendMessage("changeUsername", { newUsername });
+  return new Promise((resolve, reject) => {
+    const handler = (event: MessageEvent) => {
+      const data = event.data;
+      if (data?.type === "changeUsernameSuccess") {
+        window.removeEventListener("message", handler);
+        resolve(data);
+      } else if (data?.type === "changeUsernameError") {
+        window.removeEventListener("message", handler);
+        reject(new Error(data.error || "Failed to change username"));
+      }
+    };
+    window.addEventListener("message", handler);
+    setTimeout(() => {
+      window.removeEventListener("message", handler);
+      reject(new Error("changeUsername request timed out"));
+    }, 10000);
   });
-  if (!response.ok) {
-    const data = await response.json();
-    throw new Error(data.error || "Failed to change username");
-  }
-  return response.json();
 }
 
 export async function changePassword(
   currentPassword: string,
   newPassword: string,
 ): Promise<any> {
-  const response = await fetch(`${getBackendAddress()}/auth/change-password`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ currentPassword, newPassword }),
-    credentials: "include",
+  sendMessage("changePassword", { currentPassword, newPassword });
+  return new Promise((resolve, reject) => {
+    const handler = (event: MessageEvent) => {
+      const data = event.data;
+      if (data?.type === "changePasswordSuccess") {
+        window.removeEventListener("message", handler);
+        resolve(data);
+      } else if (data?.type === "changePasswordError") {
+        window.removeEventListener("message", handler);
+        reject(new Error(data.error || "Failed to change password"));
+      }
+    };
+    window.addEventListener("message", handler);
+    setTimeout(() => {
+      window.removeEventListener("message", handler);
+      reject(new Error("changePassword request timed out"));
+    }, 10000);
   });
-  if (!response.ok) {
-    const data = await response.json();
-    throw new Error(data.error || "Failed to change password");
-  }
-  return response.json();
 }
 
 export async function uploadWallpaper(

@@ -227,7 +227,7 @@ async function resetUser(username) {
         // Re-run seeder to restore defaults
         seedUserData(userId);
 
-        console.log(`Success: User '${username}' has been factory reset.`);
+        console.log(`Success: User '${username}' has been factory reset. Please log in again to see changes.`);
         exitCLI(0);
       });
     });

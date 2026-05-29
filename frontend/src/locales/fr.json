@@ -18,5 +18,28 @@
             "submit": "Sélectionner"
         },
         "cancel": "Annuler"
+    },
+    "onboarding": {
+        "welcome": "Bienvenue à",
+        "mainTitle": "htmlOS NEXT",
+        "next": "Suivant",
+        "selectLanguage": "Sélectionnez votre langue",
+        "language_en": "Anglais",
+        "language_pt": "Portugais",
+        "language_es": "Espagnol",
+        "language_zh": "Chinois",
+        "language_fr": "Français",
+        "language_de": "Allemand",
+        "chooseColorScheme": "Choisissez un thème de couleur",
+        "light": "Clair",
+        "dark": "Sombre",
+        "system": "Système",
+        "canChangeLater": "Vous pouvez toujours modifier cela plus tard dans les Paramètres.",
+        "chooseTaskbarStyle": "Choisissez un style de barre des tâches",
+        "floating": "Flottant",
+        "expanded": "Développé",
+        "chooseTaskbarAlignment": "Choisissez l'alignement de la barre des tâches",
+        "center": "Centrer",
+        "edges": "Bords"
     }
 }

@@ -1,3 +1,4 @@
+# Plugin Management
 You can manage plugins in **htmlOS NEXT** by using the `cli.js` tool.
 Before executing any command in this tool, you first need to be in it's container and/or directory.
 

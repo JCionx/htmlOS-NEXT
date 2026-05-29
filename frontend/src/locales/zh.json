@@ -19,4 +19,29 @@
         },
         "cancel": "取消"
     }
+,
+    "onboarding": {
+        "welcome": "欢迎使用",
+        "mainTitle": "htmlOS NEXT",
+        "next": "下一步",
+        "selectLanguage": "选择您的语言",
+        "language_en": "英语",
+        "language_pt": "葡萄牙语",
+        "language_es": "西班牙语",
+        "language_zh": "中文",
+        "language_fr": "法语",
+        "language_de": "德语",
+        "chooseColorScheme": "选择配色方案",
+        "light": "浅色",
+        "dark": "深色",
+        "system": "系统",
+        "canChangeLater": "您可以随时在设置中更改此项。",
+        "chooseTaskbarStyle": "选择任务栏样式",
+        "floating": "悬浮",
+        "expanded": "展开"
+        ,
+        "chooseTaskbarAlignment": "选择任务栏对齐方式",
+        "center": "居中",
+        "edges": "两端"
+    }
 }

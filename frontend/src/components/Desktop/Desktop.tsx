@@ -11,6 +11,8 @@ import NotificationArea from "../NotificationArea/NotificationArea";
 import { runtime } from "../../runtimeConfig";
 
 import InstallPopup from "../InstallPopup/InstallPopup";
+import Onboarding from "../Onboarding/Onboarding";
+
 interface WindowZIndexes {
   [key: string]: number;
 }
@@ -68,6 +70,11 @@ function Desktop({
   const [installPopupOpen, setInstallPopupOpen] = useState(false);
   const [pendingInstallApp, setPendingInstallApp] = useState<any>(null);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
+
+  const [onboardingOpen, setOnboardingOpen] = useState(false);
+  const [onboardingCompleted, setOnboardingCompleted] = useState<
+    boolean | null
+  >(null);
 
   // Helper to compare versions (returns 1 if v1 > v2, -1 if v1 < v2, 0 if equal)
   const compareVersions = (v1: string, v2: string): number => {
@@ -276,6 +283,26 @@ function Desktop({
         }
       } catch (e) {
         console.error("Failed to fetch pinned apps:", e);
+      }
+
+      // Check if onboarding has been completed
+      try {
+        const settingsRes = await fetch(
+          runtime.VITE_BACKEND_ADDRESS + "/settings",
+          {
+            credentials: "include",
+          },
+        );
+        const settings = await settingsRes.json();
+        const completed = settings.onboardingCompleted === "true";
+        setOnboardingCompleted(completed);
+        if (!completed) {
+          setOnboardingOpen(true);
+        }
+      } catch (e) {
+        console.error("Failed to fetch onboarding setting:", e);
+        setOnboardingCompleted(false);
+        setOnboardingOpen(true);
       }
     };
     fetchApps();
@@ -768,6 +795,28 @@ function Desktop({
 
   return (
     <>
+      {onboardingOpen && (
+        <Onboarding
+          onClose={async () => {
+            setOnboardingOpen(false);
+            setOnboardingCompleted(true);
+            // Save setting to database
+            try {
+              await fetch(`${runtime.VITE_BACKEND_ADDRESS}/settings`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({
+                  setting: "onboardingCompleted",
+                  value: "true",
+                }),
+              });
+            } catch (err) {
+              console.error("Failed to save onboarding setting:", err);
+            }
+          }}
+        />
+      )}
       {filePickerOpen && (
         <FilePicker
           formats={filePickerFormats}

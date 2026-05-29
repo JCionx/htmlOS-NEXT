@@ -1,3 +1,5 @@
+# Forwarding with Nginx Proxy Manager
+
 If you want to forward htmlOS NEXT securely with a custom domain (e.g., `next.yourdomain.com`), you can route your traffic through **Nginx Proxy Manager (NPM)**.
 
 This guide will walk you through configuring **htmlOS NEXT** to be forwarded by **NPM**.

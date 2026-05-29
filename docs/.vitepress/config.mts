@@ -49,6 +49,21 @@ export default defineConfig({
           { text: "Getting Started", link: "/developing-apps/getting-started" },
           { text: "Best Practices", link: "/developing-apps/best-practices" },
           { text: "Distributing", link: "/developing-apps/distributing" },
+          { text: "Manifest", link: "/developing-apps/manifest" },
+          {
+            text: "Tutorial",
+            collapsed: true,
+            items: [
+              {
+                text: "1. Getting Started",
+                link: "/developing-apps/tutorial/1-getting-started",
+              },
+              {
+                text: "2. Setting up your environment",
+                link: "/developing-apps/tutorial/2-setting-up-your-environment",
+              },
+            ],
+          },
         ],
       },
       {
@@ -61,6 +76,10 @@ export default defineConfig({
               {
                 text: "Getting Started",
                 link: "/packages/api/getting-started",
+              },
+              {
+                text: "API Reference",
+                link: "/packages/api/api-reference",
               },
             ],
           },
