@@ -1,42 +1,6 @@
 {
   "featuredApps": [
     {
-      "author": "Author",
-      "description": "description",
-      "storeIcon": "https://example.com/icon.png",
-      "screenshots": [
-        "https://example.com/1.png",
-        "https://example.com/2.png",
-        "https://example.com/3.png"
-      ],
-      "app": {
-        "id": "com.app.id",
-        "name": "name",
-        "version": "1.0.01",
-        "packageUrl": "https://example.com/package.zip",
-        "entryPoint": "dist/index.html",
-        "iconPath": "icon.svg",
-        "allowResize": true,
-        "allowMaximize": true,
-        "defaultWidth": 400,
-        "defaultHeight": 800,
-        "minWidth": 400,
-        "minHeight": 800,
-        "maxWidth": 400,
-        "maxHeight": 800,
-        "defaultX": 400,
-        "defaultY": 400,
-        "borderless": false,
-        "permissions": [
-          "positionManipulation",
-          "windowSpawning",
-          "diskAccess",
-          "cameraAccess",
-          "microphoneAccess"
-        ]
-      }
-    },
-    {
       "author": "JCionx",
       "description": "Apple Music client for htmlOS.\nThe core features include:\n - Playback of content in your library\n - Searching items in your library\n - Seamless handoff with other devices\n - Authentication sync\n - Queue system\n\n This app uses Apple's oficial MusicKit API, so this app is required to be served through HTTPS (unless using Safari), and your browser must support DRM content.",
       "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/com.jcionx.applemusic/icon.png",
@@ -82,64 +46,6 @@
         "iconPath": "icon.png",
         "pluginUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/com.jcionx.youtube/com.jcionx.youtube.js",
         "pluginHash": "9413e3f01f64e824013bc563e57013d9a1bdb7515fb8b5f3b811e807687d3a92"
-      }
-    },
-    {
-      "author": "JCionx",
-      "description": "Another music player App to test system behavior with multiple apps supporting the same file types.",
-      "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/music-player/icon.png",
-      "screenshots": [
-        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/1.jpeg",
-        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/2.jpeg",
-        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/3.jpeg"
-      ],
-      "app": {
-        "id": "com.jcionx.musicplayer",
-        "name": "Music Player",
-        "version": "1.0.0",
-        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/music-player/com.jcionx.musicplayer.zip",
-        "entryPoint": "index.html",
-        "iconPath": "icon.png",
-        "locale": {
-          "en": "Music Player",
-          "pt": "Reprodutor de Música",
-          "es": "Reproductor de música",
-          "de": "Musikplayer",
-          "zh": "音乐播放器",
-          "fr": "Lecteur de musique"
-        },
-        "filetypes": ["wav", "mp3", "m4a", "ogg", "flac"]
-      }
-    },
-    {
-      "author": "JCionx",
-      "description": "Unofficial Monochrome App for htmlOS NEXT. You can play songs from Tidal. More info on monochrome.tf.",
-      "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/monochrome/icon.png",
-      "screenshots": [
-        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/1.jpeg",
-        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/2.jpeg",
-        "https://jcionx.github.io/htmlOS-NEXT/apps/apple-music/screenshots/3.jpeg"
-      ],
-      "app": {
-        "id": "com.jcionx.monochrome",
-        "name": "Monochrome",
-        "version": "1.0.0",
-        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/monochrome/com.jcionx.monochrome.zip",
-        "entryPoint": "index.html",
-        "iconPath": "icon.png"
-      }
-    },
-    {
-      "author": "JCionx",
-      "description": "Wrapper for my Invidious instance. Expect instance instability.",
-      "storeIcon": "https://jcionx.github.io/htmlOS-NEXT/apps/invidious/icon.png",
-      "app": {
-        "id": "com.jcionx.invidious",
-        "name": "Invidious",
-        "version": "1.0.0",
-        "packageUrl": "https://jcionx.github.io/htmlOS-NEXT/apps/invidious/com.jcionx.invidious.zip",
-        "entryPoint": "index.html",
-        "iconPath": "icon.png"
       }
     }
   ],
